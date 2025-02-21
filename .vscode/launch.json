@@ -1,0 +1,45 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "punnyam",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "punnyam (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "punnyam (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "dropdown_search-3.0.1",
+            "cwd": "dropdown_search-3.0.1",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "dropdown_search-3.0.1 (profile mode)",
+            "cwd": "dropdown_search-3.0.1",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "dropdown_search-3.0.1 (release mode)",
+            "cwd": "dropdown_search-3.0.1",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}
