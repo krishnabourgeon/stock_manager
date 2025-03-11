@@ -378,7 +378,7 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
 
           await SunmiPrinter.printText(
               content:
-                  "${previewBillProvider.person[i].name} ${data[i].starMal}\n",
+                  "${previewBillProvider.person[i].name} - ${data[i].starMal}\n",
               style: SunmiStyle(
                   fontSize: 26,
                   isUnderLine: false,
@@ -480,6 +480,7 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
               previewBillProvider.saveBillResponse?.billimage == ''
           ? null
           : await printer.printNewLine();
+
       await printer.printCustom('${temple?.name}', 3, 1);
 //  await printer.printCustom('${temple?.addressLine1}', 1, 1);
 //     await printer.printCustom('${temple?.addressLine2}', 1, 1);
@@ -535,11 +536,12 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
       for (int i = 0; i < previewBillProvider.person.length; i++) {
         String? date = DateFormat('dd-MM-yyyy').format(DateTime.parse(
             "${previewBillProvider.previewDetailsList[i].fromDate}"));
+        print("..date...$date");
         await printer.printCustom(
-            "${previewBillProvider.person[i].id}) $date ${details[i].name} ${details[i].star}",
+            "${previewBillProvider.person[i].id}) $date ${details[i].name} - ${details[i].star}",
             1,
             1);
-        await printer.printCustom('${details[i].deity}', 1, 1);
+        // await printer.printCustom('${details[i].deity}', 1, 1);
         await printer.printCustom(
             '${details[i].pooja} ${details[i].qty}x${details[i].rate}', 1, 1);
         details[i].address == null

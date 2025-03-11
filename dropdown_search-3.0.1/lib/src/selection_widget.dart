@@ -220,7 +220,7 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
                               controller: widget.scrollbarProps?.controller,
                               thumbVisibility:
                                   widget.scrollbarProps?.isAlwaysShown,
-                              showTrackOnHover:
+                              trackVisibility:
                                   widget.scrollbarProps?.showTrackOnHover,
                               // hoverThickness:
                               //     widget.scrollbarProps?.hoverThickness,
