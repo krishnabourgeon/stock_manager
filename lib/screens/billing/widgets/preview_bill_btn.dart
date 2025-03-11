@@ -1,4 +1,4 @@
-import 'package:blue_thermal_printer/blue_thermal_printer.dart';
+// import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -31,7 +31,7 @@ class PreviewBillButton extends StatefulWidget {
 }
 
 class _PreviewBillButtonState extends State<PreviewBillButton> {
-  BlueThermalPrinter printer = BlueThermalPrinter.instance;
+  // BlueThermalPrinter printer = BlueThermalPrinter.instance;
   List<PoojaPersons> person = [];
   List<Details> details = [];
   Temple? temple;
@@ -468,154 +468,154 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
 
 //? .....thermal bluetooth print
 
-    else {
-      DateTime time = DateTime.now();
-      String? today = "${time.day}/${time.month}/${time.year}";
-      // List<LineText> list = [];
-      previewBillProvider.saveBillResponse?.billimage == null ||
-              previewBillProvider.saveBillResponse?.billimage == ''
-          ? null
-          : await printer.printImageBytes(previewBillProvider.imageData!);
-      previewBillProvider.saveBillResponse?.billimage == null ||
-              previewBillProvider.saveBillResponse?.billimage == ''
-          ? null
-          : await printer.printNewLine();
+//     else {
+//       DateTime time = DateTime.now();
+//       String? today = "${time.day}/${time.month}/${time.year}";
+//       // List<LineText> list = [];
+//       previewBillProvider.saveBillResponse?.billimage == null ||
+//               previewBillProvider.saveBillResponse?.billimage == ''
+//           ? null
+//           : await printer.printImageBytes(previewBillProvider.imageData!);
+//       previewBillProvider.saveBillResponse?.billimage == null ||
+//               previewBillProvider.saveBillResponse?.billimage == ''
+//           ? null
+//           : await printer.printNewLine();
 
-      await printer.printCustom('${temple?.name}', 3, 1);
-//  await printer.printCustom('${temple?.addressLine1}', 1, 1);
-//     await printer.printCustom('${temple?.addressLine2}', 1, 1);
-      await printer.printCustom('${temple?.phone}', 1, 1);
-      // await printer.printNewLine();
+//       await printer.printCustom('${temple?.name}', 3, 1);
+// //  await printer.printCustom('${temple?.addressLine1}', 1, 1);
+// //     await printer.printCustom('${temple?.addressLine2}', 1, 1);
+//       await printer.printCustom('${temple?.phone}', 1, 1);
+//       // await printer.printNewLine();
 
-      await printer.printCustom(
-          "________________________________________", 1, 1);
-      await printer.printLeftRight(
-        'Bill No : ${summary?.id} ',
-        today,
-        1,
-      );
+//       await printer.printCustom(
+//           "________________________________________", 1, 1);
+//       await printer.printLeftRight(
+//         'Bill No : ${summary?.id} ',
+//         today,
+//         1,
+//       );
 
-      await printer.printCustom(
-          "________________________________________", 1, 1);
-      previewBillProvider.person.length == 1
-          ? await printer.printNewLine()
-          : null;
+//       await printer.printCustom(
+//           "________________________________________", 1, 1);
+//       previewBillProvider.person.length == 1
+//           ? await printer.printNewLine()
+//           : null;
 
-//       // list.add(LineText(
-//       //     type: LineText.TYPE_TEXT,
-//       //     content: '${temple?.name}',
-//       //     size: 33,
-//       //     align: LineText.ALIGN_CENTER,
-//       //     linefeed: 1));
-//       // list.add(LineText(
-//       //     type: LineText.TYPE_TEXT,
-//       //     content: '${temple?.addressLine1}',
-//       //     size: 22,
-//       //     align: LineText.ALIGN_CENTER,
-//       //     linefeed: 1));
-//       // list.add(LineText(
-//       //     type: LineText.TYPE_TEXT,
-//       //     content: '${temple?.addressLine1}',
-//       //     size: 22,
-//       //     align: LineText.ALIGN_CENTER,
-//       //     linefeed: 1));
-//       // list.add(LineText(
-//       //     type: LineText.TYPE_TEXT,
-//       //     content: '${temple?.phone}',
-//       //     size: 22,
-//       //     align: LineText.ALIGN_CENTER,
-//       //     linefeed: 1));
-//       // list.add(LineText(linefeed: 1));
-//       // list.add(LineText(
-//       //     type: LineText.TYPE_TEXT,
-//       //     content: 'Bill No : ${summary?.id} ',
-//       //     size: 25,
-//       //     align: LineText.ALIGN_LEFT,
-//       //     linefeed: 0));
+// //       // list.add(LineText(
+// //       //     type: LineText.TYPE_TEXT,
+// //       //     content: '${temple?.name}',
+// //       //     size: 33,
+// //       //     align: LineText.ALIGN_CENTER,
+// //       //     linefeed: 1));
+// //       // list.add(LineText(
+// //       //     type: LineText.TYPE_TEXT,
+// //       //     content: '${temple?.addressLine1}',
+// //       //     size: 22,
+// //       //     align: LineText.ALIGN_CENTER,
+// //       //     linefeed: 1));
+// //       // list.add(LineText(
+// //       //     type: LineText.TYPE_TEXT,
+// //       //     content: '${temple?.addressLine1}',
+// //       //     size: 22,
+// //       //     align: LineText.ALIGN_CENTER,
+// //       //     linefeed: 1));
+// //       // list.add(LineText(
+// //       //     type: LineText.TYPE_TEXT,
+// //       //     content: '${temple?.phone}',
+// //       //     size: 22,
+// //       //     align: LineText.ALIGN_CENTER,
+// //       //     linefeed: 1));
+// //       // list.add(LineText(linefeed: 1));
+// //       // list.add(LineText(
+// //       //     type: LineText.TYPE_TEXT,
+// //       //     content: 'Bill No : ${summary?.id} ',
+// //       //     size: 25,
+// //       //     align: LineText.ALIGN_LEFT,
+// //       //     linefeed: 0));
 
-      for (int i = 0; i < previewBillProvider.person.length; i++) {
-        String? date = DateFormat('dd-MM-yyyy').format(DateTime.parse(
-            "${previewBillProvider.previewDetailsList[i].fromDate}"));
-        print("..date...$date");
-        await printer.printCustom(
-            "${previewBillProvider.person[i].id}) $date ${details[i].name} - ${details[i].star}",
-            1,
-            1);
-        // await printer.printCustom('${details[i].deity}', 1, 1);
-        await printer.printCustom(
-            '${details[i].pooja} ${details[i].qty}x${details[i].rate}', 1, 1);
-        details[i].address == null
-            ? ''
-            : await printer.printCustom('${details[i].address} ', 1, 1);
+//       for (int i = 0; i < previewBillProvider.person.length; i++) {
+//         String? date = DateFormat('dd-MM-yyyy').format(DateTime.parse(
+//             "${previewBillProvider.previewDetailsList[i].fromDate}"));
+//         print("..date...$date");
+//         await printer.printCustom(
+//             "${previewBillProvider.person[i].id}) $date ${details[i].name} - ${details[i].star}",
+//             1,
+//             1);
+//         // await printer.printCustom('${details[i].deity}', 1, 1);
+//         await printer.printCustom(
+//             '${details[i].pooja} ${details[i].qty}x${details[i].rate}', 1, 1);
+//         details[i].address == null
+//             ? ''
+//             : await printer.printCustom('${details[i].address} ', 1, 1);
 
-//     //? another blutooth printing
+// //     //? another blutooth printing
 
-//     //     list.add(LineText(
-//     //       type: LineText.TYPE_TEXT,
-//     //       content:
-//     //           "${previewBillProvider.person[i].id}) $date ${details[i].starMal}",
-//     //       size: 25,
-//     //       align: LineText.ALIGN_RIGHT,
-//     //     ));
+// //     //     list.add(LineText(
+// //     //       type: LineText.TYPE_TEXT,
+// //     //       content:
+// //     //           "${previewBillProvider.person[i].id}) $date ${details[i].starMal}",
+// //     //       size: 25,
+// //     //       align: LineText.ALIGN_RIGHT,
+// //     //     ));
 
-//     //     list.add(LineText(
-//     //       type: LineText.TYPE_TEXT,
-//     //       content:
-//     //           '${details[i].poojaMal} ${details[i].qty}x${details[i].rate}',
-//     //       size: 22,
-//     //       align: LineText.ALIGN_LEFT,
-//     //     ));
-//     //     details[i].address == null
-//     //         ? ''
-//     //         : list.add(LineText(
-//     //             type: LineText.TYPE_TEXT,
-//     //             content: '${details[i].address} ',
-//     //             size: 22,
-//     //             align: LineText.ALIGN_LEFT,
-//     //           ));
-        await printer.printNewLine();
-      }
-      await printer.printCustom(
-          "________________________________________", 1, 1);
+// //     //     list.add(LineText(
+// //     //       type: LineText.TYPE_TEXT,
+// //     //       content:
+// //     //           '${details[i].poojaMal} ${details[i].qty}x${details[i].rate}',
+// //     //       size: 22,
+// //     //       align: LineText.ALIGN_LEFT,
+// //     //     ));
+// //     //     details[i].address == null
+// //     //         ? ''
+// //     //         : list.add(LineText(
+// //     //             type: LineText.TYPE_TEXT,
+// //     //             content: '${details[i].address} ',
+// //     //             size: 22,
+// //     //             align: LineText.ALIGN_LEFT,
+// //     //           ));
+//         await printer.printNewLine();
+//       }
+//       await printer.printCustom(
+//           "________________________________________", 1, 1);
 
-      previewBillProvider.person.length == 1
-          ? await printer.printNewLine()
-          : null;
+//       previewBillProvider.person.length == 1
+//           ? await printer.printNewLine()
+//           : null;
 
-      await printer.printLeftRight(
-          'Mode: ${summary?.mode}', 'Total: ${summary?.total}', 1);
-      await printer.printNewLine();
-      await printer.printCustom(
-          "________________________________________", 1, 1);
-      await printer.printCustom('Book online ${temple?.email}', 1, 1);
-      await printer.printNewLine();
+//       await printer.printLeftRight(
+//           'Mode: ${summary?.mode}', 'Total: ${summary?.total}', 1);
+//       await printer.printNewLine();
+//       await printer.printCustom(
+//           "________________________________________", 1, 1);
+//       await printer.printCustom('Book online ${temple?.email}', 1, 1);
+//       await printer.printNewLine();
 
-      await printer.paperCut();
-//     //? another blutooth printing
+//       await printer.paperCut();
+// //     //? another blutooth printing
 
-//     //   list.add(LineText(linefeed: 1));
-//     //   list.add(LineText(
-//     //       type: LineText.TYPE_TEXT,
-//     //       content: 'Mode:${summary?.mode}        ',
-//     //       size: 24,
-//     //       align: LineText.ALIGN_LEFT,
-//     //       linefeed: 0));
-//     //   list.add(LineText(
-//     //       type: LineText.TYPE_TEXT,
-//     //       content: '    Total${summary?.total}',
-//     //       size: 24,
-//     //       align: LineText.ALIGN_RIGHT,
-//     //       linefeed: 1));
-//     //   list.add(LineText(
-//     //       type: LineText.TYPE_TEXT,
-//     //       content: 'Book online ${temple?.email}',
-//     //       weight: 1,
-//     //       align: LineText.ALIGN_CENTER,
-//     //       linefeed: 1));
-//     //   list.add(LineText(linefeed: 1));
-//     //   await bluetoothPrint.printReceipt(config, list);
-//     //   Helpers.successToast("POS Printer not connected");
-    }
+// //     //   list.add(LineText(linefeed: 1));
+// //     //   list.add(LineText(
+// //     //       type: LineText.TYPE_TEXT,
+// //     //       content: 'Mode:${summary?.mode}        ',
+// //     //       size: 24,
+// //     //       align: LineText.ALIGN_LEFT,
+// //     //       linefeed: 0));
+// //     //   list.add(LineText(
+// //     //       type: LineText.TYPE_TEXT,
+// //     //       content: '    Total${summary?.total}',
+// //     //       size: 24,
+// //     //       align: LineText.ALIGN_RIGHT,
+// //     //       linefeed: 1));
+// //     //   list.add(LineText(
+// //     //       type: LineText.TYPE_TEXT,
+// //     //       content: 'Book online ${temple?.email}',
+// //     //       weight: 1,
+// //     //       align: LineText.ALIGN_CENTER,
+// //     //       linefeed: 1));
+// //     //   list.add(LineText(linefeed: 1));
+// //     //   await bluetoothPrint.printReceipt(config, list);
+// //     //   Helpers.successToast("POS Printer not connected");
+//     }
     bill?.clearValues();
   }
 }

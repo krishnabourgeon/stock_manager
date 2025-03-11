@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:blue_thermal_printer/blue_thermal_printer.dart';
+// import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -32,15 +32,15 @@ class _HomeState extends State<Home> {
     'Pooja Summary',
     'Counter Wise Summary',
   ];
-  BlueThermalPrinter printer = BlueThermalPrinter.instance;
-  List<BluetoothDevice> devices = [];
-  BluetoothDevice? selectedDevice;
+  // BlueThermalPrinter printer = BlueThermalPrinter.instance;
+  // List<BluetoothDevice> devices = [];
+  // BluetoothDevice? selectedDevice;
 
   final _drawerController = ZoomDrawerController();
   @override
   void initState() {
-    devices.clear();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _getDevices());
+    // devices.clear();
+    // WidgetsBinding.instance.addPostFrameCallback((_) => _getDevices());
 
     getCounterID();
 
@@ -52,37 +52,37 @@ class _HomeState extends State<Home> {
     return data.buffer.asUint8List();
   }
 
-  Future<void> _getDevices() async {
-    bool? connect = await printer.isConnected;
-    if (connect == true) {
-      await printer.disconnect();
-    }
+  // Future<void> _getDevices() async {
+  //   bool? connect = await printer.isConnected;
+  //   if (connect == true) {
+  //     await printer.disconnect();
+  //   }
 
-    List<BluetoothDevice> devicesList = await printer.getBondedDevices();
+  //   List<BluetoothDevice> devicesList = await printer.getBondedDevices();
 
-    setState(() {
-      devices = devicesList;
-    });
-    await _connectToPrinter();
-    bool? conect = await printer.isConnected;
-    if (conect == true) {
-      Helpers.successToast("Bluetooth device connected successfully");
-    } else {
-      Helpers.successToast("Please check printer is available");
-    }
-  }
+  //   setState(() {
+  //     devices = devicesList;
+  //   });
+  //   await _connectToPrinter();
+  //   bool? conect = await printer.isConnected;
+  //   if (conect == true) {
+  //     Helpers.successToast("Bluetooth device connected successfully");
+  //   } else {
+  //     Helpers.successToast("Please check printer is available");
+  //   }
+  // }
 
-  Future<void> _connectToPrinter() async {
-    selectedDevice = devices.firstWhere(
-      (device) => device.name == 'CN811-UB',
-      orElse: () => BluetoothDevice('not found', ''),
-    );
-    if (selectedDevice?.name == 'CN811-UB') {
-      await printer.connect(selectedDevice!);
+  // Future<void> _connectToPrinter() async {
+  //   selectedDevice = devices.firstWhere(
+  //     (device) => device.name == 'CN811-UB',
+  //     orElse: () => BluetoothDevice('not found', ''),
+  //   );
+  //   if (selectedDevice?.name == 'CN811-UB') {
+  //     await printer.connect(selectedDevice!);
 
-      Helpers.successToast("Bluetooth device connected successfully");
-    }
-  }
+  //     Helpers.successToast("Bluetooth device connected successfully");
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
