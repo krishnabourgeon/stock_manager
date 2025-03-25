@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_sunmi_printer_plus/column_maker.dart';
 import 'package:flutter_sunmi_printer_plus/flutter_sunmi_printer_plus.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:punnyam/providers/billing_provider.dart';
 import 'package:punnyam/screens/customer_creation/customer_selection_screen.dart';

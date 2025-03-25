@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:punnyam/common/common_functions.dart';
 import 'package:punnyam/providers/auth_provider.dart';
+import 'package:punnyam/providers/billing_provider.dart';
+import 'package:punnyam/providers/home_provider.dart';
 import 'package:punnyam/services/helpers.dart';
 import 'package:punnyam/services/provider_helper_class.dart';
 import '../../common/common_button.dart';
@@ -168,12 +170,26 @@ class RegisterScreenState extends State<RegisterScreen> {
                         ? () {
                             FocusScope.of(context).unfocus();
                             authProvider.register(
-                                onSuccess: () => Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const Home(),
-                                    ),
-                                    (route) => false),
+                                onSuccess: () async {
+                                  final home = context.read<HomeProvider>();
+                                  final billingProvider =
+                                      context.read<BillingProvider>();
+                                  await home.getquickbill();
+                                  await billingProvider.getStars();
+                                  await billingProvider.getversion(context);
+
+                                  billingProvider.getPaymentModes(context,
+                                      onFailure: () => Helpers.successToast(
+                                          'Error occurred while fetching payment modes ....!'));
+                                  await home.getCounter();
+
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const Home(),
+                                      ),
+                                      (route) => false);
+                                },
                                 onFailure: () => Helpers.successToast(
                                     authProvider.errorToast ?? ''));
                           }

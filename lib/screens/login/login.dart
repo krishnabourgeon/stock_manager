@@ -128,6 +128,8 @@ class _LoginState extends State<Login> {
                                             context.read<BillingProvider>();
                                         await home.getquickbill();
                                         await billingProvider.getStars();
+                                        await billingProvider
+                                            .getversion(context);
 
                                         billingProvider.getPaymentModes(context,
                                             onFailure: () => Helpers.successToast(

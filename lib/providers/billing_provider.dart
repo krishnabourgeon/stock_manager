@@ -13,6 +13,7 @@ import 'package:punnyam/models/save_bill_response.dart';
 import 'package:punnyam/models/savequickbillresponse_datamodel.dart';
 import 'package:punnyam/models/special_star_response.dart';
 import 'package:punnyam/models/starts_response_model.dart';
+import 'package:punnyam/models/version_datamodel.dart';
 import 'package:punnyam/screens/billing/preview_bill.dart';
 import 'package:punnyam/services/app_config.dart';
 import 'package:punnyam/services/helpers.dart';
@@ -168,6 +169,27 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
         if (res.isValue) {
           paymentModeResponse = res.asValue!.value;
           updatePaymentModeList(paymentModeResponse);
+        } else {
+          updateLoadState(LoaderState.loaded);
+          if (onFailure != null) onFailure();
+        }
+      } catch (e) {
+        debugPrint('exception in deities: $e');
+        updateLoadState(LoaderState.loaded);
+      }
+      notifyListeners();
+    }
+  }
+
+  VersionDatamodel? version;
+  Future<void> getversion(BuildContext context, {Function? onFailure}) async {
+    final network = await CommonFunctions.checkInternetConnection();
+    if (network) {
+      updateLoadState(LoaderState.loading);
+      try {
+        var res = await serviceConfig.getversion();
+        if (res.isValue) {
+          version = res.asValue!.value;
         } else {
           updateLoadState(LoaderState.loaded);
           if (onFailure != null) onFailure();

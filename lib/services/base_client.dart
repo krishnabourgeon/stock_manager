@@ -85,7 +85,6 @@ class BaseClient {
   }
 
   static dynamic _processResponse(http.Response response) {
-    print(response.body);
     switch (response.statusCode) {
       case 200:
         // var responseJson = utf8.decode(response.bodyBytes);

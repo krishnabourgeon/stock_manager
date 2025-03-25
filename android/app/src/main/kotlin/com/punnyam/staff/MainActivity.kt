@@ -1,4 +1,4 @@
-package com.example.punnyam
+package com.punnyam.staff
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -18,6 +18,7 @@ import 'package:punnyam/models/savequickbillresponse_datamodel.dart';
 import 'package:punnyam/models/search_response_model.dart';
 import 'package:punnyam/models/special_star_response.dart';
 import 'package:punnyam/models/starts_response_model.dart';
+import 'package:punnyam/models/version_datamodel.dart';
 import 'package:punnyam/services/app_config.dart';
 import 'package:punnyam/services/base_client.dart';
 import 'package:async/async.dart';
@@ -197,6 +198,24 @@ class ServiceConfig {
       return (previewBillResponse.status ?? false)
           ? Result.value(previewBillResponse)
           : Result.error(previewBillResponse);
+    }
+  }
+
+  Future<Result> getversion() async {
+    Result res = await BaseClient.get(
+      'app-versions',
+    );
+    if (res.isError) {
+      ErrorResponseModel errorResponseModel =
+          ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+      VersionDatamodel versionResponse = VersionDatamodel.fromJson(response);
+      return (versionResponse.success ?? false)
+          ? Result.value(versionResponse)
+          : Result.error(versionResponse);
     }
   }
 

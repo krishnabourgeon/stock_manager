@@ -35,6 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
     final home = context.read<HomeProvider>();
     final billingProvider = context.read<BillingProvider>();
     if ((AppConfig.accessToken ?? '').isNotEmpty) {
+      await billingProvider.getversion(context);
       await home.getquickbill();
       await billingProvider.getStars();
       if (!mounted) return;
