@@ -145,6 +145,7 @@ class HomeProvider extends ChangeNotifier with ProviderHelperClass {
             )).then((value) {
           context.read<CreateCustomerProvider>().clearValues();
           context.read<BillingProvider>()
+            ..getInitialDataList()
             ..clearValues()
             ..clearPaymentValues()
             ..poojaDetailsList.clear();

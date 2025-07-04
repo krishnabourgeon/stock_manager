@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:ui' as ui show BoxHeightStyle, BoxWidthStyle;
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import '../dropdown_search.dart';
 import 'widgets/checkbox_widget.dart';
 
@@ -19,7 +17,6 @@ class SelectionWidget<T> extends StatefulWidget {
   final DropdownSearchItemAsString<T>? itemAsString;
   final DropdownSearchFilterFn<T>? filterFn;
   final String? hintText;
-
   final double? maxHeight;
   final double? dialogMaxWidth;
   final Widget? popupTitle;
@@ -121,7 +118,6 @@ class SelectionWidget<T> extends StatefulWidget {
     this.selectionListViewProps = const SelectionListViewProps(),
     required this.focusNode,
   }) : super(key: key);
-
   @override
   SelectionWidgetState<T> createState() => SelectionWidgetState<T>();
 }
@@ -140,13 +136,11 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
     super.initState();
     _debouncer = Debouncer(delay: widget.searchDelay);
     _selectedItemsNotifier.value = widget.selectedValues;
-
     widget.searchFieldProps?.controller?.addListener(() {
       _debouncer(() {
         _onTextChanged(widget.searchFieldProps!.controller!.text);
       });
     });
-
     Future.delayed(
       Duration.zero,
       () => _manageItemsByFilter(
@@ -175,7 +169,6 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
     bool isTablet = deviceSize.width > deviceSize.height;
     double maxHeight = deviceSize.height * (isTablet ? .8 : .6);
     double maxWidth = deviceSize.width * (isTablet ? .7 : .9);
-
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: const BoxDecoration(),
@@ -220,8 +213,8 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
                               controller: widget.scrollbarProps?.controller,
                               thumbVisibility:
                                   widget.scrollbarProps?.isAlwaysShown,
-                              trackVisibility:
-                                  widget.scrollbarProps?.showTrackOnHover,
+                              // showTrackOnHover:
+                              //     widget.scrollbarProps?.showTrackOnHover,
                               // hoverThickness:
                               //     widget.scrollbarProps?.hoverThickness,
                               thickness: widget.scrollbarProps?.thickness,
@@ -299,7 +292,6 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
 
   Widget _multiSelectionValidation() {
     if (!widget.isMultiSelectionMode) return Container();
-
     Widget defaultValidation = Padding(
       padding: const EdgeInsets.all(8),
       child: ElevatedButton(
@@ -307,7 +299,6 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
         child: const Text("OK"),
       ),
     );
-
     Widget popupCustomMultiSelectionWidget() {
       if (widget.popupCustomMultiSelectionWidget != null) {
         return widget.popupCustomMultiSelectionWidget!(context, _selectedItems);
@@ -409,7 +400,6 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
   ///[isFirstLoad] true if it's the first time we load data from online, false other wises
   void _manageItemsByFilter(String filter, {bool isFistLoad = false}) async {
     _loadingNotifier.value = true;
-
     List<T> applyFilter(String? filter) {
       return _cachedItems.where((i) {
         if (widget.filterFn != null) {
@@ -430,13 +420,11 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
 
     //load offline data for the first time
     if (isFistLoad && widget.items != null) _cachedItems.addAll(widget.items!);
-
     //manage offline items
     if (widget.onFind != null && (widget.isFilteredOnline || isFistLoad)) {
       try {
         final List<T> onlineItems = [];
         onlineItems.addAll(await widget.onFind!(filter));
-
         //Remove all old data
         _cachedItems.clear();
         //add offline items
@@ -451,7 +439,6 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
         }
         //add new online items to list
         _cachedItems.addAll(onlineItems);
-
         //don't filter data , they are already filtered online and local data are already filtered
         if (widget.isFilteredOnline == true) {
           _addDataToStream(_cachedItems);
@@ -470,7 +457,6 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
     } else {
       _addDataToStream(applyFilter(filter));
     }
-
     _loadingNotifier.value = false;
   }
 
@@ -602,7 +588,7 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
                           widget.searchFieldProps?.textAlignVertical,
                       textDirection: widget.searchFieldProps?.textDirection,
                       readOnly: widget.searchFieldProps?.readOnly ?? false,
-                      toolbarOptions: widget.searchFieldProps?.toolbarOptions,
+                      // toolbarOptions: widget.searchFieldProps?.toolbarOptions,
                       showCursor: widget.searchFieldProps?.showCursor,
                       obscuringCharacter:
                           widget.searchFieldProps?.obscuringCharacter ?? '•',
@@ -673,13 +659,11 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
             }
           });
     }
-
     return Container();
   }
 
   Widget _buildFavoriteItems(List<T> favoriteItems) {
     if (favoriteItems.isEmpty) return Container();
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: LayoutBuilder(builder: (context, constraints) {
@@ -748,7 +732,7 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
           Text(
             _selectedItemAsString(item),
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleMedium,
+            // style: Theme.of(context).textTheme.subtitle1,
           ),
           const Padding(padding: EdgeInsets.only(left: 8)),
           Visibility(
@@ -811,9 +795,7 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
 class Debouncer {
   final Duration? delay;
   Timer? _timer;
-
   Debouncer({this.delay});
-
   void call(Function action) {
     _timer?.cancel();
     _timer = Timer(

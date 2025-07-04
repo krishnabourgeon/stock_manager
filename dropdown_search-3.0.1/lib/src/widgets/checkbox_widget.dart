@@ -8,8 +8,7 @@ class CheckBoxWidget extends StatefulWidget {
   final bool isChecked;
   final bool isDisabled;
   final ValueChanged<bool?>? onChanged;
-
-  CheckBoxWidget({
+  const CheckBoxWidget({
     Key? key,
     this.isChecked = false,
     this.isDisabled = false,

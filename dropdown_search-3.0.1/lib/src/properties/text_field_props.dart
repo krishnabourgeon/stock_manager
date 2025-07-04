@@ -17,7 +17,7 @@ class TextFieldProps {
     this.textAlignVertical,
     this.textDirection,
     this.readOnly = false,
-    this.toolbarOptions,
+    // this.toolbarOptions,
     this.showCursor,
     this.autofocus = false,
     this.obscuringCharacter = '•',
@@ -61,7 +61,7 @@ class TextFieldProps {
 
   final SmartQuotesType? smartQuotesType;
 
-  final ToolbarOptions? toolbarOptions;
+  // final ToolbarOptions? toolbarOptions;
 
   final InputDecoration? decoration;
 

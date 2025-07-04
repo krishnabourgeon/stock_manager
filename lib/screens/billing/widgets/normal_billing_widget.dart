@@ -124,8 +124,7 @@ class _NormalBillingWidgetState extends State<NormalBillingWidget> {
               title: 'Select Star',
             )
           : CustomDropDownSearch(
-              labelText: 'Nodata',
-              labelColor: Colors.black,
+              labelText: widget.billingProvider.starName,
               isShowSearch: true,
               onChanged: (value) {
                 widget.billingProvider
@@ -166,8 +165,8 @@ class _NormalBillingWidgetState extends State<NormalBillingWidget> {
                       title: 'Select Star',
                     )
                   : CustomDropDownSearch(
-                      labelText: 'Nodata',
-                      labelColor: Colors.black,
+                      labelText: widget.billingProvider.starName,
+                      // labelColor: Colors.black,
                       isShowSearch: true,
                       onChanged: (value) {
                         widget.billingProvider
@@ -183,6 +182,61 @@ class _NormalBillingWidgetState extends State<NormalBillingWidget> {
               10.verticalSpace,
             ])
           : const SizedBox(),
+      // Row(
+      //   children: [
+      //     widget.billingProvider.loaderState == LoaderState.loading
+      //         ? const Expanded(
+      //             child: LoadingDropDown(
+      //               title: 'Select Gothra',
+      //             ),
+      //           )
+      //         : Expanded(
+      //             child: CustomDropDownSearch(
+      //               labelText: 'Select Gothra',
+      //               // labelColor: Colors.black,
+      //               isShowSearch: true,
+      //               onChanged: (value) {
+      //                 widget.billingProvider
+      //                   ..getgothraIdFromName(value)
+      //                   ..updateBillingFormState();
+      //               },
+      //               items: List.generate(
+      //                   widget.billingProvider.gothraResponse?.data?.length ??
+      //                       0,
+      //                   (index) =>
+      //                       widget.billingProvider.gothraResponse?.data![index]
+      //                           .nameEng ??
+      //                       ''),
+      //             ),
+      //           ),
+      //     10.horizontalSpace,
+      //     widget.billingProvider.loaderState == LoaderState.loading
+      //         ? const Expanded(
+      //             child: LoadingDropDown(
+      //               title: 'Select Rashi',
+      //             ),
+      //           )
+      //         : Expanded(
+      //             child: CustomDropDownSearch(
+      //               labelText: 'Select Rashi',
+      //               // labelColor: Colors.black,
+      //               isShowSearch: true,
+      //               onChanged: (value) {
+      //                 widget.billingProvider
+      //                   ..getrashiIdFromName(value)
+      //                   ..updateBillingFormState();
+      //               },
+      //               items: List.generate(
+      //                   widget.billingProvider.rashiResponse?.data?.length ?? 0,
+      //                   (index) =>
+      //                       widget.billingProvider.rashiResponse?.data![index]
+      //                           .nameEng ??
+      //                       ''),
+      //             ),
+      //           ),
+      //   ],
+      // ),
+      // 10.verticalSpace,
       !widget.billingProvider.isScheduled
           ? PunnyamDatePicker(
               title: widget.billingProvider.fromDate

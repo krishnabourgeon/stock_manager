@@ -518,6 +518,9 @@ class _HomeState extends State<Home> {
                                         .then((value) async {
                                       await home.getquickbill();
                                       await billingProvider.getStars();
+                                      await billingProvider.getgothra();
+                                      await billingProvider.getrashi();
+
                                       billingProvider.getPaymentModes(context,
                                           onFailure: () => Helpers.successToast(
                                               'Error occurred while fetching payment modes ....!'));

@@ -44,33 +44,33 @@ class PreviewBillTile extends StatelessWidget {
                         ValidationHelperClass.validateRate(value.trim()) ?? ''),
           ),
           10.verticalSpace,
-          PunnyamTextField(
-            hintText: "paid Amount",
-            textInputAction: TextInputAction.done,
-            keyboardType: TextInputType.number,
-            textEditingController:
-                context.read<BillingProvider>().paidAmountController,
-            hintStyle: TextStyle(
-              fontSize: 14.sp,
-              // fontWeight: FontWeight.bold,
-              color: Colors.grey.shade600,
-            ),
-            onChanged: (value) => context.read<BillingProvider>()
-              ..updateValidationMessage(
-                  validationTypes: ValidationTypes.paidAmount,
-                  validationMessage: ValidationHelperClass.validatePaidAmount(
-                          value.trim(),
-                          int.parse(
-                              previewBillProvider.totalRateController.text)) ??
-                      '')
-              ..updatePreviewBillingFormValidated(),
-          ),
-          if (context.read<BillingProvider>().paidAmountErrorMessage != null)
-            ValidationWidget(
-                validationMessage:
-                    context.read<BillingProvider>().paidAmountErrorMessage ??
-                        ''),
-          10.verticalSpace,
+          // PunnyamTextField(
+          //   hintText: "paid Amount",
+          //   textInputAction: TextInputAction.done,
+          //   keyboardType: TextInputType.number,
+          //   textEditingController:
+          //       context.read<BillingProvider>().paidAmountController,
+          //   hintStyle: TextStyle(
+          //     fontSize: 14.sp,
+          //     // fontWeight: FontWeight.bold,
+          //     color: Colors.grey.shade600,
+          //   ),
+          //   onChanged: (value) => context.read<BillingProvider>()
+          //     ..updateValidationMessage(
+          //         validationTypes: ValidationTypes.paidAmount,
+          //         validationMessage: ValidationHelperClass.validatePaidAmount(
+          //                 value.trim(),
+          //                 int.parse(
+          //                     previewBillProvider.totalRateController.text)) ??
+          //             '')
+          //     ..updatePreviewBillingFormValidated(),
+          // ),
+          // if (context.read<BillingProvider>().paidAmountErrorMessage != null)
+          //   ValidationWidget(
+          //       validationMessage:
+          //           context.read<BillingProvider>().paidAmountErrorMessage ??
+          //               ''),
+          // 10.verticalSpace,
           CustomDropDownSearch(
             labelText: previewBillProvider.paymentMode ?? "Select Payment Mode",
             maxHeight: 170.h,
@@ -108,8 +108,13 @@ class PreviewBillTile extends StatelessWidget {
             itemBuilder: (context, index) {
               PoojaDetails poojaDetails =
                   previewBillProvider.previewDetailsList[index];
+              // String? name = previewBillProvider
+              //     .getgothranameFromid(poojaDetails.gothra ?? 0);
+              // String? rashiname = previewBillProvider
+              //     .getrashianameFromid(poojaDetails.rashi ?? 0);
+              // print(name);
               return Container(
-                height: 250.h,
+                height: 270.h,
                 width: double.maxFinite,
                 margin: EdgeInsets.symmetric(vertical: 10.h),
                 padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
@@ -145,6 +150,16 @@ class PreviewBillTile extends StatelessWidget {
                       valueText: poojaDetails.star ?? '',
                     ),
                     5.verticalSpace,
+                    // PreviewBillRowWidget(
+                    //   labelText: 'Gothra',
+                    //   valueText: name ?? '',
+                    // ),
+                    // 5.verticalSpace,
+                    // PreviewBillRowWidget(
+                    //   labelText: 'Rashi',
+                    //   valueText: rashiname ?? '',
+                    // ),
+                    // 5.verticalSpace,
                     PreviewBillRowWidget(
                       labelText: 'Diety',
                       valueText: poojaDetails.diety ?? '',

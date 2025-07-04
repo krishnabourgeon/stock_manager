@@ -38,6 +38,9 @@ class _SplashScreenState extends State<SplashScreen> {
       await billingProvider.getversion(context);
       await home.getquickbill();
       await billingProvider.getStars();
+      await billingProvider.getgothra();
+      await billingProvider.getrashi();
+
       if (!mounted) return;
       billingProvider.getPaymentModes(context,
           onFailure: () => Helpers.successToast(

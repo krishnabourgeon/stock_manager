@@ -72,6 +72,8 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
         person.add(PoojaPersons(
             id: (i + 1).toString(),
             date: details[i].date.toString(),
+            // gothra: details[i].gothra?.nameEng,
+            // rashi: details[i].rashi?.nameEng,
             dietyName: details[i].deity.toString(),
             name: details[i].name ?? 'Customer'.toString(),
             address: details[i].address.toString(),
@@ -304,14 +306,14 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
         SunmiStyle(fontSize: 26, bold: true);
         await SunmiPrinter.setAlignment(align: SunmiPrintAlign.CENTER);
         await SunmiPrinter.lineWrap(1);
-        previewBillProvider.saveBillResponse?.billimage == null ||
-                previewBillProvider.saveBillResponse?.billimage == ''
+        previewBillProvider.saveBillResponse?.billImage == null ||
+                previewBillProvider.saveBillResponse?.billImage == ''
             ? null
             : await SunmiPrinter.printImage(
                 image: previewBillProvider.imageData!,
                 align: SunmiPrintAlign.CENTER);
-        previewBillProvider.saveBillResponse?.billimage == null ||
-                previewBillProvider.saveBillResponse?.billimage == ''
+        previewBillProvider.saveBillResponse?.billImage == null ||
+                previewBillProvider.saveBillResponse?.billImage == ''
             ? null
             : await SunmiPrinter.lineWrap(2);
         await SunmiPrinter.printText(
@@ -365,7 +367,8 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
           for (Match match in matches) {
             datass.add("${match.group(0)}");
           }
-
+          print(
+              "...${previewBillProvider.person[i].id}) ${data[i].deityMal}\n${previewBillProvider.person[i].name} - ${data[i].starMal}\n${data[i].poojaMal} ${data[i].qty}x${data[i].rate}\n");
           await SunmiPrinter.printText(
               content:
                   "${previewBillProvider.person[i].id}) ${data[i].deityMal}\n",
@@ -383,6 +386,14 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
                   isUnderLine: false,
                   bold: false,
                   align: SunmiPrintAlign.LEFT));
+          // await SunmiPrinter.printText(
+          //     content:
+          //         "${previewBillProvider.person[i].gothra} - ${previewBillProvider.person[i].rashi}\n",
+          //     style: SunmiStyle(
+          //         fontSize: 26,
+          //         isUnderLine: false,
+          //         bold: false,
+          //         align: SunmiPrintAlign.LEFT));
           await SunmiPrinter.printText(
               content: "${data[i].poojaMal} ${data[i].qty}x${data[i].rate}\n",
               style: SunmiStyle(
@@ -392,6 +403,7 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
                   align: SunmiPrintAlign.LEFT));
           for (int n = 0; n < datass.length; n += 2) {
             if (n + 1 < datass.length) {
+              print("..${datass[n]}, ${datass[n + 1]}");
               await SunmiPrinter.printText(
                   content: "${datass[n]}, ${datass[n + 1]}",
                   style: SunmiStyle(
@@ -629,12 +641,16 @@ class PoojaPersons {
   String? poojaName;
   String? star;
   String? dietyName;
+  String? gothra;
+  String? rashi;
   PoojaPersons({
     this.id,
     this.name,
     this.address,
     this.rate,
     this.qty,
+    this.gothra,
+    this.rashi,
     this.poojaName,
     this.star,
     this.dietyName,

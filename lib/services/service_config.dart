@@ -5,12 +5,14 @@ import 'package:punnyam/models/counters_model.dart';
 import 'package:punnyam/models/create_customer_body.dart';
 import 'package:punnyam/models/dieties_response_model.dart';
 import 'package:punnyam/models/error_response_model.dart';
+import 'package:punnyam/models/gothra_response.dart';
 import 'package:punnyam/models/login_response_model.dart';
 import 'package:punnyam/models/payment_mode_response.dart';
 import 'package:punnyam/models/pooja_response_model.dart';
 import 'package:punnyam/models/pooja_summary_response.dart';
 import 'package:punnyam/models/preview_bill_response.dart';
 import 'package:punnyam/models/quickbill_datamodel.dart';
+import 'package:punnyam/models/rashi_datamodel.dart';
 import 'package:punnyam/models/register_body.dart';
 import 'package:punnyam/models/save_bill_body.dart';
 import 'package:punnyam/models/save_bill_response.dart';
@@ -94,6 +96,38 @@ class ServiceConfig {
       return (starsResponse.status ?? false)
           ? Result.value(starsResponse)
           : Result.error(starsResponse);
+    }
+  }
+
+  Future<Result> getgothra() async {
+    Result res = await BaseClient.post('gothra');
+    if (res.isError) {
+      ErrorResponseModel errorResponseModel =
+          ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+      debugPrint('gothra response $response');
+      GothraDatamodel gothraResponse = GothraDatamodel.fromJson(response);
+      return (gothraResponse.status ?? false)
+          ? Result.value(gothraResponse)
+          : Result.error(gothraResponse);
+    }
+  }
+
+  Future<Result> getrashi() async {
+    Result res = await BaseClient.post('rashi');
+    if (res.isError) {
+      ErrorResponseModel errorResponseModel =
+          ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+      debugPrint('gothra response $response');
+      RashiDatamodel rashiResponse = RashiDatamodel.fromJson(response);
+      return (rashiResponse.status ?? false)
+          ? Result.value(rashiResponse)
+          : Result.error(rashiResponse);
     }
   }
 

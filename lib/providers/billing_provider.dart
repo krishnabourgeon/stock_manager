@@ -5,9 +5,11 @@ import 'package:flutter_sunmi_printer_plus/flutter_sunmi_printer_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:punnyam/common/common_functions.dart';
 import 'package:punnyam/models/dieties_response_model.dart';
+import 'package:punnyam/models/gothra_response.dart';
 import 'package:punnyam/models/payment_mode_response.dart';
 import 'package:punnyam/models/pooja_response_model.dart';
 import 'package:punnyam/models/quickbill_datamodel.dart';
+import 'package:punnyam/models/rashi_datamodel.dart';
 import 'package:punnyam/models/save_bill_body.dart';
 import 'package:punnyam/models/save_bill_response.dart';
 import 'package:punnyam/models/savequickbillresponse_datamodel.dart';
@@ -50,6 +52,8 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   List<DeitiesData> deitiesList = [];
   List<DeitiesData> allDeitiesList = [];
   StarsResponse? starsResponse;
+  GothraDatamodel? gothraResponse;
+  RashiDatamodel? rashiResponse;
   List<StartsData> starsList = [];
   List<StartsData> allStarsList = [];
   PoojaResponse? poojaResponse;
@@ -93,6 +97,8 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   String poojaId = '';
   String? scheduleTypes;
   String? starId = '';
+  String? gothraId = '';
+  String? rashiId = '';
   String? starId1 = '';
   int? specialStarId;
   String? fromDate;
@@ -112,7 +118,8 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   String? mobileErrorMessage;
   String? errorMessage;
   String? paymentMode = 'COD';
-
+  String? gothraName = '';
+  String? rashiName = '';
   int? numberOfDays;
   int? numberOfMonths;
   int? numberOfWeeks;
@@ -147,10 +154,10 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   PreviewBillResponse? previewBillResponse;
   double totalAmount = 0;
   getInitialDataList() async {
+    await clearValues();
     await getDeities();
     await getStars();
     await getStarIdFromName("Nodata");
-    // billingProvider.getStarIdFromName('Nodata');
     getSpecialStars();
     await getPoojas();
     updateFromDate(DateFormat('y-MM-dd').format(DateTime.now()));
@@ -361,6 +368,8 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
                 id: (i + 1).toString(),
                 date: details[i].date.toString(),
                 dietyName: details[i].deity.toString(),
+                // gothra: details[i].gothra?.nameEng,
+                // rashi: details[i].rashi?.nameEng,
                 name: details[i].name ?? 'Customer'.toString(),
                 address: details[i].address ?? ''.toString(),
                 poojaName: details[i].pooja.toString(),
@@ -430,6 +439,50 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     }
   }
 
+  Future<void> getgothra() async {
+    // updateLoadState(LoaderState.loading);
+    final network = await CommonFunctions.checkInternetConnection();
+    if (network) {
+      try {
+        var res = await serviceConfig.getgothra();
+        if (res.isValue) {
+          gothraResponse = res.asValue!.value;
+          // if (starsResponse != null) {
+          //   updateStarsList(starsResponse);
+          // }
+          //updateLoadState(LoaderState.loaded);
+        } else {
+          // updateLoadState(LoaderState.loaded);
+        }
+      } catch (e) {
+        debugPrint('exception in stars: $e');
+        // updateLoadState(LoaderState.loaded);
+      }
+    }
+  }
+
+  Future<void> getrashi() async {
+    // updateLoadState(LoaderState.loading);
+    final network = await CommonFunctions.checkInternetConnection();
+    if (network) {
+      try {
+        var res = await serviceConfig.getrashi();
+        if (res.isValue) {
+          rashiResponse = res.asValue!.value;
+          // if (starsResponse != null) {
+          //   updateStarsList(starsResponse);
+          // }
+          //updateLoadState(LoaderState.loaded);
+        } else {
+          // updateLoadState(LoaderState.loaded);
+        }
+      } catch (e) {
+        debugPrint('exception in stars: $e');
+        // updateLoadState(LoaderState.loaded);
+      }
+    }
+  }
+
   Future<void> getSpecialStars() async {
     final network = await CommonFunctions.checkInternetConnection();
     if (network) {
@@ -455,7 +508,7 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     if (network) {
       if (isEnableBtnLoader) updateBtnLoader(true);
       try {
-        var res = await serviceConfig.getPoojas(deityId ?? '1');
+        var res = await serviceConfig.getPoojas(deityId);
         if (res.isValue) {
           poojaResponse = res.asValue!.value;
           if (poojaResponse != null) {
@@ -628,12 +681,47 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     notifyListeners();
   }
 
+//? for setting initial star as nodata .........................................
+
   getStarIdFromName(String name) {
     starName = name;
+    print("..star..star..$starName");
     updateIsDeityUpdated(true);
     for (var element in starsList) {
       if (name == element.nameEng) {
         starId = '${element.id}';
+      }
+    }
+    notifyListeners();
+  }
+
+  getgothraIdFromName(String name) {
+    gothraName = name;
+    updateIsDeityUpdated(true);
+    for (var element in gothraResponse?.data ?? []) {
+      if (name == element.nameEng) {
+        gothraId = '${element.id}';
+      }
+    }
+    notifyListeners();
+  }
+
+  String? getgothranameFromid(int id) {
+    return gothraResponse?.data!.firstWhere((g) => g.id == id).nameEng;
+  }
+
+  String? getrashianameFromid(int id) {
+    return rashiResponse?.data!
+        .firstWhere((element) => element.id == id)
+        .nameEng;
+  }
+
+  getrashiIdFromName(String name) {
+    rashiName = name;
+    // updateIsDeityUpdated(true);
+    for (var element in rashiResponse?.data ?? []) {
+      if (name == element.nameEng) {
+        rashiId = '${element.id}';
       }
     }
     notifyListeners();
@@ -815,10 +903,16 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   }
 
   updateBillingFormState() {
+    print("..$gothraId...$gothraName..$rashiId..$rashiName");
     if (!isScheduled) {
       if (deityId.isNotEmpty &&
           poojaId.isNotEmpty &&
-          // starId.isNotEmpty &&
+          // gothraId != null &&
+          // rashiId != null &&
+          // gothraId != '' &&
+          // rashiId != '' &&
+          starId != null &&
+          starId != '' &&
           // nameController.text.isNotEmpty &&
           qtyController.text.isNotEmpty &&
           rateController.text.isNotEmpty &&
@@ -833,6 +927,12 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     } else {
       if (deityId.isNotEmpty &&
           poojaId.isNotEmpty &&
+          // gothraId != null &&
+          // rashiId != null &&
+          // gothraId != '' &&
+          // rashiId != '' &&
+          starId != null &&
+          starId != '' &&
           // starId.isNotEmpty &&
           // nameController.text.isNotEmpty &&
           qtyController.text.isNotEmpty &&
@@ -900,6 +1000,10 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     updateLoadState(LoaderState.loading);
     Future.delayed(const Duration(seconds: 1), () {
       PoojaDetails poojaDetails = PoojaDetails(
+          // gothraname: gothraName,
+          // rashiname: rashiName,
+          // gothra: int.parse(gothraId ?? '0'),
+          // rashi: int.parse(rashiId ?? '0'),
           name: nameController.text.isEmpty
               ? 'Customer'
               : nameController.text.trim(),
@@ -937,12 +1041,16 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
       poojaDetailsList.add(poojaDetails);
       if (poojacountrow == 2) {
         PoojaDetails poojaDetails1 = PoojaDetails(
+            // gothraname: gothraName,
+            // rashiname: rashiName,
+            // gothra: int.parse(gothraId ?? '0'),
+            // rashi: int.parse(rashiId ?? '0'),
             name: nameController2.text.isEmpty
                 ? 'Customer'
                 : nameController2.text.trim(),
-            address: addressController.text ?? '',
+            address: addressController.text,
             date: isScheduled ? date : null,
-            deityId: int.parse(deityId ?? '1'),
+            deityId: int.parse(deityId),
             dwmo: scheduledType,
             fromDate: fromDate,
             isScheduled: 0,
@@ -978,10 +1086,14 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
 
   saveAndPreviewFunction(BuildContext context) {
     PoojaDetails poojaDetails = PoojaDetails(
+        // gothra: int.parse(gothraId ?? '0'),
+        // rashi: int.parse(rashiId ?? '0'),
+        // gothraname: gothraName,
+        // rashiname: rashiName,
         name: nameController.text.isEmpty
             ? 'Customer'
             : nameController.text.trim(),
-        address: addressController.text ?? '',
+        address: addressController.text,
         date: !isScheduled ? date : null,
         deityId: int.parse(deityId ?? '1'),
         dwmo: scheduledType,
@@ -1013,6 +1125,10 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     poojaDetailsList.add(poojaDetails);
     if (poojacountrow == 2) {
       PoojaDetails poojaDetails1 = PoojaDetails(
+          // gothraname: gothraName,
+          // rashiname: rashiName,
+          // gothra: int.parse(gothraId ?? '0'),
+          // rashi: int.parse(rashiId ?? '0'),
           name: nameController2.text.isEmpty
               ? 'Customer'
               : nameController2.text.trim(),
@@ -1100,6 +1216,9 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     addressController.clear();
     nameController.clear();
     nameController2.clear();
+    gothraId = '';
+    rashiId = '';
+    starId = '';
     // rateController.clear();
     qtyController = TextEditingController(text: '1');
     totalRateController.clear();

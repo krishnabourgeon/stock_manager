@@ -1,9 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-
 import 'properties/popup_safearea_props.dart';
 
 const Duration _kMenuDuration = Duration(milliseconds: 300);
@@ -24,7 +22,6 @@ class _MenuItem extends SingleChildRenderObjectWidget {
     required this.onLayout,
     Widget? child,
   }) : super(key: key, child: child);
-
   final ValueChanged<Size> onLayout;
 
   @override
@@ -185,11 +182,12 @@ class PopupMenuItemState<T, W extends CustomPopupMenuItem<T>> extends State<W> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    // final ThemeData theme = Theme.of(context);
     final PopupMenuThemeData popupMenuTheme = PopupMenuTheme.of(context);
-    TextStyle? style = widget.textStyle ??
-        popupMenuTheme.textStyle ??
-        theme.textTheme.titleMedium;
+    TextStyle? style = widget.textStyle ?? popupMenuTheme.textStyle
+        // ??
+        // theme.textTheme.subtitle1
+        ;
 
     Widget item = AnimatedDefaultTextStyle(
       style: style!,

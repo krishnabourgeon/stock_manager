@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 
 const Duration _bottomSheetEnterDuration = Duration(milliseconds: 250);
 const Duration _bottomSheetExitDuration = Duration(milliseconds: 200);
-const Curve _modalBottomSheetCurve = decelerateEasing;
-
+const Curve _modalBottomSheetCurve = Easing.legacyDecelerate;
 Future<T?> showModalBottomSheetCustom<T>({
   required BuildContext context,
   required WidgetBuilder builder,
@@ -61,7 +60,6 @@ class _ModalBottomSheetRoute<T> extends PopupRoute<T> {
     RouteSettings? settings,
     this.transitionAnimationController,
   }) : super(settings: settings);
-
   final WidgetBuilder? builder;
   final CapturedThemes capturedThemes;
   final bool isScrollControlled;
@@ -73,24 +71,17 @@ class _ModalBottomSheetRoute<T> extends PopupRoute<T> {
   final bool isDismissible;
   final bool enableDrag;
   final AnimationController? transitionAnimationController;
-
   @override
   Duration get transitionDuration => _bottomSheetEnterDuration;
-
   @override
   Duration get reverseTransitionDuration => _bottomSheetExitDuration;
-
   @override
   bool get barrierDismissible => isDismissible;
-
   @override
   final String? barrierLabel;
-
   @override
   Color get barrierColor => modalBarrierColor ?? Colors.black54;
-
   AnimationController? _animationController;
-
   @override
   AnimationController createAnimationController() {
     assert(_animationController == null);
@@ -122,17 +113,14 @@ class _ModalBottomSheetRoute<T> extends PopupRoute<T> {
         );
       },
     );
-
     return capturedThemes.wrap(bottomSheet);
   }
 }
 
 class _ModalBottomSheetLayout extends SingleChildLayoutDelegate {
   _ModalBottomSheetLayout(this.progress, this.isScrollControlled);
-
   final double progress;
   final bool isScrollControlled;
-
   @override
   BoxConstraints getConstraintsForChild(BoxConstraints constraints) {
     return BoxConstraints(
@@ -167,7 +155,6 @@ class _ModalBottomSheet<T> extends StatefulWidget {
     this.isScrollControlled = false,
     this.enableDrag = true,
   }) : super(key: key);
-
   final _ModalBottomSheetRoute<T>? route;
   final bool isScrollControlled;
   final Color? backgroundColor;
@@ -175,14 +162,12 @@ class _ModalBottomSheet<T> extends StatefulWidget {
   final ShapeBorder? shape;
   final Clip? clipBehavior;
   final bool enableDrag;
-
   @override
   _ModalBottomSheetState<T> createState() => _ModalBottomSheetState<T>();
 }
 
 class _ModalBottomSheetState<T> extends State<_ModalBottomSheet<T>> {
   ParametricCurve<double> animationCurve = _modalBottomSheetCurve;
-
   String _getRouteLabel(MaterialLocalizations localizations) {
     switch (Theme.of(context).platform) {
       case TargetPlatform.iOS:
@@ -217,7 +202,6 @@ class _ModalBottomSheetState<T> extends State<_ModalBottomSheet<T>> {
     final MaterialLocalizations localizations =
         MaterialLocalizations.of(context);
     final String routeLabel = _getRouteLabel(localizations);
-
     return AnimatedBuilder(
       animation: widget.route!.animation!,
       child: BottomSheet(
@@ -281,15 +265,12 @@ class _BottomSheetSuspendedCurve extends ParametricCurve<double> {
   double transform(double t) {
     assert(t >= 0.0 && t <= 1.0);
     assert(startingPoint >= 0.0 && startingPoint <= 1.0);
-
     if (t < startingPoint) {
       return t;
     }
-
     if (t == 1.0) {
       return t;
     }
-
     final double curveProgress = (t - startingPoint) / (1 - startingPoint);
     final double transformed = curve.transform(curveProgress);
     return lerpDouble(startingPoint, 1, transformed)!;

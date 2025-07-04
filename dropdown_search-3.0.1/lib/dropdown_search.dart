@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'src/modal_dialog.dart';
-import 'src/popupMenu.dart';
+import 'src/popupmenu.dart';
 import 'src/properties/popup_safearea_props.dart';
 import 'src/properties/scrollbar_props.dart';
 import 'src/properties/text_field_props.dart';
@@ -394,7 +394,6 @@ class DropdownSearchState<T> extends State<DropdownSearch<T>> {
   final ValueNotifier<List<T>> _selectedItemsNotifier = ValueNotifier([]);
   final ValueNotifier<bool> _isFocused = ValueNotifier(false);
   final _popupStateKey = GlobalKey<SelectionWidgetState<T>>();
-
   @override
   void initState() {
     super.initState();
@@ -408,11 +407,9 @@ class DropdownSearchState<T> extends State<DropdownSearch<T>> {
     List<T> oldSelectedItems = isMultiSelectionMode
         ? oldWidget.selectedItems
         : _itemToList(oldWidget.selectedItem);
-
     List<T> newSelectedItems = isMultiSelectionMode
         ? widget.selectedItems
         : _itemToList(widget.selectedItem);
-
     if (!listEquals(oldSelectedItems, newSelectedItems)) {
       _selectedItemsNotifier.value = List.from(newSelectedItems);
     }
@@ -460,7 +457,7 @@ class DropdownSearchState<T> extends State<DropdownSearch<T>> {
             Text(
               _selectedItemAsString(item),
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleSmall,
+              // style: Theme.of(context).textTheme.subtitle2,
             ),
             MaterialButton(
               height: 10,
@@ -499,8 +496,10 @@ class DropdownSearchState<T> extends State<DropdownSearch<T>> {
               .toList(),
         );
       }
-      return Text(_selectedItemAsString(getSelectedItem),
-          style: Theme.of(context).textTheme.titleMedium);
+      return Text(
+        _selectedItemAsString(getSelectedItem),
+        // style: Theme.of(context).textTheme.subtitle1
+      );
     }
 
     return selectedItemWidget();
@@ -789,7 +788,7 @@ class DropdownSearchState<T> extends State<DropdownSearch<T>> {
         barrierDismissible: widget.popupBarrierDismissible,
         items: [
           CustomPopupMenuItem(
-            child: Container(
+            child: SizedBox(
               width: popupButtonObject.size.width,
               child: _selectDialogInstance(defaultHeight: 224),
             ),
