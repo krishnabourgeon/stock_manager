@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:punnyam/common/color_palette.dart';
-import 'package:punnyam/models/bill_list_response_model.dart';
-import 'package:punnyam/providers/bill_list_provider.dart';
-import 'package:punnyam/screens/billing/widgets/preview_bill_row_widget.dart';
+import 'package:stock_manager/common/color_palette.dart';
+import 'package:stock_manager/common/date_picker.dart';
+import 'package:stock_manager/models/bill_list_response_model.dart';
+import 'package:stock_manager/providers/bill_list_provider.dart';
+import 'package:stock_manager/screens/billing/widgets/preview_bill_row_widget.dart';
 
-import '../../../common/date_picker.dart';
+
 
 class BillTile extends StatefulWidget {
   BillTile(

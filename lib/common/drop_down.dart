@@ -2,17 +2,17 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class PunnyamDropDown extends StatefulWidget {
+class stock_managerDropDown extends StatefulWidget {
   final void Function(String val)? getCorrespondValue;
   final String? title;
   final List<String> items;
-  const PunnyamDropDown(
+  const stock_managerDropDown(
       {super.key, this.getCorrespondValue, this.title, required this.items});
   @override
-  State<PunnyamDropDown> createState() => _PunnyamDropDownState();
+  State<stock_managerDropDown> createState() => _stock_managerDropDownState();
 }
 
-class _PunnyamDropDownState extends State<PunnyamDropDown> {
+class _stock_managerDropDownState extends State<stock_managerDropDown> {
   String? selectedValue;
   @override
   Widget build(BuildContext context) {

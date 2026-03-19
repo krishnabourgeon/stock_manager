@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:punnyam/models/create_customer_body.dart';
-import 'package:punnyam/providers/create_cutomer_provider.dart';
-import 'package:punnyam/services/helpers.dart';
-import 'package:punnyam/services/validation_helper.dart';
-import 'package:punnyam/widgets/punnyam_textfiled.dart';
+import 'package:stock_manager/models/create_customer_body.dart';
+import 'package:stock_manager/providers/create_cutomer_provider.dart';
+import 'package:stock_manager/services/helpers.dart';
+import 'package:stock_manager/services/validation_helper.dart';
+import 'package:stock_manager/widgets/punnyam_textfiled.dart';
 
 import '../../common/common_button.dart';
 import '../../common/custom_drop_down_search.dart';

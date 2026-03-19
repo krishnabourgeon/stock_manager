@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:punnyam/models/pooja_summary_response.dart';
-import 'package:punnyam/services/provider_helper_class.dart';
+import 'package:stock_manager/models/pooja_summary_response.dart';
+import 'package:stock_manager/services/provider_helper_class.dart';
 
 class PoojaSummaryProvider extends ChangeNotifier with ProviderHelperClass {
   String? fromDate;

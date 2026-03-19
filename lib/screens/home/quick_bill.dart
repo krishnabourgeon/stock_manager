@@ -8,14 +8,14 @@ import 'package:flutter_sunmi_printer_plus/flutter_sunmi_printer_plus.dart';
 import 'package:flutter_sunmi_printer_plus/sunmi_style.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:punnyam/common/custom_drop_down_search.dart';
-import 'package:punnyam/common/extension.dart';
-import 'package:punnyam/models/payment_mode_response.dart';
-import 'package:punnyam/providers/billing_provider.dart';
-import 'package:punnyam/providers/home_provider.dart';
-import 'package:punnyam/screens/home/home.dart';
-import 'package:punnyam/services/helpers.dart';
-import 'package:punnyam/widgets/punnyam_textfiled.dart';
+import 'package:stock_manager/common/custom_drop_down_search.dart';
+import 'package:stock_manager/common/extension.dart';
+import 'package:stock_manager/models/payment_mode_response.dart';
+import 'package:stock_manager/providers/billing_provider.dart';
+import 'package:stock_manager/providers/home_provider.dart';
+import 'package:stock_manager/screens/home/home.dart';
+import 'package:stock_manager/services/helpers.dart';
+import 'package:stock_manager/widgets/punnyam_textfiled.dart';
 
 class QuickBillScreen extends StatefulWidget {
   const QuickBillScreen({super.key});

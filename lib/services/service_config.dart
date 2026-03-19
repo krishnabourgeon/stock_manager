@@ -1,28 +1,32 @@
 import 'package:flutter/foundation.dart';
-import 'package:punnyam/models/bill_list_response_model.dart';
-import 'package:punnyam/models/counter_wise_summary_response.dart';
-import 'package:punnyam/models/counters_model.dart';
-import 'package:punnyam/models/create_customer_body.dart';
-import 'package:punnyam/models/dieties_response_model.dart';
-import 'package:punnyam/models/error_response_model.dart';
-import 'package:punnyam/models/gothra_response.dart';
-import 'package:punnyam/models/login_response_model.dart';
-import 'package:punnyam/models/payment_mode_response.dart';
-import 'package:punnyam/models/pooja_response_model.dart';
-import 'package:punnyam/models/pooja_summary_response.dart';
-import 'package:punnyam/models/preview_bill_response.dart';
-import 'package:punnyam/models/quickbill_datamodel.dart';
-import 'package:punnyam/models/rashi_datamodel.dart';
-import 'package:punnyam/models/register_body.dart';
-import 'package:punnyam/models/save_bill_body.dart';
-import 'package:punnyam/models/save_bill_response.dart';
-import 'package:punnyam/models/savequickbillresponse_datamodel.dart';
-import 'package:punnyam/models/search_response_model.dart';
-import 'package:punnyam/models/special_star_response.dart';
-import 'package:punnyam/models/starts_response_model.dart';
-import 'package:punnyam/models/version_datamodel.dart';
-import 'package:punnyam/services/app_config.dart';
-import 'package:punnyam/services/base_client.dart';
+import 'package:stock_manager/models/bill_list_response_model.dart';
+import 'package:stock_manager/models/category_model.dart';
+import 'package:stock_manager/models/counter_wise_summary_response.dart';
+import 'package:stock_manager/models/counters_model.dart';
+import 'package:stock_manager/models/create_customer_body.dart';
+import 'package:stock_manager/models/dieties_response_model.dart';
+import 'package:stock_manager/models/error_response_model.dart';
+import 'package:stock_manager/models/gothra_response.dart';
+import 'package:stock_manager/models/login_response_model.dart';
+import 'package:stock_manager/models/payment_mode_response.dart';
+import 'package:stock_manager/models/pooja_response_model.dart';
+import 'package:stock_manager/models/pooja_summary_response.dart';
+import 'package:stock_manager/models/preview_bill_response.dart';
+import 'package:stock_manager/models/product_model.dart';
+import 'package:stock_manager/models/quickbill_datamodel.dart';
+import 'package:stock_manager/models/rashi_datamodel.dart';
+import 'package:stock_manager/models/register_body.dart';
+import 'package:stock_manager/models/save_bill_body.dart';
+import 'package:stock_manager/models/save_bill_response.dart';
+import 'package:stock_manager/models/savequickbillresponse_datamodel.dart';
+import 'package:stock_manager/models/search_response_model.dart';
+import 'package:stock_manager/models/special_star_response.dart';
+import 'package:stock_manager/models/starts_response_model.dart';
+import 'package:stock_manager/models/supplier_model.dart';
+import 'package:stock_manager/models/unit_model.dart';
+import 'package:stock_manager/models/version_datamodel.dart';
+import 'package:stock_manager/services/app_config.dart';
+import 'package:stock_manager/services/base_client.dart';
 import 'package:async/async.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -80,6 +84,76 @@ class ServiceConfig {
       return (deitiesResponse.status ?? false)
           ? Result.value(deitiesResponse)
           : Result.error(deitiesResponse);
+    }
+  }
+
+
+
+   Future<Result> getProduct() async {
+    Result res = await BaseClient.get('invproducts');
+    if (res.isError) {
+      ErrorResponseModel errorResponseModel =
+          ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+      debugPrint('product response $response');
+      ProductModel productModel = ProductModel.fromJson(response);
+      return (productModel.status ?? false)
+          ? Result.value(productModel)
+          : Result.error(productModel);
+    }
+  }
+
+
+  Future<Result> getSupplier() async {
+    Result res = await BaseClient.get('suppliers');
+    if (res.isError) {
+      ErrorResponseModel errorResponseModel =
+          ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+      debugPrint('supplier response $response');
+      SupplierModel supplierModel = SupplierModel.fromJson(response);
+      return (supplierModel.status ?? false)
+          ? Result.value(supplierModel)
+          : Result.error(supplierModel);
+    }
+  }
+
+
+
+  Future<Result> getUnit() async {
+    Result res = await BaseClient.get('units');
+    if (res.isError) {
+      ErrorResponseModel errorResponseModel =
+          ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+      debugPrint('unit response $response');
+      UnitModel unitModel = UnitModel.fromJson(response);
+      return (unitModel.status ?? false)
+          ? Result.value(unitModel)
+          : Result.error(unitModel);
+    }
+  }
+
+
+   Future<Result> getCategory() async {
+    Result res = await BaseClient.get('cat');
+    if (res.isError) {
+      ErrorResponseModel errorResponseModel =
+          ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+      debugPrint('category response $response');
+      CategoryModel categoryModel = CategoryModel.fromJson(response);
+      return (categoryModel.status ?? false)
+          ? Result.value(categoryModel)
+          : Result.error(categoryModel);
     }
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:punnyam/providers/create_cutomer_provider.dart';
+import 'package:stock_manager/providers/create_cutomer_provider.dart';
 
 import '../../../widgets/punnyam_textfiled.dart';
 

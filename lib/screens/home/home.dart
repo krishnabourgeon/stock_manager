@@ -8,19 +8,19 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 // import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:punnyam/common/color_palette.dart';
-import 'package:punnyam/common/common_button.dart';
-import 'package:punnyam/common/common_functions.dart';
-import 'package:punnyam/common/extension.dart';
-import 'package:punnyam/common/select_card.dart';
-import 'package:punnyam/providers/billing_provider.dart';
-import 'package:punnyam/providers/home_provider.dart';
-// import 'package:punnyam/screens/home/quick_bill.dart';
-import 'package:punnyam/screens/login/login.dart';
-import 'package:punnyam/services/app_config.dart';
-import 'package:punnyam/services/helpers.dart';
-import 'package:punnyam/services/provider_helper_class.dart';
-import 'package:punnyam/services/shared_preference_helper.dart';
+import 'package:stock_manager/common/color_palette.dart';
+import 'package:stock_manager/common/common_button.dart';
+import 'package:stock_manager/common/common_functions.dart';
+import 'package:stock_manager/common/extension.dart';
+import 'package:stock_manager/common/select_card.dart';
+import 'package:stock_manager/providers/billing_provider.dart';
+import 'package:stock_manager/providers/home_provider.dart';
+// import 'package:stock_manager/screens/home/quick_bill.dart';
+import 'package:stock_manager/screens/login/login.dart';
+import 'package:stock_manager/services/app_config.dart';
+import 'package:stock_manager/services/helpers.dart';
+import 'package:stock_manager/services/provider_helper_class.dart';
+import 'package:stock_manager/services/shared_preference_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -36,6 +36,7 @@ class _HomeState extends State<Home> {
     "Bill List",
     'Pooja Summary',
     'Counter Wise Summary',
+    "Stock"
   ];
   // BlueThermalPrinter printer = BlueThermalPrinter.instance;
   // List<BluetoothDevice> devices = [];
@@ -178,7 +179,7 @@ class _HomeState extends State<Home> {
                                   Column(
                                     children: [
                                       Text(
-                                        "PUNNYAM",
+                                        "stock_manager",
                                         style: TextStyle(
                                             color: Colors.black,
                                             fontSize: 14.sp,
@@ -196,7 +197,7 @@ class _HomeState extends State<Home> {
                               CommonButton(
                                 onPressed: () async {
                                   await launchUrl(Uri.parse(
-                                      "https://play.google.com/store/apps/details?id=com.punnyam.staff"));
+                                      "https://play.google.com/store/apps/details?id=com.stockmanager.app"));
                                 },
                                 width: 150.w,
                                 title: "Update",
@@ -304,11 +305,11 @@ class _HomeState extends State<Home> {
                         Stack(
                           children: [
                             Image.asset(
-                              'assets/image/dashboard_bg.png',
+                              'assets/image/Dashboardgreen.jpeg',
                               width: double.maxFinite,
                               fit: BoxFit.contain,
                             ),
-                            Positioned(
+                            Positioned( 
                               top: 45.h,
                               left: 20.w,
                               child: Column(

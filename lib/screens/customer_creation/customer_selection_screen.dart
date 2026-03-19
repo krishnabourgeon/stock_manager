@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:punnyam/providers/create_cutomer_provider.dart';
-import 'package:punnyam/screens/customer_creation/widgets/add_customer_tile.dart';
-import 'package:punnyam/screens/customer_creation/widgets/search_result_tile.dart';
-import 'package:punnyam/screens/customer_creation/widgets/search_tile.dart';
-import 'package:punnyam/screens/customer_creation/widgets/walk_in_customer_tile.dart';
-import 'package:punnyam/screens/home/home.dart';
+import 'package:stock_manager/providers/create_cutomer_provider.dart';
+import 'package:stock_manager/screens/customer_creation/widgets/add_customer_tile.dart';
+import 'package:stock_manager/screens/customer_creation/widgets/search_result_tile.dart';
+import 'package:stock_manager/screens/customer_creation/widgets/search_tile.dart';
+import 'package:stock_manager/screens/customer_creation/widgets/walk_in_customer_tile.dart';
+import 'package:stock_manager/screens/home/home.dart';
 
 class CustomerSelectionScreen extends StatefulWidget {
   const CustomerSelectionScreen({Key? key}) : super(key: key);

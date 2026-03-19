@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:punnyam/common/common_button.dart';
-import 'package:punnyam/providers/create_cutomer_provider.dart';
+import 'package:stock_manager/common/common_button.dart';
+import 'package:stock_manager/providers/create_cutomer_provider.dart';
 
 import '../customer_creation_screen.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart';
-import 'package:punnyam/common/color_palette.dart';
+import 'package:stock_manager/common/color_palette.dart';
 
 class TextDatePicker extends StatefulWidget {
   final String? title;

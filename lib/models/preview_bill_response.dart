@@ -1,4 +1,4 @@
-import 'package:punnyam/models/save_bill_body.dart';
+import 'package:stock_manager/models/save_bill_body.dart';
 
 class PreviewBillResponse {
   bool? status;

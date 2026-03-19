@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
-import 'package:punnyam/models/create_customer_body.dart';
-import 'package:punnyam/models/search_response_model.dart';
-import 'package:punnyam/services/provider_helper_class.dart';
-import 'package:punnyam/services/validation_helper.dart';
+import 'package:stock_manager/models/create_customer_body.dart';
+import 'package:stock_manager/models/search_response_model.dart';
+import 'package:stock_manager/services/provider_helper_class.dart';
+import 'package:stock_manager/services/validation_helper.dart';
 
 class CreateCustomerProvider extends ChangeNotifier with ProviderHelperClass {
   TextEditingController searchController = TextEditingController();

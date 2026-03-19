@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:punnyam/providers/create_cutomer_provider.dart';
-import 'package:punnyam/screens/billing/billing.dart';
-import 'package:punnyam/services/app_config.dart';
+import 'package:stock_manager/providers/create_cutomer_provider.dart';
+import 'package:stock_manager/screens/billing/billing.dart';
+import 'package:stock_manager/services/app_config.dart';
 import '../../../providers/billing_provider.dart';
 
 class SearchResultTile extends StatelessWidget {

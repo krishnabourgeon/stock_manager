@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:punnyam/common/extensions.dart';
+import 'package:stock_manager/common/extensions.dart';
 
 class StackLoader extends StatelessWidget {
   final Widget child;

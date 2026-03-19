@@ -1,4 +1,4 @@
-import 'package:punnyam/services/service_config.dart';
+import 'package:stock_manager/services/service_config.dart';
 
 enum LoaderState { initial, loaded, loading, error, networkErr, noData }
 

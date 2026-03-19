@@ -1,13 +1,14 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:punnyam/models/counters_model.dart';
-import 'package:punnyam/models/quickbill_datamodel.dart';
-import 'package:punnyam/screens/customer_creation/customer_selection_screen.dart';
-import 'package:punnyam/screens/home/bill_list_table.dart';
-import 'package:punnyam/screens/home/counter_summary_table.dart';
-import 'package:punnyam/screens/home/pooja_list_table.dart';
-import 'package:punnyam/services/provider_helper_class.dart';
+import 'package:stock_manager/models/counters_model.dart';
+import 'package:stock_manager/models/quickbill_datamodel.dart';
+import 'package:stock_manager/screens/customer_creation/customer_selection_screen.dart';
+import 'package:stock_manager/screens/home/bill_list_table.dart';
+import 'package:stock_manager/screens/home/counter_summary_table.dart';
+import 'package:stock_manager/screens/home/pooja_list_table.dart';
+import 'package:stock_manager/screens/stock/stock_screen.dart';
+import 'package:stock_manager/services/provider_helper_class.dart';
 import 'billing_provider.dart';
 import 'create_cutomer_provider.dart';
 
@@ -177,6 +178,13 @@ class HomeProvider extends ChangeNotifier with ProviderHelperClass {
             context,
             MaterialPageRoute(
               builder: (context) => const CounterSummaryTable(),
+            ));
+        break;
+        case 4:
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const StockScreen(),
             ));
         break;
     }

@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:punnyam/common/color_palette.dart';
-import 'package:punnyam/common/common_functions.dart';
-import 'package:punnyam/common/date_picker.dart';
-import 'package:punnyam/providers/pooja_summary_provider.dart';
-import 'package:punnyam/services/provider_helper_class.dart';
+import 'package:stock_manager/common/color_palette.dart';
+import 'package:stock_manager/common/common_functions.dart';
+import 'package:stock_manager/common/date_picker.dart';
+import 'package:stock_manager/providers/pooja_summary_provider.dart';
+import 'package:stock_manager/services/provider_helper_class.dart';
 
 class PoojaListTable extends StatefulWidget {
   const PoojaListTable({Key? key}) : super(key: key);

@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:punnyam/common/color_palette.dart';
-import 'package:punnyam/common/common_functions.dart';
-import 'package:punnyam/common/date_picker.dart';
-import 'package:punnyam/providers/counter_wise_summary_provider.dart';
-import 'package:punnyam/services/provider_helper_class.dart';
+import 'package:stock_manager/common/color_palette.dart';
+import 'package:stock_manager/common/common_functions.dart';
+import 'package:stock_manager/common/date_picker.dart';
+import 'package:stock_manager/providers/counter_wise_summary_provider.dart';
+import 'package:stock_manager/services/provider_helper_class.dart';
 
 class CounterSummaryTable extends StatefulWidget {
   const CounterSummaryTable({Key? key}) : super(key: key);

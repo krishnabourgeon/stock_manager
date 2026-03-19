@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:punnyam/common/custom_drop_down_search.dart';
-import 'package:punnyam/common/date_picker.dart';
-import 'package:punnyam/providers/billing_provider.dart';
-import 'package:punnyam/screens/billing/widgets/loading_dropdown.dart';
-import 'package:punnyam/services/provider_helper_class.dart';
-import 'package:punnyam/services/validation_helper.dart';
+import 'package:stock_manager/common/custom_drop_down_search.dart';
+import 'package:stock_manager/common/date_picker.dart';
+import 'package:stock_manager/providers/billing_provider.dart';
+import 'package:stock_manager/screens/billing/widgets/loading_dropdown.dart';
+import 'package:stock_manager/services/provider_helper_class.dart';
+import 'package:stock_manager/services/validation_helper.dart';
 import '../../../models/dieties_response_model.dart';
 import '../../../widgets/punnyam_textfiled.dart';
 import '../../register/register_screen.dart';
@@ -94,48 +94,48 @@ class _NormalBillingWidgetState extends State<NormalBillingWidget> {
                       widget.billingProvider.poojaDataList[index].name ?? ''),
             ),
       10.verticalSpace,
-      PunnyamTextField(
-          hintText: "Customer",
-          height: 45.h,
-          textEditingController: widget.billingProvider.nameController,
-          inputFormatter: [
-            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
-          ],
-          keyboardType: TextInputType.name,
-          hintStyle: TextStyle(
-            fontSize: 13.5.sp,
-            fontWeight: FontWeight.normal,
-            color: Colors.black,
-          ),
-          onChanged: (value) {
-            widget.billingProvider.updateBillingFormState();
-          }
-          // => widget.billingProvider.updateValidationMessage(
-          //     validationTypes: ValidationTypes.name,
-          //     validationMessage:
-          //         ValidationHelperClass.validateName(value.trim()) ?? ''),
-          ),
-      if (widget.billingProvider.nameErrorMessage != null)
-        ValidationWidget(
-            validationMessage: widget.billingProvider.nameErrorMessage ?? ''),
-      10.verticalSpace,
-      widget.billingProvider.loaderState == LoaderState.loading
-          ? const LoadingDropDown(
-              title: 'Select Star',
-            )
-          : CustomDropDownSearch(
-              labelText: widget.billingProvider.starName,
-              isShowSearch: true,
-              onChanged: (value) {
-                widget.billingProvider
-                  ..getStarIdFromName(value)
-                  ..updateBillingFormState();
-              },
-              items: List.generate(
-                  widget.billingProvider.starsList.length,
-                  (index) =>
-                      widget.billingProvider.starsList[index].nameEng ?? ''),
-            ),
+      // PunnyamTextField(
+      //     hintText: "Customer",
+      //     height: 45.h,
+      //     textEditingController: widget.billingProvider.nameController,
+      //     inputFormatter: [
+      //       FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+      //     ],
+      //     keyboardType: TextInputType.name,
+      //     hintStyle: TextStyle(
+      //       fontSize: 13.5.sp,
+      //       fontWeight: FontWeight.normal,
+      //       color: Colors.black,
+      //     ),
+      //     onChanged: (value) {
+      //       widget.billingProvider.updateBillingFormState();
+      //     }
+      //     // => widget.billingProvider.updateValidationMessage(
+      //     //     validationTypes: ValidationTypes.name,
+      //     //     validationMessage:
+      //     //         ValidationHelperClass.validateName(value.trim()) ?? ''),
+      //     ),
+      // if (widget.billingProvider.nameErrorMessage != null)
+      //   ValidationWidget(
+      //       validationMessage: widget.billingProvider.nameErrorMessage ?? ''),
+      // 10.verticalSpace,
+      // widget.billingProvider.loaderState == LoaderState.loading
+      //     ? const LoadingDropDown(
+      //         title: 'Select Star',
+      //       )
+      //     : CustomDropDownSearch(
+      //         labelText: widget.billingProvider.starName,
+      //         isShowSearch: true,
+      //         onChanged: (value) {
+      //           widget.billingProvider
+      //             ..getStarIdFromName(value)
+      //             ..updateBillingFormState();
+      //         },
+      //         items: List.generate(
+      //             widget.billingProvider.starsList.length,
+      //             (index) =>
+      //                 widget.billingProvider.starsList[index].nameEng ?? ''),
+      //       ),
       10.verticalSpace,
       widget.billingProvider.poojacountrow == 2
           ? Column(children: [

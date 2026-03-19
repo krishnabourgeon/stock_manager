@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:punnyam/common/select_card.dart';
-import 'package:punnyam/screens/home/home.dart';
+import 'package:stock_manager/common/select_card.dart';
+import 'package:stock_manager/screens/home/home.dart';
 
 class SelectCounter extends StatefulWidget {
   const SelectCounter({super.key});

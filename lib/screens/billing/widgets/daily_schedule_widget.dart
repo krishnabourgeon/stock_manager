@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:punnyam/providers/billing_provider.dart';
+import 'package:stock_manager/providers/billing_provider.dart';
 import '../../../common/custom_drop_down_search.dart';
 import '../../../common/date_picker.dart';
 import '../../../services/provider_helper_class.dart';

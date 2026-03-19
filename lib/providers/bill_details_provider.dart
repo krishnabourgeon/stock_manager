@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/foundation.dart';
-import 'package:punnyam/models/bill_details_response_model.dart';
-import 'package:punnyam/services/base_client.dart';
+import 'package:stock_manager/models/bill_details_response_model.dart';
+import 'package:stock_manager/services/base_client.dart';
 
 class BillDetailprovider with ChangeNotifier {
   static int? id;

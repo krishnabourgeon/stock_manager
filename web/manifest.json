@@ -1,6 +1,6 @@
 {
-    "name": "punnyam",
-    "short_name": "punnyam",
+    "name": "stock_manager",
+    "short_name": "stock_manager",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

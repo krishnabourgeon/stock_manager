@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:punnyam/common/color_palette.dart';
-import 'package:punnyam/common/common_button.dart';
-import 'package:punnyam/providers/auth_provider.dart';
-import 'package:punnyam/providers/billing_provider.dart';
-import 'package:punnyam/providers/home_provider.dart';
-import 'package:punnyam/screens/home/home.dart';
-import 'package:punnyam/screens/register/register_screen.dart';
-import 'package:punnyam/services/helpers.dart';
-import 'package:punnyam/services/provider_helper_class.dart';
-import 'package:punnyam/services/validation_helper.dart';
-import 'package:punnyam/widgets/punnyam_textfiled.dart';
+import 'package:stock_manager/common/color_palette.dart';
+import 'package:stock_manager/common/common_button.dart';
+import 'package:stock_manager/providers/auth_provider.dart';
+import 'package:stock_manager/providers/billing_provider.dart';
+import 'package:stock_manager/providers/home_provider.dart';
+import 'package:stock_manager/screens/home/home.dart';
+import 'package:stock_manager/screens/register/register_screen.dart';
+import 'package:stock_manager/services/helpers.dart';
+import 'package:stock_manager/services/provider_helper_class.dart';
+import 'package:stock_manager/services/validation_helper.dart';
+import 'package:stock_manager/widgets/punnyam_textfiled.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});

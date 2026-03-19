@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:punnyam/services/app_config.dart';
-import 'package:punnyam/services/helpers.dart';
-import 'package:punnyam/services/shared_preference_helper.dart';
+import 'package:stock_manager/services/app_config.dart';
+import 'package:stock_manager/services/helpers.dart';
+import 'package:stock_manager/services/shared_preference_helper.dart';
 import 'app_exceptions.dart';
 import 'package:async/async.dart';
 

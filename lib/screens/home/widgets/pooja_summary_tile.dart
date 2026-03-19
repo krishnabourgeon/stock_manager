@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:punnyam/common/color_palette.dart';
-import 'package:punnyam/common/date_picker.dart';
-import 'package:punnyam/models/pooja_summary_response.dart';
-import 'package:punnyam/providers/pooja_summary_provider.dart';
-import 'package:punnyam/screens/billing/widgets/preview_bill_row_widget.dart';
+import 'package:stock_manager/common/color_palette.dart';
+import 'package:stock_manager/common/date_picker.dart';
+import 'package:stock_manager/models/pooja_summary_response.dart';
+import 'package:stock_manager/providers/pooja_summary_provider.dart';
+import 'package:stock_manager/screens/billing/widgets/preview_bill_row_widget.dart';
 
 class PoojaSummaryTile extends StatefulWidget {
   PoojaSummaryTile(

@@ -3,8 +3,8 @@
 // // import 'package:flutter/material.dart';
 // // import 'package:intl/intl.dart';
 // // import 'package:provider/provider.dart';
-// // import 'package:punnyam/providers/bill_details_provider.dart';
-// // import 'package:punnyam/services/helpers.dart';
+// // import 'package:stock_manager/providers/bill_details_provider.dart';
+// // import 'package:stock_manager/services/helpers.dart';
 
 // // class PrintPage extends StatefulWidget {
 // //   @override
@@ -162,8 +162,8 @@
 // import 'package:flutter/services.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
 // import 'package:provider/provider.dart';
-// import 'package:punnyam/providers/bill_details_provider.dart';
-// import 'package:punnyam/services/helpers.dart';
+// import 'package:stock_manager/providers/bill_details_provider.dart';
+// import 'package:stock_manager/services/helpers.dart';
 
 // class MyApp extends StatefulWidget {
 //   const MyApp({super.key});

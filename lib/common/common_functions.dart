@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/scheduler.dart';
-import 'package:punnyam/services/helpers.dart';
+import 'package:stock_manager/services/helpers.dart';
 
 class CommonFunctions {
   static void afterInit(Function function) {

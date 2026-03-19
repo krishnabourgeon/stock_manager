@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:punnyam/common/color_palette.dart';
-import 'package:punnyam/screens/splash/splash_screen.dart';
+import 'package:stock_manager/common/color_palette.dart';
+import 'package:stock_manager/screens/splash/splash_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:punnyam/services/multi_provider_list.dart';
+import 'package:stock_manager/services/multi_provider_list.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(MultiProvider(
-      providers: MultiProviderList.providerList, child: const Punnyam()));
+      providers: MultiProviderList.providerList, child: const stock_manager()));
 }
 
-class Punnyam extends StatelessWidget {
-  const Punnyam({super.key});
+class stock_manager extends StatelessWidget {
+  const stock_manager({super.key});
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -24,7 +24,7 @@ class Punnyam extends StatelessWidget {
       builder: (context, _) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Punnyam temple suite',
+          title: 'stock_manager temple suite',
           theme: ThemeData(
             primarySwatch: ColorPalette.materialTheme,
             brightness: Brightness.light,

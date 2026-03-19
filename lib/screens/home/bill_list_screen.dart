@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:punnyam/common/common_functions.dart';
-import 'package:punnyam/providers/bill_list_provider.dart';
-import 'package:punnyam/screens/home/widgets/bill_tile.dart';
-import 'package:punnyam/services/provider_helper_class.dart';
+import 'package:stock_manager/common/common_functions.dart';
+import 'package:stock_manager/providers/bill_list_provider.dart';
+import 'package:stock_manager/screens/home/widgets/bill_tile.dart';
+import 'package:stock_manager/services/provider_helper_class.dart';
 
 class BillListingScreen extends StatefulWidget {
   const BillListingScreen({Key? key}) : super(key: key);

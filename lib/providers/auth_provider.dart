@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:punnyam/models/login_response_model.dart';
-import 'package:punnyam/models/register_body.dart';
-import 'package:punnyam/services/provider_helper_class.dart';
-import 'package:punnyam/services/shared_preference_helper.dart';
-import 'package:punnyam/services/validation_helper.dart';
+import 'package:stock_manager/models/login_response_model.dart';
+import 'package:stock_manager/models/register_body.dart';
+import 'package:stock_manager/services/provider_helper_class.dart';
+import 'package:stock_manager/services/shared_preference_helper.dart';
+import 'package:stock_manager/services/validation_helper.dart';
 
 class AuthProvider extends ChangeNotifier with ProviderHelperClass {
   TextEditingController loginUsernameController = TextEditingController();

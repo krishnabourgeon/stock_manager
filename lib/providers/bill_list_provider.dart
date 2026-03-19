@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:punnyam/models/bill_list_response_model.dart';
-import 'package:punnyam/services/provider_helper_class.dart';
+import 'package:stock_manager/models/bill_list_response_model.dart';
+import 'package:stock_manager/services/provider_helper_class.dart';
 
 class BillListProvider extends ChangeNotifier with ProviderHelperClass {
   String? date;

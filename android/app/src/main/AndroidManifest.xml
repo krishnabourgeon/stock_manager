@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.punnyam.staff">
+    package="com.stockmanager.app">
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.BLUETOOTH" />  
 	<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
@@ -22,7 +22,7 @@
         </intent>
     </queries>
    <application
-        android:label="punnyam"
+        android:label="stock_manager"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true"

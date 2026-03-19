@@ -1,4 +1,4 @@
-package com.punnyam.staff
+package com.stockmanager.app
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:punnyam/models/counter_wise_summary_response.dart';
-import 'package:punnyam/services/provider_helper_class.dart';
+import 'package:stock_manager/models/counter_wise_summary_response.dart';
+import 'package:stock_manager/services/provider_helper_class.dart';
 
 class CounterWiseSummaryProvider extends ChangeNotifier
     with ProviderHelperClass {

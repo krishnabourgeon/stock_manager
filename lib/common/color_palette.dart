@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
 class ColorPalette {
-  static Color get primaryColor => const Color(0xFFe97c7c);
-  static Color get orange => const Color(0xFFf09477);
+  ///static Color get primaryColor => const Color(0xFFe97c7c);
+  static Color get primaryColor => const Color(0xFF006400);
+  // static Color get orange => const Color(0xFFf09477);
+   static Color get orange => const Color.fromARGB(255, 53, 160, 53);
   static Color get grey => const Color(0xFFd5d7e9);
   static Color get lightGrey => const Color(0xFFF7F7F7);
+  static Color get darkGreen => const Color(0xFF006400);
+  static Color get lightGreen => const Color(0xFF90EE90);
   static const MaterialColor materialTheme = MaterialColor(
     0xFFe97c7c,
     <int, Color>{

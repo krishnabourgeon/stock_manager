@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:punnyam/common/common_functions.dart';
-import 'package:punnyam/providers/billing_provider.dart';
-import 'package:punnyam/screens/billing/widgets/preview_bill_btn.dart';
-import 'package:punnyam/screens/billing/widgets/preview_bill_tile.dart';
-import 'package:punnyam/services/helpers.dart';
+import 'package:stock_manager/common/common_functions.dart';
+import 'package:stock_manager/providers/billing_provider.dart';
+import 'package:stock_manager/screens/billing/widgets/preview_bill_btn.dart';
+import 'package:stock_manager/screens/billing/widgets/preview_bill_tile.dart';
+import 'package:stock_manager/services/helpers.dart';
 import '../../services/provider_helper_class.dart';
 
 class PreviewBillScreen extends StatefulWidget {

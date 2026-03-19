@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:punnyam/common/color_palette.dart';
+
+import 'package:stock_manager/common/color_palette.dart';
 
 class PunnyamDatePicker extends StatefulWidget {
   final String? title;

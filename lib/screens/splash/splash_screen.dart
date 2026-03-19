@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:punnyam/common/color_palette.dart';
-import 'package:punnyam/providers/billing_provider.dart';
-import 'package:punnyam/providers/home_provider.dart';
-import 'package:punnyam/screens/login/login.dart';
-import 'package:punnyam/services/app_config.dart';
-import 'package:punnyam/services/helpers.dart';
-import 'package:punnyam/services/shared_preference_helper.dart';
+import 'package:stock_manager/common/color_palette.dart';
+import 'package:stock_manager/providers/billing_provider.dart';
+import 'package:stock_manager/providers/home_provider.dart';
+import 'package:stock_manager/screens/login/login.dart';
+import 'package:stock_manager/services/app_config.dart';
+import 'package:stock_manager/services/helpers.dart';
+import 'package:stock_manager/services/shared_preference_helper.dart';
 import '../home/home.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -77,16 +77,19 @@ class _SplashScreenState extends State<SplashScreen> {
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
                 colors: [
-              ColorPalette.orange,
-              ColorPalette.primaryColor,
+              ColorPalette.darkGreen,
+              ColorPalette.lightGreen,
             ])),
-        child: Center(
-            child: Image.asset(
-          'assets/image/logo.png',
-          width: 300.w,
-          height: 300.w,
-          fit: BoxFit.fill,
-        )),
+        // child: Center(
+        //     child: 
+        // //     Image.asset(
+        // //   'assets/image/logo.png',
+        // //   width: 300.w,
+        // //   height: 300.w,
+        // //   fit: BoxFit.fill,
+        // // )
+        // Textz
+        // ),
       ),
     );
   }

@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.punnyam.staff">
+    package="com.stockmanager.app">
     <application android:usesCleartextTraffic="true">
 
     </application>
