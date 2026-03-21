@@ -7,8 +7,10 @@ class PreviewBillResponse {
   PreviewBillResponse({this.status, this.data, this.message});
   PreviewBillResponse.fromJson(Map<String, dynamic> json) {
     status = json['status'];
-    data = json['data'] != null ? PreviewBillData.fromJson(json['data']) : null;
-    message = json['message'];
+    data = (json['data'] != null && json['data'] is Map<String, dynamic>)
+        ? PreviewBillData.fromJson(json['data'])
+        : null;
+    message = json['message'] ?? (json['data'] is String ? json['data'] : null);
   }
 }
 

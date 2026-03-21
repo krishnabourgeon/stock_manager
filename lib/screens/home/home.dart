@@ -21,7 +21,7 @@ import 'package:stock_manager/services/app_config.dart';
 import 'package:stock_manager/services/helpers.dart';
 import 'package:stock_manager/services/provider_helper_class.dart';
 import 'package:stock_manager/services/shared_preference_helper.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stock_manager/models/counters_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Home extends StatefulWidget {
@@ -480,10 +480,6 @@ class _HomeState extends State<Home> {
                                           );
                                         }).toList(),
                                         onChanged: (value) async {
-                                          final SharedPreferences prefs =
-                                              await SharedPreferences
-                                                  .getInstance();
-
                                           setState(() {
                                             _chosenValue = value;
                                             for (int i = 0;
@@ -495,10 +491,6 @@ class _HomeState extends State<Home> {
                                                     provider.counterId[i];
                                                 log(selectedCounterID
                                                     .toString());
-                                                prefs.setString(
-                                                    "counterid",
-                                                    selectedCounterID
-                                                        .toString());
                                               }
                                             }
                                           });
@@ -514,6 +506,15 @@ class _HomeState extends State<Home> {
                                       context.read<BillingProvider>();
 
                                   if ((selectedCounterID != null)) {
+                                    // Save storeId from the selected counter's Datum
+                                    final selectedDatum = home.counterdata
+                                        ?.firstWhere(
+                                          (d) => '${d.id}' == selectedCounterID,
+                                          orElse: () => Datum(),
+                                        );
+                                    await SharedPreferenceHelper.saveStoreID(
+                                        '${selectedDatum?.store ?? ""}');
+
                                     await SharedPreferenceHelper.saveCounterID(
                                             selectedCounterID ?? "")
                                         .then((value) async {
@@ -551,8 +552,21 @@ class _HomeState extends State<Home> {
 
   getCounterID() async {
     String id = await SharedPreferenceHelper.getCounterID();
+    String storeId = await SharedPreferenceHelper.getStoreID();
     if (id == '') {
       _showCounters();
+    } else if (storeId == '') {
+      // Counter was already saved but storeId wasn't (existing sessions before fix).
+      // Fetch the counter list, look up the matching counter, and save its storeId.
+      final home = context.read<HomeProvider>();
+      await home.getCounter();
+      final selectedDatum = home.counterdata?.firstWhere(
+        (d) => '${d.id}' == id,
+        orElse: () => Datum(),
+      );
+      if (selectedDatum?.store != null) {
+        await SharedPreferenceHelper.saveStoreID('${selectedDatum!.store}');
+      }
     }
   }
 }

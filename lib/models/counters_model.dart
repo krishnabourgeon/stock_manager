@@ -29,15 +29,19 @@ class Datum {
   Datum({
     this.id,
     this.name,
+    this.store
   });
   int? id;
   String? name;
+  int? store;
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         id: json["id"],
         name: json["name"],
+        store: json["store"]
       );
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
+        "store": store
       };
 }

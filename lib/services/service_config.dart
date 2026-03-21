@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:stock_manager/models/Save_stock_body.dart';
 import 'package:stock_manager/models/bill_list_response_model.dart';
 import 'package:stock_manager/models/category_model.dart';
 import 'package:stock_manager/models/counter_wise_summary_response.dart';
@@ -13,11 +14,13 @@ import 'package:stock_manager/models/pooja_response_model.dart';
 import 'package:stock_manager/models/pooja_summary_response.dart';
 import 'package:stock_manager/models/preview_bill_response.dart';
 import 'package:stock_manager/models/product_model.dart';
+import 'package:stock_manager/models/product_store_model.dart';
 import 'package:stock_manager/models/quickbill_datamodel.dart';
 import 'package:stock_manager/models/rashi_datamodel.dart';
 import 'package:stock_manager/models/register_body.dart';
 import 'package:stock_manager/models/save_bill_body.dart';
 import 'package:stock_manager/models/save_bill_response.dart';
+import 'package:stock_manager/models/save_stock_model.dart';
 import 'package:stock_manager/models/savequickbillresponse_datamodel.dart';
 import 'package:stock_manager/models/search_response_model.dart';
 import 'package:stock_manager/models/special_star_response.dart';
@@ -25,10 +28,12 @@ import 'package:stock_manager/models/starts_response_model.dart';
 import 'package:stock_manager/models/supplier_model.dart';
 import 'package:stock_manager/models/unit_model.dart';
 import 'package:stock_manager/models/version_datamodel.dart';
+import 'package:stock_manager/models/view_stock_model.dart';
 import 'package:stock_manager/services/app_config.dart';
 import 'package:stock_manager/services/base_client.dart';
 import 'package:async/async.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stock_manager/services/shared_preference_helper.dart';
 
 class ServiceConfig {
   Future<Result> login({String? email, String? password}) async {
@@ -157,6 +162,124 @@ class ServiceConfig {
     }
   }
 
+Future<Result> getStockList() async {
+  //  LOAD storeId first
+  String storeId = await SharedPreferenceHelper.getStoreID();
+
+  //  DEBUG — check what is actually being sent
+  debugPrint('getStockList => storeId: "$storeId"');
+
+  // API expects GET with JSON body: { "store_id": 1 }
+  Result res = await BaseClient.getWithBody(
+    'viewstock',
+    body: {'store_id': int.tryParse(storeId) ?? 0},
+  );
+
+  if (res.isError) {
+    ErrorResponseModel errorResponseModel =
+        ErrorResponseModel(errorMessage: 'Oops...!, Something went wrong');
+    return Result.error(errorResponseModel);
+  } else {
+    var response = res.asValue!.value;
+    debugPrint('stock list response $response');
+
+    ViewStockModel viewStockModel = ViewStockModel.fromJson(response);
+
+    return (viewStockModel.status)
+        ? Result.value(viewStockModel)
+        : Result.error(viewStockModel);
+  }
+}
+
+Future<Result> getStockCount() async {
+  //  LOAD storeId first
+  String storeId = await SharedPreferenceHelper.getStoreID();
+
+  //  DEBUG — check what is actually being sent
+  debugPrint('getStockList => storeId: "$storeId"');
+
+  // API expects GET with JSON body: { "store_id": 1 }
+  Result res = await BaseClient.getWithBody(
+    'viewstock',
+    body: {'store_id': int.tryParse(storeId) ?? 0},
+  );
+
+  if (res.isError) {
+    ErrorResponseModel errorResponseModel =
+        ErrorResponseModel(errorMessage: 'Oops...!, Something went wrong');
+    return Result.error(errorResponseModel);
+  } else {
+    var response = res.asValue!.value;
+    debugPrint('stock list response $response');
+
+    ViewStockModel viewStockModel = ViewStockModel.fromJson(response);
+
+    return (viewStockModel.status)
+        ? Result.value(viewStockModel)
+        : Result.error(viewStockModel);
+  }
+}
+
+
+Future<Result> getProductStock({
+  required String storeId,
+  required String productId,
+}) async {
+  debugPrint('getProductStock => storeId: $storeId, productId: $productId');
+
+  Result res = await BaseClient.getWithBody(
+    'viewproductstorestock',
+    body: {
+      'store_id': int.tryParse(storeId) ?? 0,
+      'product_id': int.tryParse(productId) ?? 0,
+    },
+  );
+
+  if (res.isError) {
+    return Result.error(
+      ErrorResponseModel(errorMessage: 'Failed to fetch stock'),
+    );
+  } else {
+    var response = res.asValue!.value;
+    debugPrint('product stock response $response');
+
+    ProductStoreModel model = ProductStoreModel.fromJson(response);
+
+    return model.status
+        ? Result.value(model)
+        : Result.error(model);
+  }
+}
+
+  Future<Result> saveStock(SaveStockBody saveStockBody) async {
+  if (kDebugMode) {
+    print("saveStock..............${saveStockBody.toJson()}");
+  }
+
+  Result res = await BaseClient.post(
+    'billing/stock', // make sure this matches your API route
+    body: saveStockBody.toJson(),
+  );
+
+  if (res.isError) {
+    ErrorResponseModel errorResponseModel =
+        ErrorResponseModel(errorMessage: 'Oops...! Something went wrong');
+    return Result.error(errorResponseModel);
+  } else {
+    var response = res.asValue!.value;
+
+    SaveStockModel saveStockResponse =
+        SaveStockModel.fromJson(response);
+
+    return (saveStockResponse.status)
+        ? Result.value(saveStockResponse)
+        : Result.error(saveStockResponse);
+  }
+}
+
+
+
+ 
   Future<Result> getStarts() async {
     Result res = await BaseClient.get('stars');
     if (res.isError) {

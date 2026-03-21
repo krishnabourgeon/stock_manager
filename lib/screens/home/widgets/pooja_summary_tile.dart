@@ -87,10 +87,10 @@ class _PoojaSummaryTileState extends State<PoojaSummaryTile> {
                 child: Column(
                   children: [
                     PreviewBillRowWidget(
-                        labelText: 'Pooja Name',
+                        labelText: 'Product Name',
                         valueText: widget.poojaDataList[index].poojaName ?? ''),
                     PreviewBillRowWidget(
-                        labelText: 'Pooja Count',
+                        labelText: 'Product Count',
                         valueText:
                             widget.poojaDataList[index].poojaCount.toString()),
                     PreviewBillRowWidget(

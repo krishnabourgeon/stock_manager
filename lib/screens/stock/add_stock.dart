@@ -9,6 +9,7 @@ import 'package:stock_manager/models/product_model.dart';
 import 'package:stock_manager/models/supplier_model.dart';
 import 'package:stock_manager/services/app_config.dart';
 import 'package:stock_manager/services/provider_helper_class.dart';
+import 'package:stock_manager/services/shared_preference_helper.dart';
 class AddStock extends StatefulWidget {
   const AddStock({super.key});
 
@@ -26,6 +27,7 @@ class _AddStockState extends State<AddStock> {
   final TextEditingController rateController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   bool isSupplierLocked = false;
+  String? selectedUnitName;
   
 
   List<Map<String, dynamic>> addedStocks = [];
@@ -83,6 +85,44 @@ class _AddStockState extends State<AddStock> {
 // }
 
 
+// void _saveAndNext() {
+//   if (formKey.currentState!.validate()) {
+//     double qtyValue = double.tryParse(qtyController.text) ?? 0;
+//     double rateValue = double.tryParse(rateController.text) ?? 0;
+//     double total = qtyValue * rateValue;
+
+//     setState(() {
+//       addedStocks.add({
+//         'supplier': selectedSupplierId,
+//         'category': selectedCategoryId,
+//         'product': selectedProductId,
+//         'unit': selectedUnitId,
+//         'qty': qtyController.text,
+//         'rate': rateController.text,
+//         'total': total, //  ADD THIS
+//         'date': DateTime.now(),
+//         'customerName': AppConfig.customerName
+//       });
+
+//       //selectedSupplierId = null;
+//        isSupplierLocked = true;
+//       selectedCategoryId = null;
+//       selectedProductId = null;
+//       selectedUnitId = null;
+
+//       qty = 0;
+//       qtyController.clear();
+//       rateController.clear();
+//     });
+
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(content: Text('Stock added (Total: ₹$total)')),
+//     );
+//   }
+// }
+
+
+
 void _saveAndNext() {
   if (formKey.currentState!.validate()) {
     double qtyValue = double.tryParse(qtyController.text) ?? 0;
@@ -92,18 +132,15 @@ void _saveAndNext() {
     setState(() {
       addedStocks.add({
         'supplier': selectedSupplierId,
-        'category': selectedCategoryId,
         'product': selectedProductId,
-        'unit': selectedUnitId,
-        'qty': qtyController.text,
-        'rate': rateController.text,
-        'total': total, // ✅ ADD THIS
-        'date': DateTime.now(),
-        'customerName': AppConfig.customerName
+        'unit': selectedUnitName, 
+        'qty': qtyValue.toInt(),  
+        'rate': rateValue.toInt(),
+        'total': total,
       });
 
-      //selectedSupplierId = null;
-       isSupplierLocked = true;
+      isSupplierLocked = true;
+
       selectedCategoryId = null;
       selectedProductId = null;
       selectedUnitId = null;
@@ -114,11 +151,10 @@ void _saveAndNext() {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Stock added (Total: ₹$total)')),
+      SnackBar(content: Text('Stock added (₹$total)')),
     );
   }
 }
-
 
 // void _saveAll() {
 //   if (formKey.currentState!.validate()) {
@@ -149,24 +185,143 @@ void _saveAndNext() {
 // }
 
 
-void _saveAll() {
+// void _saveAll() {
+//   if (formKey.currentState!.validate()) {
+//     double qtyValue = double.tryParse(qtyController.text) ?? 0;
+//     double rateValue = double.tryParse(rateController.text) ?? 0;
+//     double total = qtyValue * rateValue;
+
+//     addedStocks.add({
+//       'supplier': selectedSupplierId,
+//       'category': selectedCategoryId,
+//       'product': selectedProductId,
+//       'unit': selectedUnitId,
+//       'qty': qtyController.text,
+//       'rate': rateController.text,
+//       'total': total, // ✅ ADD THIS
+//       'date': DateTime.now()
+//     });
+//   }
+
+//   if (addedStocks.isEmpty) {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       const SnackBar(content: Text('No stocks to save')),
+//     );
+//     return;
+//   }
+
+//   // ✅ Calculate GRAND TOTAL
+//   double grandTotal = addedStocks.fold(
+//     0,
+//     (sum, item) => sum + (item['total'] ?? 0),
+//   );
+
+//   ScaffoldMessenger.of(context).showSnackBar(
+//     SnackBar(content: Text('Saved! Grand Total: ₹$grandTotal')),
+//   );
+
+//   Navigator.pop(context, addedStocks);
+// }
+
+
+
+// void _saveAll() {
+//   //  Validate form
+//   if (formKey.currentState!.validate()) {
+//     double qtyValue = double.tryParse(qtyController.text) ?? 0;
+//     double rateValue = double.tryParse(rateController.text) ?? 0;
+//     double total = qtyValue * rateValue;
+
+//     //  Add current item before saving
+//     addedStocks.add({
+//       'supplier': selectedSupplierId,
+//       'product': selectedProductId,
+//       'unit': selectedUnitName, //  must be STRING (pcs, kg...)
+//       'qty': qtyValue.toInt(),
+//       'rate': rateValue.toInt(),
+//       'total': total,
+//     });
+//   }
+
+//   //  Check empty list
+//   if (addedStocks.isEmpty) {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       const SnackBar(content: Text('No stocks to save')),
+//     );
+//     return;
+//   }
+
+//   //  Validate supplier
+//   if (selectedSupplierId == null) {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       const SnackBar(content: Text('Please select supplier')),
+//     );
+//     return;
+//   }
+
+//   //  Calculate GRAND TOTAL (FIXED TYPE)
+//   double grandTotal = addedStocks.fold(
+//     0.0,
+//     (sum, item) => sum + ((item['total'] ?? 0) as num).toDouble(),
+//   );
+
+//   //  Show total (optional)
+//   ScaffoldMessenger.of(context).showSnackBar(
+//     SnackBar(content: Text('Grand Total: ₹${grandTotal.toStringAsFixed(2)}')),
+//   );
+
+//   //  CALL API
+//   context.read<StockProvider>().saveStock(
+//     addedStocks: addedStocks,
+//     onSuccess: () {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         const SnackBar(content: Text('Stock saved successfully')),
+//       );
+      
+//       //  Reset UI after success
+//       setState(() {
+//         addedStocks.clear();
+//         isSupplierLocked = false;
+//         selectedSupplierId = null;
+//         selectedProductId = null;
+//         selectedUnitId = null;
+//         selectedUnitName = null;
+//         qty = 0;
+//         qtyController.clear();
+//         rateController.clear();
+//       });
+
+//       Navigator.pop(context);
+//     },
+//     onFailure: () {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         const SnackBar(content: Text('Failed to save stock')),
+//       );
+//     },
+//   );
+// }
+
+
+
+void _saveAll() async {
+  //  Validate form
   if (formKey.currentState!.validate()) {
     double qtyValue = double.tryParse(qtyController.text) ?? 0;
     double rateValue = double.tryParse(rateController.text) ?? 0;
     double total = qtyValue * rateValue;
 
+    //  Add current item before saving
     addedStocks.add({
       'supplier': selectedSupplierId,
-      'category': selectedCategoryId,
       'product': selectedProductId,
-      'unit': selectedUnitId,
-      'qty': qtyController.text,
-      'rate': rateController.text,
-      'total': total, // ✅ ADD THIS
-      'date': DateTime.now()
+      'unit': selectedUnitName, // must be STRING (kg, pcs...)
+      'qty': qtyValue.toInt(),
+      'rate': rateValue.toInt(),
+      'total': total,
     });
   }
 
+  //  Check empty list
   if (addedStocks.isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('No stocks to save')),
@@ -174,18 +329,72 @@ void _saveAll() {
     return;
   }
 
-  // ✅ Calculate GRAND TOTAL
+  //  Validate supplier
+  if (selectedSupplierId == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please select supplier')),
+    );
+    return;
+  }
+
+  //   LOAD STORE ID (VERY IMPORTANT FIX)
+  await SharedPreferenceHelper.getStoreID();
+
+  //  DEBUG (check in console)
+  print("STORE ID BEFORE API: ${AppConfig.storeId}");
+
+  //   SAFETY CHECK
+  if (AppConfig.storeId == null || AppConfig.storeId!.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Store ID missing. Please login again')),
+    );
+    return;
+  }
+
+  //  Calculate GRAND TOTAL
   double grandTotal = addedStocks.fold(
-    0,
-    (sum, item) => sum + (item['total'] ?? 0),
+    0.0,
+    (sum, item) => sum + ((item['total'] ?? 0) as num).toDouble(),
   );
 
+  //  Show total (optional)
   ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text('Saved! Grand Total: ₹$grandTotal')),
+    SnackBar(
+      content: Text('Grand Total: ₹${grandTotal.toStringAsFixed(2)}'),
+    ),
   );
 
-  Navigator.pop(context, addedStocks);
+  //  CALL API
+  context.read<StockProvider>().saveStock(
+    addedStocks: addedStocks,
+    onSuccess: () {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Stock saved successfully')),
+      );
+
+      //  Reset UI after success
+      setState(() {
+        addedStocks.clear();
+        isSupplierLocked = false;
+        selectedSupplierId = null;
+        selectedProductId = null;
+        selectedUnitId = null;
+        selectedUnitName = null;
+        qty = 0;
+        qtyController.clear();
+        rateController.clear();
+      });
+
+      Navigator.pop(context);
+    },
+    onFailure: () {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to save stock')),
+      );
+    },
+  );
 }
+
 
 double getCombinedTotal() {
   double existingTotal = addedStocks.fold(
@@ -274,61 +483,61 @@ double getCombinedTotal() {
                           //   },
                           // );
                           DropdownButtonFormField<int>(
-  decoration: InputDecoration(
-    labelText: isSupplierLocked ? "Supplier (Locked)" : "Select Supplier",
-    border: const OutlineInputBorder(),
-    filled: isSupplierLocked,
-    fillColor: isSupplierLocked ? Colors.grey.shade200 : null,
-    prefixIcon: stockProvider.loaderState == LoaderState.loading
-        ? const Padding(
-            padding: EdgeInsets.all(12.0),
-            child: SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-          )
-        : null,
-  ),
+                            decoration: InputDecoration(
+                              labelText: isSupplierLocked ? "Supplier (Locked)" : "Select Supplier",
+                              border: const OutlineInputBorder(),
+                              filled: isSupplierLocked,
+                              fillColor: isSupplierLocked ? Colors.grey.shade200 : null,
+                              prefixIcon: stockProvider.loaderState == LoaderState.loading
+                                  ? const Padding(
+                                      padding: EdgeInsets.all(12.0),
+                                      child: SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(strokeWidth: 2),
+                                      ),
+                                    )
+                                  : null,
+                            ),
 
-  value: stockProvider.supplierList.any((e) => e.id == selectedSupplierId)
-      ? selectedSupplierId
-      : null,
+                            value: stockProvider.supplierList.any((e) => e.id == selectedSupplierId)
+                                ? selectedSupplierId
+                                : null,
 
-  items: stockProvider.supplierList.isEmpty
-      ? const [
-          DropdownMenuItem<int>(
-            value: null,
-            child: Text("No suppliers available"),
-          )
-        ]
-      : stockProvider.supplierList
-          .fold<List<Data>>([], (prev, item) {
-            if (!prev.any((e) => e.id == item.id)) prev.add(item);
-            return prev;
-          })
-          .map((item) => DropdownMenuItem<int>(
-                value: item.id,
-                child: Text(item.name.toString()),
-              ))
-          .toList(),
+                            items: stockProvider.supplierList.isEmpty
+                                ? const [
+                                    DropdownMenuItem<int>(
+                                      value: null,
+                                      child: Text("No suppliers available"),
+                                    )
+                                  ]
+                                : stockProvider.supplierList
+                                    .fold<List<Data>>([], (prev, item) {
+                                      if (!prev.any((e) => e.id == item.id)) prev.add(item);
+                                      return prev;
+                                    })
+                                    .map((item) => DropdownMenuItem<int>(
+                                          value: item.id,
+                                          child: Text(item.name.toString()),
+                                        ))
+                                    .toList(),
 
-  // 🔒 IMPORTANT CHANGE HERE
-  onChanged: isSupplierLocked
-      ? null
-      : (value) {
-          setState(() {
-            selectedSupplierId = value;
-          });
-        },
+                            //  IMPORTANT CHANGE HERE
+                            onChanged: isSupplierLocked
+                                ? null
+                                : (value) {
+                                    setState(() {
+                                      selectedSupplierId = value;
+                                    });
+                                  },
 
-  validator: (value) {
-    if (value == null) {
-      return "Please select supplier";
-    }
-    return null;
-  },
-);
+                            validator: (value) {
+                              if (value == null) {
+                                return "Please select supplier";
+                              }
+                              return null;
+                            },
+                          );
                         },
                       ),
                       10.verticalSpace,
@@ -470,6 +679,12 @@ double getCombinedTotal() {
                             onChanged: (value) {
                               setState(() {
                                 selectedUnitId = value;
+
+                                selectedUnitName = context
+                                    .read<StockProvider>()
+                                    .unitList
+                                    .firstWhere((e) => e.id == value)
+                                    .name;
                               });
                             },
                             validator: (value) {

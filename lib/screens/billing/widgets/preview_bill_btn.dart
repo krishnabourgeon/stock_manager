@@ -307,7 +307,8 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
         await SunmiPrinter.setAlignment(align: SunmiPrintAlign.CENTER);
         await SunmiPrinter.lineWrap(1);
         previewBillProvider.saveBillResponse?.billImage == null ||
-                previewBillProvider.saveBillResponse?.billImage == ''
+                previewBillProvider.saveBillResponse?.billImage == '' ||
+                previewBillProvider.imageData == null
             ? null
             : await SunmiPrinter.printImage(
                 image: previewBillProvider.imageData!,

@@ -54,6 +54,28 @@ class BaseClient {
     }
   }
 
+  // GET with a JSON body (non-standard but some APIs require it)
+  static Future<dynamic> getWithBody(String api, {required Map<String, dynamic> body}) async {
+    String bearerToken = await token;
+    var uri = Uri.parse(AppConfig.baseUrl + api);
+    bool check = await isInternetAvailable();
+    if (check) {
+      try {
+        var request = http.Request('GET', uri);
+        request.headers[HttpHeaders.contentTypeHeader] = _appJson;
+        request.headers[HttpHeaders.authorizationHeader] = 'Bearer $bearerToken';
+        request.body = json.encode(body);
+        var streamedResponse = await request.send().timeout(const Duration(seconds: timeDuration));
+        var response = await http.Response.fromStream(streamedResponse);
+        return _processResponse(response);
+      } on SocketException {
+        throw FetchDataException('No Internet connection', uri.toString());
+      } on TimeoutException {
+        throw ApiNotRespondingException('API not responded in time', uri.toString());
+      }
+    }
+  }
+
   //POST METHOD
   static Future<dynamic> post(String api, {dynamic body}) async {
     String bearerToken = await token;

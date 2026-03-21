@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sunmi_printer_plus/flutter_sunmi_printer_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:stock_manager/common/common_functions.dart';
+import 'package:stock_manager/models/category_model.dart';
 import 'package:stock_manager/models/dieties_response_model.dart';
 import 'package:stock_manager/models/gothra_response.dart';
 import 'package:stock_manager/models/payment_mode_response.dart';
 import 'package:stock_manager/models/pooja_response_model.dart';
+import 'package:stock_manager/models/product_model.dart';
+import 'package:stock_manager/models/product_store_model.dart';
 import 'package:stock_manager/models/quickbill_datamodel.dart';
 import 'package:stock_manager/models/rashi_datamodel.dart';
 import 'package:stock_manager/models/save_bill_body.dart';
@@ -20,6 +23,7 @@ import 'package:stock_manager/screens/billing/preview_bill.dart';
 import 'package:stock_manager/services/app_config.dart';
 import 'package:stock_manager/services/helpers.dart';
 import 'package:stock_manager/services/provider_helper_class.dart';
+import 'package:stock_manager/services/shared_preference_helper.dart';
 import 'package:stock_manager/services/validation_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:whatsapp_unilink/whatsapp_unilink.dart';
@@ -33,6 +37,8 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   int? sunmiPrinter;
   bool isConnected = false;
   static bool ratefield = false;
+  ProductModel? productModel;
+  CategoryModel? categoryModel;
 // print close
 
   checkPrinter() async {
@@ -48,6 +54,18 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
 
   DeitiesResponse? deitiesResponse;
   SavequickbillDatamodel? savequickbills;
+
+  List<Cat> categoryList = [];
+  List<Datum> allProductList = [];
+  List<Datum> productList = [];
+  List<Cat> allCategoryList = [];  
+
+String? selectedCategoryName;
+String? selectedProductName;
+
+String selectedCategoryId = '';
+String selectedProductId = '';
+double? productRate;
 
   List<DeitiesData> deitiesList = [];
   List<DeitiesData> allDeitiesList = [];
@@ -137,6 +155,7 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   bool isScheduled = false;
   bool isSearching = false;
   static bool address = false;
+  double availableStock = 0;
 
   TextEditingController mobileNumberController = TextEditingController();
   TextEditingController noOfMonthsController = TextEditingController();
@@ -155,11 +174,11 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   double totalAmount = 0;
   getInitialDataList() async {
     await clearValues();
-    await getDeities();
+    await getCategories();
     await getStars();
     await getStarIdFromName("Nodata");
     getSpecialStars();
-    await getPoojas();
+    await getProducts();
     updateFromDate(DateFormat('y-MM-dd').format(DateTime.now()));
     mobileNumberController.text = AppConfig.customerNumber ?? '';
     nameController.text = AppConfig.customerName ?? '';
@@ -186,6 +205,154 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
       }
       notifyListeners();
     }
+  }
+
+  Future<void> fetchProductStock() async {
+  String storeId = await SharedPreferenceHelper.getStoreID();
+
+  if (selectedProductId.isEmpty) return;
+
+  final res = await serviceConfig.getProductStock(
+    storeId: storeId,
+    productId: selectedProductId,
+  );
+
+  if (!res.isError) {
+    ProductStoreModel model = res.asValue!.value;
+
+    if (model.data.isNotEmpty) {
+      availableStock = model.data.first.total;
+    } else {
+      availableStock = 0;
+    }
+  } else {
+    availableStock = 0;
+  }
+
+  notifyListeners();
+}
+
+
+
+  Future<void> getCategories() async {
+    final network = await CommonFunctions.checkInternetConnection();
+    if (network) {
+      updateLoadState(LoaderState.loading);
+      try {
+        var res = await serviceConfig.getCategory();
+        if (res.isValue) {
+          categoryModel = res.asValue!.value;
+          if (categoryModel != null) {
+            updateCategoriesList(categoryModel);
+          }
+          updateLoadState(LoaderState.loaded);
+        } else {
+          updateLoadState(LoaderState.loaded);
+        }
+      } catch (e) {
+        debugPrint('exception in categories: $e');
+        updateLoadState(LoaderState.loaded);
+      }
+    }
+  } 
+
+    updateProductsList(ProductModel? productModel) {
+    productList = productModel?.data ?? [];
+    allProductList = productModel?.data ?? [];
+    // updateDeityId('${deitiesList[0].id}');  // cleared
+    notifyListeners();
+  }
+
+   updateCategoriesList(CategoryModel? categoryModel) {
+    categoryList = categoryModel?.data ?? [];
+    allCategoryList = categoryModel?.data ?? [];
+    // updateDeityId('${deitiesList[0].id}');  // cleared
+    notifyListeners();
+  }
+
+
+  Future<void> getProducts() async {
+    final network = await CommonFunctions.checkInternetConnection();
+    if (network) {
+      updateLoadState(LoaderState.loading);
+      try {
+        var res = await serviceConfig.getProduct();
+        if (res.isValue) {
+          productModel = res.asValue!.value;
+          if (productModel != null) {
+            updateProductsList(productModel);
+          }
+          updateLoadState(LoaderState.loaded);
+        } else {
+          updateLoadState(LoaderState.loaded);
+        }
+      } catch (e) {
+        debugPrint('exception in products: $e');
+        updateLoadState(LoaderState.loaded);
+      }
+    }
+  }
+
+  void filterProductsByCategory(String categoryId) {
+    if (categoryId.isEmpty) {
+      productList = allProductList;
+    } else {
+      productList = allProductList
+          .where((element) => element.catId.toString() == categoryId)
+          .toList();
+    }
+    notifyListeners();
+  }
+
+  void getCategoryIdFromName(String name) {
+    selectedCategoryName = name;
+    for (var element in categoryList) {
+      if (name == element.name) {
+        selectedCategoryId = element.id.toString();
+        filterProductsByCategory(selectedCategoryId);
+      }
+    }
+    notifyListeners();
+  }
+
+  // void getProductIdFromName(String name) {
+  //   selectedProductName = name;
+  //   for (var element in productList) {
+  //     if (name == element.name) {
+  //       selectedProductId = element.id.toString();
+  //       qtyController.text = '1';
+  //       productRate = double.tryParse(element.price) ?? 0;
+  //       updateRateWithProduct();
+  //     }
+  //   }
+  //   notifyListeners();
+  // }
+
+    void getProductIdFromName(String name) {
+    try {
+      final product = productList.firstWhere((e) => e.name == name);
+
+      selectedProductId = product.id.toString();
+      selectedProductName = product.name;
+       qtyController.text = '1';
+      ///  AUTO SET PRICE
+      rateController.text = product.price;
+
+    } catch (e) {
+      debugPrint("Product not found");
+    }
+
+    notifyListeners();
+  }
+
+  void updateRateWithProduct() {
+     if (qtyController.text.isNotEmpty) {
+      var totalRate = (productRate ?? 0) * (int.parse(qtyController.text));
+      rateController.text = totalRate == 0 ? '' : totalRate.toStringAsFixed(0);
+    } else {
+      rateController.text = '';
+    }
+    notifyListeners();
   }
 
   VersionDatamodel? version;
@@ -905,8 +1072,8 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   updateBillingFormState() {
     print("..$gothraId...$gothraName..$rashiId..$rashiName");
     if (!isScheduled) {
-      if (deityId.isNotEmpty &&
-          poojaId.isNotEmpty &&
+      if (selectedCategoryId.isNotEmpty &&
+          selectedProductId.isNotEmpty &&
           // gothraId != null &&
           // rashiId != null &&
           // gothraId != '' &&
@@ -925,8 +1092,8 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
         isBillingFormValidated = false;
       }
     } else {
-      if (deityId.isNotEmpty &&
-          poojaId.isNotEmpty &&
+      if (selectedCategoryId.isNotEmpty &&
+          selectedProductId.isNotEmpty &&
           // gothraId != null &&
           // rashiId != null &&
           // gothraId != '' &&
@@ -1009,7 +1176,7 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
               : nameController.text.trim(),
           address: addressController.text ?? '',
           date: isScheduled ? date : null,
-          deityId: int.parse(deityId ?? '1'),
+          deityId: int.tryParse(selectedCategoryId),
           dwmo: scheduledType,
           fromDate: fromDate,
           isScheduled: isScheduled ? 1 : 0,
@@ -1022,7 +1189,7 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
           noOfWeeks: noOfWeeksController.text.isNotEmpty
               ? int.parse(noOfWeeksController.text.trim())
               : null,
-          poojaId: int.parse(poojaId),
+          poojaId: int.tryParse(selectedProductId),
           prasadamStatus: (isPrasadhamIncluded ?? false) ? 1 : 0,
           qty: int.parse(qtyController.text.trim()),
           rate: double.parse(rateController.text.trim()),
@@ -1077,8 +1244,6 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
       }
       clearValues(isClearDate: false);
       updateFromDate(DateFormat('y-MM-dd').format(DateTime.now()));
-      getDeityIdFromName(deityname!);
-      getPoojaIdFromName(poojaName!);
       updateBillingFormState();
       updateLoadState(LoaderState.loaded);
     });
@@ -1095,7 +1260,7 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
             : nameController.text.trim(),
         address: addressController.text,
         date: !isScheduled ? date : null,
-        deityId: int.parse(deityId ?? '1'),
+        deityId: int.tryParse(selectedCategoryId),
         dwmo: scheduledType,
         fromDate: fromDate,
         isScheduled: isScheduled == true ? 1 : 0,
@@ -1108,7 +1273,7 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
         noOfWeeks: noOfWeeksController.text.isNotEmpty
             ? int.parse(noOfWeeksController.text.trim())
             : null,
-        poojaId: int.parse(poojaId),
+        poojaId: int.tryParse(selectedProductId),
         prasadamStatus: (isPrasadhamIncluded ?? false) ? 1 : 0,
         qty: int.parse(qtyController.text.trim()),
         rate: double.parse(rateController.text.trim()),
@@ -1232,8 +1397,10 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     starName = null;
     starName1 = null;
     specialStarName = null;
-    // deityname = null;
-    // poojaName = null;
+    selectedCategoryName = null;
+    selectedProductName = null;
+    selectedCategoryId = '';
+    selectedProductId = '';
     if (isClearPaymentMode) paymentMode = 'COD';
     numberOfDays = null;
     numberOfWeeks = null;

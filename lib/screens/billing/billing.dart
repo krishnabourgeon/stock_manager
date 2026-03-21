@@ -71,59 +71,59 @@ class _BillingState extends State<Billing> {
               child: Column(
                 children: [
                   NormalBillingWidget(billingProvider: billingProvider),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 5.w),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "Do you want to schedule?",
-                          style: TextStyle(color: Colors.black),
-                        ),
-                        PunnyamSwitch(
-                          isOn: billingProvider.isScheduled,
-                          onTap: (value) => billingProvider
-                            ..updateSwitch(value)
-                            ..updateBillingFormState(),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (billingProvider.isScheduled)
-                    Column(
-                      children: [
-                        10.verticalSpace,
-                        billingProvider.loaderState == LoaderState.loading
-                            ? const LoadingDropDown(
-                                title: 'Schedule Type',
-                              )
-                            : CustomDropDownSearch(
-                                labelText: 'Schedule Type',
-                                maxHeight: 220.h,
-                                onChanged: (value) => billingProvider
-                                  ..updateSheduleType(value)
-                                  ..updateBillingFormState(),
-                                items: List.generate(
-                                    billingProvider.scheduleTypesList.length,
-                                    (index) =>
-                                        billingProvider
-                                            .scheduleTypesList[index] ??
-                                        ''),
-                              ),
-                        10.verticalSpace,
-                        if (billingProvider.scheduleTypes == "Daily")
-                          DailyScheduleWidget(billingProvider: billingProvider),
-                        if (billingProvider.scheduleTypes == "Weekly")
-                          WeeklyScheduleWidget(
-                              billingProvider: billingProvider),
-                        if (billingProvider.scheduleTypes == "Monthly")
-                          MonthlyScheduleWidget(
-                              billingProvider: billingProvider),
-                        if (billingProvider.scheduleTypes == "Other")
-                          OtherScheduleWidget(billingProvider: billingProvider),
-                        20.verticalSpace,
-                      ],
-                    ),
+                  // Padding(
+                  //   padding: EdgeInsets.symmetric(horizontal: 5.w),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //     children: [
+                  //       const Text(
+                  //         "Do you want to schedule?",
+                  //         style: TextStyle(color: Colors.black),
+                  //       ),
+                  //       PunnyamSwitch(
+                  //         isOn: billingProvider.isScheduled,
+                  //         onTap: (value) => billingProvider
+                  //           ..updateSwitch(value)
+                  //           ..updateBillingFormState(),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // if (billingProvider.isScheduled)
+                  //   Column(
+                  //     children: [
+                  //       10.verticalSpace,
+                  //       billingProvider.loaderState == LoaderState.loading
+                  //           ? const LoadingDropDown(
+                  //               title: 'Schedule Type',
+                  //             )
+                  //           : CustomDropDownSearch(
+                  //               labelText: 'Schedule Type',
+                  //               maxHeight: 220.h,
+                  //               onChanged: (value) => billingProvider
+                  //                 ..updateSheduleType(value)
+                  //                 ..updateBillingFormState(),
+                  //               items: List.generate(
+                  //                   billingProvider.scheduleTypesList.length,
+                  //                   (index) =>
+                  //                       billingProvider
+                  //                           .scheduleTypesList[index] ??
+                  //                       ''),
+                  //             ),
+                  //       10.verticalSpace,
+                  //       if (billingProvider.scheduleTypes == "Daily")
+                  //         DailyScheduleWidget(billingProvider: billingProvider),
+                  //       if (billingProvider.scheduleTypes == "Weekly")
+                  //         WeeklyScheduleWidget(
+                  //             billingProvider: billingProvider),
+                  //       if (billingProvider.scheduleTypes == "Monthly")
+                  //         MonthlyScheduleWidget(
+                  //             billingProvider: billingProvider),
+                  //       if (billingProvider.scheduleTypes == "Other")
+                  //         OtherScheduleWidget(billingProvider: billingProvider),
+                  //       20.verticalSpace,
+                  //     ],
+                  //   ),
                   CommonButton(
                     title: "Save and Add Next",
                     onPressed: billingProvider.isBillingFormValidated

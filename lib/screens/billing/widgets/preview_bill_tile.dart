@@ -114,7 +114,7 @@ class PreviewBillTile extends StatelessWidget {
               //     .getrashianameFromid(poojaDetails.rashi ?? 0);
               // print(name);
               return Container(
-                height: 270.h,
+                height: 155.h,
                 width: double.maxFinite,
                 margin: EdgeInsets.symmetric(vertical: 10.h),
                 padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
@@ -132,47 +132,12 @@ class PreviewBillTile extends StatelessWidget {
                               'Item removed successfully...!'));
                     }),
                     PreviewBillRowWidget(
-                      labelText: 'Name',
-                      valueText: poojaDetails.name ?? 'Customer',
-                    ),
-
-                    5.verticalSpace,
-                    poojaDetails.address == null
-                        ? const SizedBox()
-                        : PreviewBillRowWidget(
-                            labelText: 'Address',
-                            valueText: poojaDetails.address ?? '',
-                          ),
-
-                    5.verticalSpace,
-                    PreviewBillRowWidget(
-                      labelText: 'Star',
-                      valueText: poojaDetails.star ?? '',
-                    ),
-                    5.verticalSpace,
-                    // PreviewBillRowWidget(
-                    //   labelText: 'Gothra',
-                    //   valueText: name ?? '',
-                    // ),
-                    // 5.verticalSpace,
-                    // PreviewBillRowWidget(
-                    //   labelText: 'Rashi',
-                    //   valueText: rashiname ?? '',
-                    // ),
-                    // 5.verticalSpace,
-                    PreviewBillRowWidget(
-                      labelText: 'Diety',
+                      labelText: 'Category',
                       valueText: poojaDetails.diety ?? '',
                     ),
                     5.verticalSpace,
-                    // if (poojaDetails.specialStarId != null)
-                    //   PreviewBillRowWidget(
-                    //     labelText: 'Special Star',
-                    //     valueText: poojaDetails.specialStar ?? '',
-                    //   ),
-                    // if (poojaDetails.specialStarId != null) 5.verticalSpace,
                     PreviewBillRowWidget(
-                      labelText: 'Pooja',
+                      labelText: 'Product',
                       valueText: poojaDetails.pooja ?? '',
                     ),
                     5.verticalSpace,
@@ -185,15 +150,6 @@ class PreviewBillTile extends StatelessWidget {
                       labelText: 'Rate',
                       valueText: poojaDetails.rate.toString(),
                     ),
-                    5.verticalSpace,
-                    PreviewBillRowWidget(
-                      labelText: 'Date',
-                      valueText: poojaDetails.fromDate
-                              ?.split('-')
-                              .reversed
-                              .join('-') ??
-                          'N/A',
-                    )
                   ],
                 ),
               );

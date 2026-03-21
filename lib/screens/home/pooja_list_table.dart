@@ -50,7 +50,7 @@ class _PoojaListTableState extends State<PoojaListTable> {
           statusBarBrightness: Brightness.light,
         ),
         title: const Text(
-          "Pooja Summary List",
+          "Product Summary List",
           style: TextStyle(color: Colors.black),
         ),
       ),
@@ -206,12 +206,12 @@ class _PoojaListTableState extends State<PoojaListTable> {
                 columns: const [
                   DataColumn(
                       label: Text(
-                    'Pooja Name',
+                    'Product Name',
                     style: TextStyle(color: Colors.white, fontSize: 12),
                   )),
                   DataColumn(
                       label: Text(
-                    'Pooja Count',
+                    'Product Count',
                     style: TextStyle(color: Colors.white, fontSize: 12),
                   )),
                   DataColumn(

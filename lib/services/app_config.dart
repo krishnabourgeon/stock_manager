@@ -7,6 +7,8 @@ class AppConfig {
   static String? accessToken;
   static String? counterID;
   static int? customerId;
+  static String? storeId;
+  static String? userId;
   static String? customerName;
   static String? customerNumber;
   static String? settings;
