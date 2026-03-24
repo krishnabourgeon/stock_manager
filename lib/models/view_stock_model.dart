@@ -31,19 +31,23 @@ class ViewStockModel {
 class StockList {
     double total;
     int productid;
+    String name;
 
     StockList({
         required this.total,
         required this.productid,
+        required this.name,
     });
 
     factory StockList.fromJson(Map<String, dynamic> json) => StockList(
         total: json["total"]?.toDouble(),
-        productid: json["productid"],
+        productid: json["id"],
+        name: json["name"],
     );
 
     Map<String, dynamic> toJson() => {
         "total": total,
-        "productid": productid,
+        "id": productid,
+        "name": name,
     };
 }

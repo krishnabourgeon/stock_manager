@@ -628,55 +628,317 @@ class _StockScreenState extends State<StockScreen> {
               ),
             ),
           ),
+//           Padding(
+//   padding: const EdgeInsets.symmetric(horizontal: 10),
+//   child: Column(
+//     children: [
+//       ///  DATE FILTER
+//       Row(
+//         children: [
+//           Expanded(
+//             child: InkWell(
+//               onTap: () async {
+//                 final date = await showDatePicker(
+//                   context: context,
+//                   initialDate: DateTime.now(),
+//                   firstDate: DateTime(2020),
+//                   lastDate: DateTime(2100),
+//                 );
+//                 if (date != null) {
+//                   stockProvider.setFromDate(date);
+//                 }
+//               },
+//               child: Container(
+//                 padding: const EdgeInsets.all(12),
+//                 decoration: BoxDecoration(
+//                   border: Border.all(color: Colors.grey),
+//                   borderRadius: BorderRadius.circular(8),
+//                 ),
+//                 child: Text(
+//                   stockProvider.fromDate == null
+//                       ? "From Date"
+//                       : stockProvider.formatDate(stockProvider.fromDate!),
+//                 ),
+//               ),
+//             ),
+//           ),
+//           SizedBox(width: 10.w),
+//           Expanded(
+//             child: InkWell(
+//               onTap: () async {
+//                 final date = await showDatePicker(
+//                   context: context,
+//                   initialDate: DateTime.now(),
+//                   firstDate: DateTime(2020),
+//                   lastDate: DateTime(2100),
+//                 );
+//                 if (date != null) {
+//                   stockProvider.setToDate(date);
+//                 }
+//               },
+//               child: Container(
+//                 padding: const EdgeInsets.all(12),
+//                 decoration: BoxDecoration(
+//                   border: Border.all(color: Colors.grey),
+//                   borderRadius: BorderRadius.circular(8),
+//                 ),
+//                 child: Text(
+//                   stockProvider.toDate == null
+//                       ? "To Date"
+//                       : stockProvider.formatDate(stockProvider.toDate!),
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
 
-          ///  LOADING
-          if (stockProvider.loaderState == LoaderState.loading)
-            const Expanded(
-              child: Center(child: CircularProgressIndicator()),
-            )
+//       SizedBox(height: 10.h),
 
-          ///  STOCK LIST
-          else if (stockProvider.stockList.isNotEmpty)
-            Expanded(
-              child: ListView.builder(
-                itemCount: stockProvider.stockList.length,
-                itemBuilder: (context, index) {
-                  final stock = stockProvider.stockList[index];
+//       /// 🔘 APPLY FILTER
+//       Row(
+//         children: [
+//           Expanded(
+//             child: ElevatedButton(
+//               onPressed: () {
+//                 stockProvider.applyFilters();
+//               },
+//               child: const Text("Apply Filter"),
+//             ),
+//           ),
+//           SizedBox(width: 10.w),
+//           Expanded(
+//             child: ElevatedButton(
+//               onPressed: () {
+//                 stockProvider.clearFilters();
+//               },
+//               child: const Text("Clear"),
+//             ),
+//           ),
+//         ],
+//       ),
+//     ],
+//   ),
+// ),
+//           ///  LOADING
+//           if (stockProvider.loaderState == LoaderState.loading)
+//             const Expanded(
+//               child: Center(child: CircularProgressIndicator()),
+//             )
 
-                  return Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Product: ${stock.productid ?? ''}",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text("Total: ${stock.total ?? ''}"),
-                          // Text("Unit: ${stock.unit ?? ''}"),
-                          // Text("Qty: ${stock.qty ?? ''}"),
-                          // Text("Rate: ${stock.rate ?? ''}"),
+//           ///  STOCK LIST
+//           else if (stockProvider.stockList.isNotEmpty)
+//             Expanded(
+//               child:
+//               //  ListView.builder(
+//               //   itemCount: stockProvider.stockList.length,
+//               //   itemBuilder: (context, index) {
+//               //     final stock = stockProvider.stockList[index];
+
+//               //     return Padding(
+//               //       padding: const EdgeInsets.all(20),
+//               //       child: Container(
+//               //         height: 100,
+//               //         padding: const EdgeInsets.all(15),
+//               //         decoration: BoxDecoration(
+//               //           color: Colors.grey[200],
+//               //           border: Border.all(color: Colors.grey),
+//               //           borderRadius: BorderRadius.circular(8),
+//               //         ),
+//               //         child: Column(
+//               //           crossAxisAlignment: CrossAxisAlignment.start,
+//               //           children: [
+//               //             Text("Product: ${stock.name}",
+//               //                 style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18)),
+//               //             Text("Total: ${stock.total}",style: TextStyle(fontSize: 15)),
+//               //             // Text("Unit: ${stock.unit ?? ''}"),
+//               //             // Text("Qty: ${stock.qty ?? ''}"),
+//               //             // Text("Rate: ${stock.rate ?? ''}"),
 
 
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            )
+//               //           ],
+//               //         ),
+//               //       ),
+//               //     );
+//               //   },
+//               // ),
 
-          ///  EMPTY STATE
-          else
-            const Expanded(
-              child: Center(
-                child: Text("No stocks available"),
+//               DataTable(
+//                   columnSpacing: constraints.maxWidth / 2.7,
+//                   decoration: BoxDecoration(color: ColorPalette.primaryColor),
+//                   border: TableBorder.symmetric(
+//                     outside: BorderSide(color: Colors.grey, width: .5.w),
+//                   ),
+//                   columns: const [
+//                     DataColumn(
+//                         label: Text(
+//                       'Payment Mode',
+//                       style: TextStyle(color: Colors.white),
+//                     )),
+//                     DataColumn(
+//                         label: Text(
+//                       'Total',
+//                       style: TextStyle(color: Colors.white),
+//                     )),
+//                   ],
+//                   rows: List.generate(
+//                       counterWiseSummaryProvider?.tempCounterWiseData.length ??
+//                           0, (index) {
+//                     return DataRow(
+//                         color: index % 2 == 0
+//                             ? MaterialStateProperty.all<Color>(Colors.white)
+//                             : MaterialStateProperty.all<Color>(
+//                                 Colors.grey.shade100),
+//                         cells: [
+//                           DataCell(Text(counterWiseSummaryProvider
+//                                   ?.tempCounterWiseData[index].paymentMode ??
+//                               '')),
+//                           DataCell(Center(
+//                             child: Text(
+//                               counterWiseSummaryProvider
+//                                       ?.tempCounterWiseData[index].totalAmount
+//                                       .toString() ??
+//                                   '0',
+//                             ),
+//                           )),
+//                         ]);
+//                   }),
+//                 ),
+//             )
+
+            Stack(
+  children: [
+    /// 🔹 DATE PICKERS (TOP)
+    Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+      child: Row(
+        children: [
+          /// FROM DATE
+          Expanded(
+            child: InkWell(
+              onTap: () async {
+                final date = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(2100),
+                );
+                if (date != null) {
+                  stockProvider.setFromDate(date);
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  stockProvider.fromDate == null
+                      ? "From Date"
+                      : stockProvider.formatDate(stockProvider.fromDate!),
+                ),
               ),
             ),
+          ),
+
+          SizedBox(width: 10.w),
+
+          /// TO DATE
+          Expanded(
+            child: InkWell(
+              onTap: () async {
+                final date = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(2100),
+                );
+                if (date != null) {
+                  stockProvider.setToDate(date);
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  stockProvider.toDate == null
+                      ? "To Date"
+                      : stockProvider.formatDate(stockProvider.toDate!),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+
+    /// 🔹 TABLE (LIKE YOUR SECOND DESIGN)
+    Padding(
+      padding: EdgeInsets.only(top: 70.h,left:30.w),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: 
+        // DataTable(
+        //   columnSpacing: 100,
+        //   headingRowColor:
+        //       MaterialStateProperty.all(Colors.green),
+        //   columns: const [
+        //     DataColumn(
+        //       label: Text("Product",
+        //           style: TextStyle(color: Colors.white)),
+        //     ),
+        //     DataColumn(
+        //       label: Text("Total",
+        //           style: TextStyle(color: Colors.white)),
+        //     ),
+        //   ],
+        //   rows: stockProvider.stockList.map((stock) {
+        //     return DataRow(cells: [
+        //       DataCell(Text(stock.name ?? '')),
+        //       DataCell(Text(stock.total.toString())),
+        //     ]);
+        //   }).toList(),
+        // ),
+        DataTable(
+        border: TableBorder.all(
+          color: Colors.grey,
+          width: 1,
+        ),
+        columnSpacing: 100,
+        headingRowColor: MaterialStateProperty.all(Colors.green),
+        columns: const [
+          DataColumn(
+            label: Text("Product",
+                style: TextStyle(color: Colors.white)),
+          ),
+          DataColumn(
+            label: Text("Total",
+                style: TextStyle(color: Colors.white)),
+          ),
+        ],
+        rows: stockProvider.stockList.map((stock) {
+          return DataRow(cells: [
+            DataCell(Text(stock.name ?? '')),
+            DataCell(Text(stock.total.toString())),
+          ]);
+        }).toList(),
+      )
+      ),
+    ),
+  ],
+)
+
+          // ///  EMPTY STATE
+          // else
+          //   const Expanded(
+          //     child: Center(
+          //       child: Text("No stocks available"),
+          //     ),
+          //   ),
         ],
       ),
     );

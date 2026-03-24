@@ -198,7 +198,23 @@ class _BillListTableState extends State<BillListTable> {
     return child;
   }
 
+  
+
   _pageView(BillListProvider? billListProvider) {
+      double cashTotal = 0;
+      double qrTotal = 0;
+
+      final billList = billListProvider?.billListResponseModel?.list ?? [];
+
+      for (var item in billList) {
+        final amount = double.tryParse(item.total.toString()) ?? 0;
+
+        if (item.paymentMode == "Cash") {
+          cashTotal += amount;
+        } else if (item.paymentMode == "QR Code") {
+          qrTotal += amount;
+        }
+      }
     return Stack(
       children: [
         Align(
@@ -254,7 +270,7 @@ class _BillListTableState extends State<BillListTable> {
                     )),
                     DataColumn(
                         label: Text(
-                      'Devotee',
+                      'Customer',
                       style: TextStyle(color: Colors.white),
                     )),
                     DataColumn(
@@ -567,41 +583,111 @@ class _BillListTableState extends State<BillListTable> {
         //     ),
         //   ),
         // ),
+        // Align(
+        //   alignment: Alignment.bottomCenter,
+        //   child: Container(
+        //     color: Colors.green,
+        //     width: double.infinity,
+        //     height: 50.h,
+        //     padding: EdgeInsets.symmetric(horizontal: 20.w),
+        //     child: Column(
+        //       mainAxisSize: MainAxisSize.min,
+        //       mainAxisAlignment: MainAxisAlignment.center,
+        //       children: [
+        //         Row(
+        //           crossAxisAlignment: CrossAxisAlignment.center,
+        //           children: [
+        //             Text(
+        //               'Gross Total :',
+        //               style: TextStyle(
+        //                   color: Colors.white,
+        //                   fontWeight: FontWeight.bold,
+        //                   fontSize: 14.sp),
+        //             ),
+        //             10.horizontalSpace,
+        //             Text(
+        //                 billListProvider?.billListResponseModel?.grossTotal
+        //                         .toString() ??
+        //                     '0',
+        //                 style: TextStyle(
+        //                     color: Colors.white,
+        //                     fontWeight: FontWeight.bold,
+        //                     fontSize: 14.sp)),
+        //           ],
+        //         ),
+        //         //SizedBox(height: 5.h),
+        //         Row(
+        //           children: [
+        //             Text('Cash Total : ',
+        //                 style: TextStyle(color: Colors.white)),
+        //             Text(cashTotal.toString(),
+        //                 style: TextStyle(color: Colors.white)),
+        //           ],
+        //         ),
+        //         Row(
+        //           children: [
+        //             Text('QR Code Total : ',
+        //                 style: TextStyle(color: Colors.white)),
+        //             Text(qrTotal.toString(),
+        //                 style: TextStyle(color: Colors.white)),
+        //           ],
+        //         ),
+        //         SizedBox(height: 20.h),
+        //       ],
+        //     ),
+        //   ),
+        // )
         Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            color: Colors.green,
-            width: double.infinity,
-            height: 50.h,
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Gross Total :',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14.sp),
-                    ),
-                    10.horizontalSpace,
-                    Text(
-                        billListProvider?.billListResponseModel?.grossTotal
-                                .toString() ??
-                            '0',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14.sp)),
-                  ],
-                )
-              ],
-            ),
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          color: Colors.green,
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'Gross Total :',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.sp),
+                  ),
+                  10.horizontalSpace,
+                  Text(
+                    billListProvider?.billListResponseModel?.grossTotal.toString() ?? '0',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.sp),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: 5.h),
+
+              Row(
+                children: [
+                  Text('Cash Total : ', style: TextStyle(color: Colors.white)),
+                  Text(cashTotal.toString(), style: TextStyle(color: Colors.white)),
+                ],
+              ),
+
+              Row(
+                children: [
+                  Text('QR Code Total : ', style: TextStyle(color: Colors.white)),
+                  Text(qrTotal.toString(), style: TextStyle(color: Colors.white)),
+                ],
+              ),
+              SizedBox(height: 40.h),
+            ],
           ),
-        )
+        ),
+      )
       ],
     );
   }

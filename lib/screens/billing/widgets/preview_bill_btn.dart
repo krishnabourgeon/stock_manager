@@ -86,6 +86,8 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
     bill = widget.previewBillProvider;
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -158,6 +160,7 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
                       : Colors.greenAccent.withOpacity(.5)
                 ],
               ),
+              SizedBox(height: 40.h,)
             ],
           ),
         ));
@@ -227,11 +230,11 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
                               i < context.read<BillingProvider>().person.length;
                               i++) {
                             poojaString.add(
-                                "\n*${context.read<BillingProvider>().person[i].id?.trim()})*\nPooja Date: *${context.read<BillingProvider>().person[i].date?.trim()}*,\nDeity Name: *${context.read<BillingProvider>().person[i].dietyName?.trim()}*\nPooja: *${context.read<BillingProvider>().person[i].poojaName?.trim()}* - *${context.read<BillingProvider>().person[i].rate}*\nName: *${context.read<BillingProvider>().person[i].name?.trim()}*\nStar Name: *${context.read<BillingProvider>().person[i].star?.trim()}*");
+                                "\n*${context.read<BillingProvider>().person[i].id?.trim()})*\Bill Date: *${context.read<BillingProvider>().person[i].date?.trim()}*,\nCategory Name: *${context.read<BillingProvider>().person[i].dietyName?.trim()}*\nProduct: *${context.read<BillingProvider>().person[i].poojaName?.trim()}* - *${context.read<BillingProvider>().person[i].rate}*");
                           }
 
                           String text =
-                              'Date: *${context.read<BillingProvider>().summary?.billDate?.trim()}*\n\nBill No: *${context.read<BillingProvider>().summary?.id}*\n\nTemple Name: *${context.read<BillingProvider>().temple?.name?.trim()}*\n\nTemple Email: *${context.read<BillingProvider>().temple?.email?.trim()}*\n\nCounter: *${context.read<BillingProvider>().summary?.counter?.trim()}*\n\nPooja Details:\n${poojaString.toString().substring(1, poojaString.toString().length - 1)}\n\nPayment Mode: *${context.read<BillingProvider>().summary?.mode}*\n\nTotal Amount: *${context.read<BillingProvider>().totalRateController.text.toString().trim()}*\n\nAmount Paid: *${context.read<BillingProvider>().paidAmountController.text.trim()}*\n\nBook Online: *${context.read<BillingProvider>().temple?.website}*';
+                              'Date: *${context.read<BillingProvider>().summary?.billDate?.trim()}*\n\nBill No: *${context.read<BillingProvider>().summary?.id}*\n\n Name: *${context.read<BillingProvider>().temple?.name?.trim()}*\n\n Email: *${context.read<BillingProvider>().temple?.email?.trim()}*\n\nBranch: *${context.read<BillingProvider>().summary?.counter?.trim()}*\n\nProduct Details:\n${poojaString.toString().substring(1, poojaString.toString().length - 1)}\n\nPayment Mode: *${context.read<BillingProvider>().summary?.mode}*\n\nTotal Amount: *${context.read<BillingProvider>().summary?.total?.trim()}*\n\nAmount Paid: *${context.read<BillingProvider>().summary?.recvAmt?.trim()}*\n\nBook Online: *${context.read<BillingProvider>().temple?.website}*';
 
                           context
                               .read<BillingProvider>()

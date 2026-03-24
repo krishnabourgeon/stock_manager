@@ -413,7 +413,6 @@ Future<Result> getProductStock({
               'Mobile number already exists. Please try another one.');
     }
   }
-
   Future<Result> getPreviewBill(SaveBillBody previewBillBody) async {
     Result res =
         await BaseClient.post('preview-bill', body: previewBillBody.toJson());
@@ -431,6 +430,7 @@ Future<Result> getProductStock({
           : Result.error(previewBillResponse);
     }
   }
+
 
   Future<Result> getversion() async {
     Result res = await BaseClient.get(

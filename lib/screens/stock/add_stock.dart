@@ -699,58 +699,53 @@ double getCombinedTotal() {
                       10.verticalSpace,
                       Row(
                         children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.remove),
-                                  onPressed: () {
-                                    if (qty > 0) {
-                                      setState(() {
-                                        qty--;
-                                        qtyController.text = qty.toString();
-                                      });
-                                    }
-                                  },
-                                ),
-                                SizedBox(width: 10,),
-                                SizedBox(
-                                  width: 50,
-                                  child: TextFormField(
-                                    controller: qtyController,
-                                    readOnly: true,
-                                    textAlign: TextAlign.center,
-                                    decoration: const InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: "Qty",
-                                    ),
-                                    
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return "Please enter qty";
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                                SizedBox(width: 10,),
-                                IconButton(
-                                  icon: const Icon(Icons.add),
-                                  onPressed: () {
-                                    setState(() {
-                                      qty++;
-                                      qtyController.text = qty.toString();
-                                    });
-                                  },
-                                  ),
-                              ],
-                            ),
+                      Container(
+                        width: 100,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: TextFormField(
+                          controller: qtyController,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            hintText: "Qty",
+                            contentPadding: EdgeInsets.symmetric(vertical: 10),
                           ),
+
+                          /// 🔹 Validation
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Enter qty";
+                            }
+
+                            if (int.tryParse(value) == null) {
+                              return "Invalid number";
+                            }
+
+                            if (int.parse(value) <= 0) {
+                              return "Qty must be > 0";
+                            }
+
+                            return null;
+                          },
+
+                          /// 🔹 Optional: auto update provider / state
+                          onChanged: (value) {
+                            if (value.isNotEmpty) {
+                              int qty = int.tryParse(value) ?? 0;
+
+                              // 👉 If using BillingProvider
+                              // context.read<BillingProvider>().qtyController.text = value;
+
+                              // 👉 If you need to update rate dynamically
+                              // context.read<BillingProvider>().updateRateWithProduct();
+                            }
+                          },
+                        ),
+                      ),
                           SizedBox(width: 10,),
                           Expanded(
                             child: TextFormField(

@@ -34,6 +34,16 @@ List<Cat> allCategoryList = [];
 List<StockList> stockList = [];
 List<StockList> allStockList = [];
 
+String? selectedProductFilter;
+DateTime? fromDate;
+DateTime? toDate;
+List filterstockList = [];
+List allfilterStockList = [];
+
+
+
+List<String> productNames = [];
+
 
 Future<void> getProducts() async {
     final network = await CommonFunctions.checkInternetConnection();
@@ -57,6 +67,55 @@ Future<void> getProducts() async {
     }
   } 
 
+  void setProductFilter(String? value) {
+  selectedProductFilter = value;
+  notifyListeners();
+}
+
+void setFromDate(DateTime date) {
+  fromDate = date;
+  notifyListeners();
+}
+
+void setToDate(DateTime date) {
+  toDate = date;
+  notifyListeners();
+}
+
+String formatDate(DateTime date) {
+  return "${date.day}-${date.month}-${date.year}";
+}
+
+void applyFilters() {
+  List tempList = allfilterStockList;
+
+  /// 🔍 PRODUCT FILTER
+  if (selectedProductFilter != null) {
+    tempList = tempList
+        .where((e) => e.name == selectedProductFilter)
+        .toList();
+  }
+
+  /// 📅 DATE FILTER
+  if (fromDate != null && toDate != null) {
+    tempList = tempList.where((e) {
+      final stockDate = DateTime.parse(e.date); // ensure API gives date
+      return stockDate.isAfter(fromDate!.subtract(const Duration(days: 1))) &&
+          stockDate.isBefore(toDate!.add(const Duration(days: 1)));
+    }).toList();
+  }
+
+  filterstockList = tempList;
+  notifyListeners();
+}
+
+void clearFilters() {
+  selectedProductFilter = null;
+  fromDate = null;
+  toDate = null;
+  stockList = allStockList;
+  notifyListeners();
+}
 
   Future<void> getSuppliers() async {
     final network = await CommonFunctions.checkInternetConnection();

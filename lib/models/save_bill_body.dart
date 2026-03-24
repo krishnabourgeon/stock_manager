@@ -2,6 +2,7 @@ class SaveBillBody {
   int? customerId;
   int? counterId;
   int? paymentMode;
+   String? storeId;
   double? billAmount;
   double? paidAmount;
   String? transactionid;
@@ -10,6 +11,7 @@ class SaveBillBody {
       {this.customerId,
       this.transactionid,
       this.counterId,
+      this.storeId,
       this.paymentMode,
       this.billAmount,
       this.paidAmount,
@@ -17,6 +19,7 @@ class SaveBillBody {
   SaveBillBody.fromJson(Map<String, dynamic> json) {
     customerId = json['customer_id'];
     counterId = json['counter_id'];
+    storeId = json['store_id'];
     paymentMode = json['payment_mode'];
     billAmount = json['bill_amount'];
     paidAmount = json['paid_amount'];
@@ -32,6 +35,7 @@ class SaveBillBody {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['customer_id'] = customerId;
     data['counter_id'] = counterId;
+    data['store_id'] = storeId;
     data['payment_mode'] = paymentMode;
     data['bill_amount'] = billAmount;
     data['paid_amount'] = paidAmount;

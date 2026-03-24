@@ -82,7 +82,7 @@ class _BillTileState extends State<BillTile> {
                         valueText: widget.billListData[index].counter ??
                             '0'.toString()),
                     PreviewBillRowWidget(
-                        labelText: 'Devotee',
+                        labelText: 'Customer',
                         valueText: widget.billListData[index].devotee ?? ''),
                     PreviewBillRowWidget(
                         labelText: 'Total',

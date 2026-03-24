@@ -50,7 +50,7 @@ class _PoojaSummaryScreenState extends State<PoojaSummaryScreen> {
           statusBarBrightness: Brightness.light,
         ),
         title: const Text(
-          "Pooja Summary",
+          "Product Summary",
           style: TextStyle(color: Colors.black),
         ),
       ),
@@ -136,7 +136,7 @@ class _PoojaSummaryScreenState extends State<PoojaSummaryScreen> {
               ),
             ),
             40.verticalSpace,
-            const Text('No Pooja Summary Found !'),
+            const Text('No Product Summary Found !'),
           ],
         );
         break;

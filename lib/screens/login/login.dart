@@ -43,7 +43,7 @@ class _LoginState extends State<Login> {
                   child: SizedBox(
                     width: double.maxFinite,
                     child: Image.asset(
-                      "assets/image/login_image.png",
+                      "assets/image/converted_image.png",
                       fit: BoxFit.cover,
                     ),
                   ),

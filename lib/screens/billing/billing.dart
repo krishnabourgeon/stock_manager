@@ -13,9 +13,7 @@ import 'package:stock_manager/screens/billing/widgets/normal_billing_widget.dart
 import 'package:stock_manager/screens/billing/widgets/other_schedule_widget.dart';
 import 'package:stock_manager/screens/billing/widgets/weekly_schedule_widget.dart';
 import 'package:stock_manager/services/provider_helper_class.dart';
-import 'package:stock_manager/widgets/punnyam_switch.dart';
 import 'package:stock_manager/widgets/stack_loader.dart';
-import '../../common/custom_drop_down_search.dart';
 
 class Billing extends StatefulWidget {
   const Billing({super.key});
@@ -150,16 +148,25 @@ class _BillingState extends State<Billing> {
                                 : Colors.greenAccent.withOpacity(.5)
                             : Colors.greenAccent
                       ],
-                      onPressed: billingProvider.poojaDetailsList.isEmpty
-                          ? billingProvider.isBillingFormValidated
-                              ? () {
-                                  BillingProvider.address = false;
-                                  billingProvider
-                                      .saveAndPreviewFunction(context);
-                                }
-                              : null
-                          : () =>
-                              billingProvider.navigateToPreviewBill(context)),
+                      // onPressed: billingProvider.poojaDetailsList.isEmpty
+                      //     ? billingProvider.isBillingFormValidated
+                      //         ? () {
+                      //             BillingProvider.address = false;
+                      //             billingProvider
+                      //                 .saveAndPreviewFunction(context);
+                      //           }
+                      //         : null
+                      onPressed: billingProvider.isBillingFormValidated
+                          ? () {
+                              billingProvider.saveAndPreviewFunction(context);
+                            }
+                          : (billingProvider.poojaDetailsList.isNotEmpty
+                              ? () =>
+                                  billingProvider.navigateToPreviewBill(context)
+                              : null)
+                          // : () =>
+                          //     billingProvider.navigateToPreviewBill(context)
+                          ),
                   30.verticalSpace,
                   Padding(
                       padding: EdgeInsets.only(

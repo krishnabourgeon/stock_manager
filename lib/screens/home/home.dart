@@ -34,8 +34,8 @@ class _HomeState extends State<Home> {
   List<String> titleCards = [
     "Billing",
     "Bill List",
-    'Pooja Summary',
-    'Counter Wise Summary',
+    'Product Summary',
+    //'Counter Wise Summary',
     "Stock"
   ];
   // BlueThermalPrinter printer = BlueThermalPrinter.instance;
@@ -305,7 +305,7 @@ class _HomeState extends State<Home> {
                         Stack(
                           children: [
                             Image.asset(
-                              'assets/image/Dashboardgreen.jpeg',
+                              'assets/image/converted_image.png',
                               width: double.maxFinite,
                               fit: BoxFit.contain,
                             ),
@@ -338,7 +338,7 @@ class _HomeState extends State<Home> {
                                         color: Colors.white, fontSize: 21.sp),
                                   ),
                                   Text(
-                                    'Online Pooja Booking',
+                                    'Online Product Booking',
                                     style: TextStyle(
                                         color: Colors.white, fontSize: 14.sp),
                                   ),
