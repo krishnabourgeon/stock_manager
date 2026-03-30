@@ -1,15 +1,21 @@
 class SaveStockBody {
   int supplierId;
-  String date;
+  String? purchaseDate;   
   int totalAmt;
   int totalTax;
   String? storeId;
   String? customerId;
   List<StockItem> items;
+  String? invoiceNo;
+  // String? fromDate;
+  // String? toDate;
 
   SaveStockBody({
     required this.supplierId,
-    required this.date,
+     this.purchaseDate,
+    required this.invoiceNo,
+    // required this.toDate,
+    // required this.fromDate,
     required this.totalAmt,
     required this.totalTax,
     required this.storeId,
@@ -19,7 +25,10 @@ class SaveStockBody {
 
   Map<String, dynamic> toJson() => {
         "supplier_id": supplierId,
-        "date": date,
+        "date": purchaseDate,
+        // "from_date":fromDate,
+        // "to_date":toDate,
+        "invoice_no":invoiceNo,
         "total_amt": totalAmt,
         "total_tax": totalTax,
         "storeid": storeId,  

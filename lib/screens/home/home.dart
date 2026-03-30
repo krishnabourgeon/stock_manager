@@ -305,7 +305,7 @@ class _HomeState extends State<Home> {
                         Stack(
                           children: [
                             Image.asset(
-                              'assets/image/converted_image.png',
+                              'assets/image/converted_image.jpeg',
                               width: double.maxFinite,
                               fit: BoxFit.contain,
                             ),

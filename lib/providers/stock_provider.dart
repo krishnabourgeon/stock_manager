@@ -39,11 +39,18 @@ DateTime? fromDate;
 DateTime? toDate;
 List filterstockList = [];
 List allfilterStockList = [];
+int? selectedSupplierFilter;
 
 
 
 List<String> productNames = [];
 
+
+void setSupplierFilter(int? value) {
+  selectedSupplierFilter = value;
+  applyFilters(); // auto apply
+  notifyListeners();
+}
 
 Future<void> getProducts() async {
     final network = await CommonFunctions.checkInternetConnection();
@@ -86,34 +93,58 @@ String formatDate(DateTime date) {
   return "${date.day}-${date.month}-${date.year}";
 }
 
-void applyFilters() {
-  List tempList = allfilterStockList;
+// void applyFilters() {
+//   List tempList = allfilterStockList;
 
-  /// 🔍 PRODUCT FILTER
-  if (selectedProductFilter != null) {
+//   /// 🔍 PRODUCT FILTER
+//   if (selectedProductFilter != null) {
+//     tempList = tempList
+//         .where((e) => e.name == selectedProductFilter)
+//         .toList();
+//   }
+
+//   /// 📅 DATE FILTER
+//   if (fromDate != null && toDate != null) {
+//     tempList = tempList.where((e) {
+//       final stockDate = DateTime.parse(e.date); // ensure API gives date
+//       return stockDate.isAfter(fromDate!.subtract(const Duration(days: 1))) &&
+//           stockDate.isBefore(toDate!.add(const Duration(days: 1)));
+//     }).toList();
+//   }
+
+//   filterstockList = tempList;
+//   notifyListeners();
+// }
+
+// void clearFilters() {
+//   selectedProductFilter = null;
+//   fromDate = null;
+//   toDate = null;
+//   stockList = allStockList;
+//   notifyListeners();
+// }
+
+
+void applyFilters() {
+ List<StockList> tempList = List.from(allStockList);
+
+  /// 🔍 SUPPLIER FILTER
+  if (selectedSupplierFilter != null) {
     tempList = tempList
-        .where((e) => e.name == selectedProductFilter)
+        .where((e) => e.name == selectedSupplierFilter)
         .toList();
   }
 
   /// 📅 DATE FILTER
-  if (fromDate != null && toDate != null) {
-    tempList = tempList.where((e) {
-      final stockDate = DateTime.parse(e.date); // ensure API gives date
-      return stockDate.isAfter(fromDate!.subtract(const Duration(days: 1))) &&
-          stockDate.isBefore(toDate!.add(const Duration(days: 1)));
-    }).toList();
-  }
+  // if (fromDate != null && toDate != null) {
+  //   tempList = tempList.where((e) {
+  //     //final stockDate = DateTime.parse(e.date);
+  //     return stockDate.isAfter(fromDate!.subtract(const Duration(days: 1))) &&
+  //         stockDate.isBefore(toDate!.add(const Duration(days: 1)));
+  //   }).toList();
+  // }
 
-  filterstockList = tempList;
-  notifyListeners();
-}
-
-void clearFilters() {
-  selectedProductFilter = null;
-  fromDate = null;
-  toDate = null;
-  stockList = allStockList;
+  stockList = tempList;
   notifyListeners();
 }
 
@@ -140,23 +171,58 @@ void clearFilters() {
   } 
 
 
-  Future<void> getStockList() async {
+//   Future<void> getStockList() async {
+//   final network = await CommonFunctions.checkInternetConnection();
+
+//   if (network) {
+//     updateLoadState(LoaderState.loading);
+
+//     try {
+//       var res = await serviceConfig.getStockList();
+
+//       if (res.isValue) {
+//         viewStockModel = res.asValue!.value;
+
+//         if (viewStockModel != null) {
+//           updateStockList(viewStockModel);
+//         }
+//       }
+
+//       updateLoadState(LoaderState.loaded);
+//     } catch (e) {
+//       debugPrint('exception in stock list: $e');
+//       updateLoadState(LoaderState.loaded);
+//     }
+//   }
+// }
+
+
+
+
+Future<void> getStockList({
+  String? fromDate,
+  String? toDate,
+  int? supplierId,
+}) async {
   final network = await CommonFunctions.checkInternetConnection();
 
   if (network) {
     updateLoadState(LoaderState.loading);
 
     try {
-      var res = await serviceConfig.getStockList();
+      var res = await serviceConfig.getStockList(
+        fromDate: fromDate,
+        toDate: toDate,
+        supplierId: supplierId,
+      );
 
       if (res.isValue) {
         viewStockModel = res.asValue!.value;
 
         if (viewStockModel != null) {
-          updateStockList(viewStockModel);
+          stockList = viewStockModel!.data ?? [];
         }
       }
-
       updateLoadState(LoaderState.loaded);
     } catch (e) {
       debugPrint('exception in stock list: $e');
@@ -214,6 +280,10 @@ void clearFilters() {
 
   Future<void> saveStock({
   required List<Map<String, dynamic>> addedStocks,
+  required String invoiceNo,
+  required DateTime date,
+  // required DateTime fromDate,
+  // required DateTime toDate,
   Function? onSuccess,
   Function? onFailure,
   bool enableLoaderState = false,
@@ -249,14 +319,26 @@ void clearFilters() {
 
       SaveStockBody body = SaveStockBody(
         supplierId: addedStocks.first['supplier'],
-        date: DateTime.now().toString().split(' ')[0],
+        purchaseDate: date.toString().split(' ')[0],
         totalAmt: totalAmt,
         totalTax: totalTax,
         items: items,
+        invoiceNo: invoiceNo,
+        // fromDate: fromDate.toString().split(' ')[0],
+        // toDate: toDate.toString().split(' ')[0],
         storeId: AppConfig.storeId,
+        
       );
 
       print("REQUEST BODY: ${body.toJson()}"); //  debug
+      print("=========== STOCK SAVE DEBUG ===========");
+      print("Invoice No: $invoiceNo");
+      print("Purchase Date: ${date.toString().split(' ')[0]}");
+      print("Supplier ID: ${addedStocks.first['supplier']}");
+      print("Total Amount: $totalAmt");
+      print("Items: ${items.map((e) => e.toJson()).toList()}");
+      print("Final JSON: ${body.toJson()}");
+      print("========================================");
 
       var res = await serviceConfig.saveStock(body);
 

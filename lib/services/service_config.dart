@@ -162,32 +162,83 @@ class ServiceConfig {
     }
   }
 
-Future<Result> getStockList() async {
-  //  LOAD storeId first
+// Future<Result> getStockList() async {
+//   //  LOAD storeId first
+//   String storeId = await SharedPreferenceHelper.getStoreID();
+
+//   //  DEBUG — check what is actually being sent
+//   debugPrint('getStockList => storeId: "$storeId"');
+
+//   // API expects GET with JSON body: { "store_id": 1 }
+//   Result res = await BaseClient.getWithBody(
+//     'viewstock',
+//     body: {'store_id': int.tryParse(storeId) ?? 0},
+//   );
+
+//   if (res.isError) {
+//     ErrorResponseModel errorResponseModel =
+//         ErrorResponseModel(errorMessage: 'Oops...!, Something went wrong');
+//     return Result.error(errorResponseModel);
+//   } else {
+//     var response = res.asValue!.value;
+//     debugPrint('stock list response $response');
+
+//     ViewStockModel viewStockModel = ViewStockModel.fromJson(response);
+
+//     return (viewStockModel.status)
+//         ? Result.value(viewStockModel)
+//         : Result.error(viewStockModel);
+//   }
+// }
+
+
+Future<Result> getStockList({
+  String? fromDate,
+  String? toDate,
+  int? supplierId,
+}) async {
   String storeId = await SharedPreferenceHelper.getStoreID();
 
-  //  DEBUG — check what is actually being sent
   debugPrint('getStockList => storeId: "$storeId"');
 
-  // API expects GET with JSON body: { "store_id": 1 }
+  /// 🔹 BUILD BODY DYNAMICALLY
+  Map<String, dynamic> body = {
+    'store_id': int.tryParse(storeId) ?? 0,
+  };
+
+  if (fromDate != null) {
+    body['from_date'] = fromDate;
+  }
+
+  if (toDate != null) {
+    body['to_date'] = toDate;
+  }
+
+  if (supplierId != null) {
+    body['supplier_id'] = supplierId;
+  }
+
+  debugPrint('REQUEST BODY: $body');
+  print("view stock : ${body}");
+
   Result res = await BaseClient.getWithBody(
     'viewstock',
-    body: {'store_id': int.tryParse(storeId) ?? 0},
+    body: body,
   );
 
   if (res.isError) {
-    ErrorResponseModel errorResponseModel =
-        ErrorResponseModel(errorMessage: 'Oops...!, Something went wrong');
-    return Result.error(errorResponseModel);
+    return Result.error(
+      ErrorResponseModel(errorMessage: 'Oops...!, Something went wrong'),
+    );
   } else {
     var response = res.asValue!.value;
     debugPrint('stock list response $response');
 
-    ViewStockModel viewStockModel = ViewStockModel.fromJson(response);
+    ViewStockModel model = ViewStockModel.fromJson(response);
 
-    return (viewStockModel.status)
-        ? Result.value(viewStockModel)
-        : Result.error(viewStockModel);
+    return (model.status)
+        ? Result.value(model)
+        : Result.error(model);
   }
 }
 

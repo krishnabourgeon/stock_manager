@@ -28,6 +28,10 @@ class _AddStockState extends State<AddStock> {
   final formKey = GlobalKey<FormState>();
   bool isSupplierLocked = false;
   String? selectedUnitName;
+  TextEditingController invoiceController = TextEditingController();
+  DateTime? fromDate;
+  DateTime? toDate;
+  DateTime? selectedDate;
   
 
   List<Map<String, dynamic>> addedStocks = [];
@@ -120,6 +124,41 @@ class _AddStockState extends State<AddStock> {
 //     );
 //   }
 // }
+
+// Future<void> selectDate(BuildContext context, bool isFromDate) async {
+//   DateTime? picked = await showDatePicker(
+//     context: context,
+//     initialDate: DateTime.now(),
+//     firstDate: DateTime(2000),
+//     lastDate: DateTime(2100),
+//   );
+
+//   if (picked != null) {
+//     setState(() {
+//       if (isFromDate) {
+//         fromDate = picked;
+//       } else {
+//         toDate = picked;
+//       }
+//     });
+//   }
+// }
+
+
+Future<void> pickDate() async {
+  DateTime? picked = await showDatePicker(
+    context: context,
+    initialDate: selectedDate ?? DateTime.now(),
+    firstDate: DateTime(2000),
+    lastDate: DateTime(2100),
+  );
+
+  if (picked != null) {
+    setState(() {
+      selectedDate = picked;
+    });
+  }
+}
 
 
 
@@ -337,6 +376,20 @@ void _saveAll() async {
     return;
   }
 
+  if (invoiceController.text.isEmpty) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('Enter invoice number')),
+  );
+  return;
+}
+
+if (selectedDate == null) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('Please select date')),
+  );
+  return;
+}
+
   //   LOAD STORE ID (VERY IMPORTANT FIX)
   await SharedPreferenceHelper.getStoreID();
 
@@ -367,6 +420,10 @@ void _saveAll() async {
   //  CALL API
   context.read<StockProvider>().saveStock(
     addedStocks: addedStocks,
+    invoiceNo: invoiceController.text,
+    // fromDate: fromDate!,
+    // toDate: toDate!,
+    date: selectedDate!, 
     onSuccess: () {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Stock saved successfully')),
@@ -541,6 +598,52 @@ double getCombinedTotal() {
                         },
                       ),
                       10.verticalSpace,
+                      10.verticalSpace,
+
+/// 🔹 INVOICE + DATE (SAME ROW)
+Row(
+  children: [
+    /// 📄 Invoice Number
+    Expanded(
+      child: TextFormField(
+        controller: invoiceController,
+        decoration: const InputDecoration(
+          labelText: "Invoice No",
+          border: OutlineInputBorder(),
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "Enter invoice";
+          }
+          return null;
+        },
+      ),
+    ),
+
+    SizedBox(width: 10.w),
+
+    /// 📅 Date Picker
+    Expanded(
+      child: InkWell(
+        onTap: pickDate,
+        child: InputDecorator(
+          decoration: const InputDecoration(
+            labelText: "Date",
+            border: OutlineInputBorder(),
+            suffixIcon: Icon(Icons.calendar_today),
+          ),
+          child: Text(
+            selectedDate == null
+                ? "Select"
+                : "${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year}",
+          ),
+        ),
+      ),
+    ),
+  ],
+),
+
+10.verticalSpace,
                       Consumer<StockProvider>(
                         builder: (context, stockProvider, child) {
                           return DropdownButtonFormField<int>(
@@ -697,6 +800,78 @@ double getCombinedTotal() {
                         },
                       ),
                       10.verticalSpace,
+                      /// 🔹 Invoice Number
+                      // TextFormField(
+                      //   controller: invoiceController,
+                      //   decoration: const InputDecoration(
+                      //     labelText: "Invoice Number",
+                      //     border: OutlineInputBorder(),
+                      //   ),
+                      //   validator: (value) {
+                      //     if (value == null || value.isEmpty) {
+                      //       return "Enter invoice number";
+                      //     }
+                      //     return null;
+                      //   },
+                      // ),
+                      // 10.verticalSpace,
+                      //SizedBox(height: 10),
+                      // InkWell(
+                      //   onTap: pickDate,
+                      //   child: InputDecorator(
+                      //     decoration: const InputDecoration(
+                      //       labelText: "Invoice Date",
+                      //       border: OutlineInputBorder(),
+                      //       suffixIcon: Icon(Icons.calendar_today), // nice UI
+                      //     ),
+                      //     child: Text(
+                      //       selectedDate == null
+                      //           ? "Select Date"
+                      //           : "${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year}",
+                      //     ),
+                      //   ),
+                      // ),
+
+                      /// 🔹 From & To Date
+                      // Row(
+                      //   children: [
+                      //     Expanded(
+                      //       child: InkWell(
+                      //         onTap: () => selectDate(context, true),
+                      //         child: InputDecorator(
+                      //           decoration: const InputDecoration(
+                      //             labelText: "From Date",
+                      //             border: OutlineInputBorder(),
+                      //           ),
+                      //           child: Text(
+                      //             fromDate == null
+                      //                 ? "Select date"
+                      //                 : "${fromDate!.day}/${fromDate!.month}/${fromDate!.year}",
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     ),
+                      //      10.verticalSpace,
+                      //     Expanded(
+                      //       child: InkWell(
+                      //         onTap: () => selectDate(context, false),
+                      //         child: InputDecorator(
+                      //           decoration: const InputDecoration(
+                      //             labelText: "To Date",
+                      //             border: OutlineInputBorder(),
+                      //           ),
+                      //           child: Text(
+                      //             toDate == null
+                      //                 ? "Select date"
+                      //                 : "${toDate!.day}/${toDate!.month}/${toDate!.year}",
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
+
+                      10.verticalSpace,
                       Row(
                         children: [
                       Container(
@@ -746,7 +921,7 @@ double getCombinedTotal() {
                           },
                         ),
                       ),
-                          SizedBox(width: 10,),
+                       10.verticalSpace,
                           Expanded(
                             child: TextFormField(
                               controller: rateController,

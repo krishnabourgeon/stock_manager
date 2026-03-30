@@ -5,7 +5,6 @@ import 'package:stock_manager/models/counters_model.dart';
 import 'package:stock_manager/models/quickbill_datamodel.dart';
 import 'package:stock_manager/screens/customer_creation/customer_selection_screen.dart';
 import 'package:stock_manager/screens/home/bill_list_table.dart';
-import 'package:stock_manager/screens/home/counter_summary_table.dart';
 import 'package:stock_manager/screens/home/pooja_list_table.dart';
 import 'package:stock_manager/screens/stock/stock_screen.dart';
 import 'package:stock_manager/services/provider_helper_class.dart';
@@ -177,16 +176,16 @@ class HomeProvider extends ChangeNotifier with ProviderHelperClass {
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const CounterSummaryTable(),
-            ));
-        break;
-        case 4:
-        Navigator.push(
-            context,
-            MaterialPageRoute(
               builder: (context) => const StockScreen(),
             ));
         break;
+        // case 4:
+        // Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => const StockScreen(),
+        //     ));
+        // break;
     }
   }
 

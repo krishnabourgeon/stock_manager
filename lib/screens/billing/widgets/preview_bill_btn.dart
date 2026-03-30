@@ -1,9 +1,22 @@
 // import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:flutter/material.dart';
+
+import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+
+import 'package:pdf/pdf.dart';
+// import 'package:flutter/material.dart' as pw;
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_sunmi_printer_plus/column_maker.dart';
 import 'package:flutter_sunmi_printer_plus/flutter_sunmi_printer_plus.dart';
+// import 'package:pdf/widgets.dart';
+// import 'package:pdf/widgets.dart' as pw; 
+// // import 'package:pdf/widgets.dart' as pw;
+// import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 import 'package:stock_manager/providers/billing_provider.dart';
 import 'package:stock_manager/screens/customer_creation/customer_selection_screen.dart';
@@ -44,6 +57,158 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
     super.initState();
   }
 
+//   Future<void> generatePdf() async {
+//   final pdf = pw.Document();
+
+//   final provider = widget.previewBillProvider;
+
+//   List<String> poojaString = [];
+//   for (int i = 0; i < provider.person.length; i++) {
+//     poojaString.add(
+//         "${provider.person[i].id}) ${provider.person[i].date}\n"
+//         "Category: ${provider.person[i].dietyName}\n"
+//         "Product: ${provider.person[i].poojaName} - ${provider.person[i].rate}\n");
+//   }
+
+//   pdf.addPage(
+//     pw.Page(
+//       build: (pw.Context context) {
+//         return pw.Padding(
+//           padding: const pw.EdgeInsets.all(16),
+//           child: pw.Column(
+//             crossAxisAlignment: pw.CrossAxisAlignment.start,
+//             children: [
+//               pw.Text("Bill Receipt",
+//                   style: pw.TextStyle(
+//                       fontSize: 20, fontWeight: pw.FontWeight.bold)),
+
+//               pw.SizedBox(height: 10),
+
+//               pw.Text("Date: ${provider.summary?.billDate ?? ''}"),
+//               pw.Text("Bill No: ${provider.summary?.id ?? ''}"),
+//               pw.Text("Name: ${provider.temple?.name ?? ''}"),
+//               pw.Text("Email: ${provider.temple?.email ?? ''}"),
+//               pw.Text("Branch: ${provider.summary?.counter ?? ''}"),
+
+//               pw.SizedBox(height: 10),
+
+//               pw.Text("Product Details:",
+//                   style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+
+//               pw.SizedBox(height: 5),
+
+//               pw.Column(
+//                 crossAxisAlignment: pw.CrossAxisAlignment.start,
+//                 children: poojaString
+//                     .map((e) => pw.Text(e))
+//                     .toList(),
+//               ),
+
+//               pw.SizedBox(height: 10),
+
+//               pw.Text("Payment Mode: ${provider.summary?.mode ?? ''}"),
+//               pw.Text("Total Amount: ${provider.summary?.total ?? ''}"),
+//               pw.Text("Amount Paid: ${provider.summary?.recvAmt ?? ''}"),
+
+//               pw.SizedBox(height: 10),
+
+//               pw.Text("Book Online: ${provider.temple?.website ?? ''}"),
+//             ],
+//           ),
+//         );
+//       },
+//     ),
+//   );
+
+//   await Printing.layoutPdf(
+//     onLayout: (format) async => pdf.save(),
+//   );
+// }
+
+
+Future<void> downloadPreviewBillPdf() async {
+  final pdf = pw.Document();
+
+  final provider = widget.previewBillProvider;
+
+  /// ✅ Extract data BEFORE pdf build
+  final summary = provider.summary;
+  final temple = provider.temple;
+  final persons = provider.person;
+
+  /// ✅ Create pooja list string
+  List<String> poojaString = [];
+
+  for (int i = 0; i < persons.length; i++) {
+    poojaString.add(
+      "${persons[i].id}) ${persons[i].date}\n"
+      "Category: ${persons[i].dietyName}\n"
+      "Product: ${persons[i].poojaName} - ${persons[i].rate}\n",
+    );
+  }
+
+  pdf.addPage(
+    pw.Page(
+      pageFormat: PdfPageFormat.a4,
+      build: (pw.Context context) {
+        return pw.Padding(
+          padding: const pw.EdgeInsets.all(16),
+          child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+
+              /// 🔷 TITLE
+              pw.Center(
+                child: pw.Text(
+                  "TEMPLE RECEIPT",
+                  style: pw.TextStyle(
+                    fontSize: 20,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+              ),
+
+              pw.SizedBox(height: 20),
+
+              /// 🔷 DETAILS
+              pw.Text("Date: ${summary?.billDate ?? ''}"),
+              pw.Text("Bill No: ${summary?.id ?? ''}"),
+              pw.Text("Customer: ${temple?.name ?? ''}"),
+              pw.Text("Branch: ${summary?.counter ?? ''}"),
+              pw.Text("Email: ${temple?.email ?? ''}"),
+
+              pw.SizedBox(height: 10),
+
+              /// 🔷 PRODUCT DETAILS
+              pw.Text(
+                "Product Details:\n${poojaString.join("\n")}",
+              ),
+
+              pw.SizedBox(height: 10),
+
+              /// 🔷 PAYMENT
+              pw.Text("Payment Mode: ${summary?.mode ?? ''}"),
+              pw.Text("Total Amount: ${summary?.total ?? ''}"),
+              pw.Text("Amount Paid: ${summary?.recvAmt ?? ''}"),
+
+              pw.SizedBox(height: 10),
+
+              pw.Text("Book Online: ${temple?.website ?? ''}"),
+            ],
+          ),
+        );
+      },
+    ),
+  );
+
+  /// ✅ DOWNLOAD / PREVIEW
+  await Printing.layoutPdf(
+    onLayout: (format) async => pdf.save(),
+  );
+}
+
+
+
   BillingProvider? bill;
   routeTo(BuildContext buildContext) {
     Navigator.pushAndRemoveUntil(
@@ -60,6 +225,7 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
   Future<void> initAll() async {
     Future.microtask(() {
       final provider = widget.previewBillProvider;
+      person.clear();
       widget.previewBillProvider.updatetransid(widget.trans.text);
       details = provider.saveBillResponse?.details ?? [];
       temple = provider.saveBillResponse?.temple;
@@ -136,7 +302,8 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
                                     posPrinter(bill!);
                                   }).then((value) {
                                     routeTo(widget.buildContext);
-                                    showpop(widget.buildContext);
+                                    //showpop(widget.buildContext);
+                                     showAfterSaveOptions(widget.buildContext);
                                   });
                                 },
                                 onFailure: () => Helpers.successToast(
@@ -160,11 +327,124 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
                       : Colors.greenAccent.withOpacity(.5)
                 ],
               ),
-              SizedBox(height: 40.h,)
+              // CommonButton(
+              //   onPressed: () async {
+              //     await downloadPreviewBillPdf();
+              //   },
+              //   margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+              //   title: 'Download PDF',
+              // ),
+              SizedBox(height: 50.h,)
             ],
           ),
         ));
   }
+
+  
+void showAfterSaveOptions(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("Bill Saved Successfully"),
+       // content: const Text("Choose an option"),
+        actions: [
+
+          // /// 📄 DOWNLOAD PDF
+          // TextButton(
+          //   onPressed: () async {
+          //     Navigator.pop(context);
+          //     await downloadPreviewBillPdf();
+          //   },
+          //   child: const Text("Download PDF"),
+          // ),
+
+          /// 📲 SHARE PDF
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await sharePdfToWhatsApp();
+            },
+            child: const Text("Share WhatsApp"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
+
+
+Future<void> sharePdfToWhatsApp() async {
+  final pdf = pw.Document();
+
+  final provider = widget.previewBillProvider;
+  final summary = provider.summary;
+  final temple = provider.temple;
+  final persons = provider.person;
+
+  List<String> poojaString = [];
+
+  for (int i = 0; i < persons.length; i++) {
+    poojaString.add(
+      "${persons[i].id}) ${persons[i].date}\n"
+      "Category: ${persons[i].dietyName}\n"
+      "Product: ${persons[i].poojaName} - ${persons[i].rate}\n",
+    );
+  }
+
+  pdf.addPage(
+    pw.Page(
+      build: (context) {
+        return pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Text("BILL RECEIPT",
+                style: pw.TextStyle(fontSize: 20,)),
+
+            pw.SizedBox(height: 15),
+
+            pw.Text("Bill No: ${summary?.id ?? ''}"),
+            pw.SizedBox(height: 10),
+            pw.Text("Customer: ${temple?.name ?? ''}"),
+            pw.SizedBox(height: 10),
+            pw.Text("Date: ${summary?.billDate ?? ''}"),
+            pw.SizedBox(height: 10),
+            pw.Text("Branch: ${summary?.counter}"),
+            pw.SizedBox(height: 10),
+            pw.Text("Email: ${temple?.email}"),
+
+            pw.SizedBox(height: 10),
+
+            pw.Text("Details:\n${poojaString.join("\n")}"),
+
+            pw.SizedBox(height: 10),
+            pw.Text("Payment Mode: ${summary?.mode ?? ''}"),
+            pw.SizedBox(height: 10),
+            pw.Text("Total Amount: ${summary?.total ?? ''}"),
+            pw.SizedBox(height: 10),
+            pw.Text("Amount Paid: ${summary?.recvAmt ?? ''}"),
+            pw.SizedBox(height: 10),
+            pw.Text("Book Online: ${temple?.website ?? ''}"),
+            pw.SizedBox(height: 10),
+          ],
+        );
+      },
+    ),
+  );
+
+  ///  Convert to bytes
+  final bytes = await pdf.save();
+
+  ///  Share
+  await Printing.sharePdf(
+    bytes: bytes,
+    filename: "bill_${summary?.id ?? 'receipt'}.pdf",
+  );
+}
+
+
 
   showPopUp(BuildContext context) {
     showDialog<void>(
@@ -297,6 +577,8 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
               ]);
         });
   }
+
+
 
 //? sunmi printer
   posPrinter(BillingProvider previewBillProvider) async {
@@ -633,7 +915,10 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
 //     }
     bill?.clearValues();
   }
+  
 }
+
+
 
 class PoojaPersons {
   String? name = 'Customer';
