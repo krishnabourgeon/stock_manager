@@ -586,121 +586,11 @@ class _StockScreenState extends State<StockScreen> {
       ),
     );
   }
-  //   /// 🔹 PDF GENERATION
-//   Future<void> generatePdf(StockProvider stockProvider) async {
-//   final pdf = pw.Document();
-
-//   // 🔹 Get selected supplier name
-//   String supplierName = "All";
-//   if (selectedSupplierId != null) {
-//     final supplier = stockProvider.supplierList.firstWhere(
-//       (e) => e.id == selectedSupplierId,
-//       orElse: () => stockProvider.supplierList.first,
-//     );
-//     supplierName = supplier.name ?? "All";
-//   }
-
-//   // 🔹 Format dates
-//   String fromDate = stockProvider.fromDate != null
-//       ? stockProvider.formatDate(stockProvider.fromDate!)
-//       : "All";
-
-//   String toDate = stockProvider.toDate != null
-//       ? stockProvider.formatDate(stockProvider.toDate!)
-//       : "All";
-
-//   pdf.addPage(
-//     pw.Page(
-//       build: (context) {
-//         return pw.Column(
-//           crossAxisAlignment: pw.CrossAxisAlignment.start,
-//           children: [
-
-//             /// 🔹 TITLE
-//             pw.Text(
-//               "Stock Report",
-//               style: pw.TextStyle(
-//                 fontSize: 18,
-//                 fontWeight: pw.FontWeight.bold,
-//               ),
-//             ),
-
-//             pw.SizedBox(height: 10),
-
-//             /// 🔹 FILTER DETAILS (NEW )
-//              pw.Text("Name: $supplierName"),
-//             // pw.Text("From Date: $fromDate"),
-//             // pw.Text("To Date: $toDate"),
-
-//             pw.SizedBox(height: 15),
-
-//             /// 🔹 TABLE
-//             pw.Table(
-//               border: pw.TableBorder.all(),
-//               columnWidths: {
-//                 0: const pw.FlexColumnWidth(2),
-//                 1: const pw.FlexColumnWidth(1),
-//               },
-//               children: [
-
-//                 /// HEADER
-//                 pw.TableRow(
-//                   decoration: pw.BoxDecoration(
-//                     color: PdfColors.green,
-//                   ),
-//                   children: [
-//                     pw.Padding(
-//                       padding: const pw.EdgeInsets.all(8),
-//                       child: pw.Text(
-//                         "Product",
-//                         style: pw.TextStyle(color: PdfColors.white),
-//                       ),
-//                     ),
-//                     pw.Padding(
-//                       padding: const pw.EdgeInsets.all(8),
-//                       child: pw.Text(
-//                         "Total",
-//                         style: pw.TextStyle(color: PdfColors.white),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-
-//                 /// DATA
-//                 ...stockProvider.stockList.map((stock) {
-//                   return pw.TableRow(
-//                     children: [
-//                       pw.Padding(
-//                         padding: const pw.EdgeInsets.all(8),
-//                         child: pw.Text(stock.name ?? ''),
-//                       ),
-//                       pw.Padding(
-//                         padding: const pw.EdgeInsets.all(8),
-//                         child: pw.Text(stock.total.toString()),
-//                       ),
-//                     ],
-//                   );
-//                 }).toList(),
-//               ],
-//             ),
-//           ],
-//         );
-//       },
-//     ),
-//   );
-
-//   await Printing.layoutPdf(
-//     onLayout: (format) async => pdf.save(),
-//   );
-// }
-
-
-
-// inside your _StockScreenState class
-Future<void> generatePdf(StockProvider stockProvider) async {
+    /// 🔹 PDF GENERATION
+  Future<void> generatePdf(StockProvider stockProvider) async {
   final pdf = pw.Document();
-  final temple = stockProvider.viewStockModel?.temple;
 
+  // 🔹 Get selected supplier name
   String supplierName = "All";
   if (selectedSupplierId != null) {
     final supplier = stockProvider.supplierList.firstWhere(
@@ -710,37 +600,41 @@ Future<void> generatePdf(StockProvider stockProvider) async {
     supplierName = supplier.name ?? "All";
   }
 
+  // 🔹 Format dates
+  String fromDate = stockProvider.fromDate != null
+      ? stockProvider.formatDate(stockProvider.fromDate!)
+      : "All";
+
+  String toDate = stockProvider.toDate != null
+      ? stockProvider.formatDate(stockProvider.toDate!)
+      : "All";
+
   pdf.addPage(
     pw.Page(
       build: (context) {
         return pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
-            pw.Text("Stock Report",
-                style: pw.TextStyle(
-                    fontSize: 18, fontWeight: pw.FontWeight.bold)),
+
+            /// 🔹 TITLE
+            pw.Text(
+              "Stock Report",
+              style: pw.TextStyle(
+                fontSize: 18,
+                fontWeight: pw.FontWeight.bold,
+              ),
+            ),
+
             pw.SizedBox(height: 10),
-            pw.Text("Name: ${temple?.name}(${temple?.nameMal})",
-                style: pw.TextStyle(
-                    fontSize: 18, fontWeight: pw.FontWeight.normal)),
-                    pw.SizedBox(height: 10),
-             pw.Text("Address: ${temple?.addressLine1},${temple?.addressLine2}",
-                style: pw.TextStyle(
-                    fontSize: 18, fontWeight: pw.FontWeight.normal)),
-                    pw.SizedBox(height: 10),
-             pw.Text("Phone: ${temple?.phone}",
-                style: pw.TextStyle(
-                    fontSize: 18, fontWeight: pw.FontWeight.normal)),
-                    pw.SizedBox(height: 10),
-             pw.Text("Email: ${temple?.email}",
-                style: pw.TextStyle(
-                    fontSize: 18, fontWeight: pw.FontWeight.normal)),
-                    pw.SizedBox(height: 10),
-                     pw.Text("Website: ${temple?.website}",
-                style: pw.TextStyle(
-                    fontSize: 18, fontWeight: pw.FontWeight.normal)),
-                    pw.SizedBox(height: 10),        
+
+            /// 🔹 FILTER DETAILS (NEW )
+             pw.Text("Name: $supplierName"),
+            // pw.Text("From Date: $fromDate"),
+            // pw.Text("To Date: $toDate"),
+
             pw.SizedBox(height: 15),
+
+            /// 🔹 TABLE
             pw.Table(
               border: pw.TableBorder.all(),
               columnWidths: {
@@ -748,29 +642,45 @@ Future<void> generatePdf(StockProvider stockProvider) async {
                 1: const pw.FlexColumnWidth(1),
               },
               children: [
+
+                /// HEADER
                 pw.TableRow(
-                  decoration: pw.BoxDecoration(color: PdfColors.green),
+                  decoration: pw.BoxDecoration(
+                    color: PdfColors.green,
+                  ),
                   children: [
                     pw.Padding(
-                        padding: const pw.EdgeInsets.all(8),
-                        child: pw.Text("Product",
-                            style: pw.TextStyle(color: PdfColors.white))),
+                      padding: const pw.EdgeInsets.all(8),
+                      child: pw.Text(
+                        "Product",
+                        style: pw.TextStyle(color: PdfColors.white),
+                      ),
+                    ),
                     pw.Padding(
-                        padding: const pw.EdgeInsets.all(8),
-                        child: pw.Text("Total",
-                            style: pw.TextStyle(color: PdfColors.white))),
+                      padding: const pw.EdgeInsets.all(8),
+                      child: pw.Text(
+                        "Total",
+                        style: pw.TextStyle(color: PdfColors.white),
+                      ),
+                    ),
                   ],
                 ),
+
+                /// DATA
                 ...stockProvider.stockList.map((stock) {
-                  return pw.TableRow(children: [
-                    pw.Padding(
+                  return pw.TableRow(
+                    children: [
+                      pw.Padding(
                         padding: const pw.EdgeInsets.all(8),
-                        child: pw.Text(stock.name ?? '')),
-                    pw.Padding(
+                        child: pw.Text(stock.name ?? ''),
+                      ),
+                      pw.Padding(
                         padding: const pw.EdgeInsets.all(8),
-                        child: pw.Text(stock.total.toString())),
-                  ]);
-                }).toList()
+                        child: pw.Text(stock.total.toString()),
+                      ),
+                    ],
+                  );
+                }).toList(),
               ],
             ),
           ],
@@ -779,34 +689,124 @@ Future<void> generatePdf(StockProvider stockProvider) async {
     ),
   );
 
-  // 🔹 Request permission for storage
-  //if (await Permission.storage.request().isGranted) {
-    // 🔹 Save file
-    // final dir = await getExternalStorageDirectory();
-    // final path = '${dir!.path}/stock_report_${DateTime.now().millisecondsSinceEpoch}.pdf';
-    // final file = File(path);
-    // await file.writeAsBytes(await pdf.save());
-    final dir = Directory('/storage/emulated/0/Download');
-
-final path =
-    '${dir.path}/stock_report_${DateTime.now().millisecondsSinceEpoch}.pdf';
-
-final file = File(path);
-await file.writeAsBytes(await pdf.save());
-    // 🔹 Share via WhatsApp (or other apps)
-    //await Share.shareFiles([file.path], text: "Here is the stock report PDF");
-    await Share.shareXFiles(
-      [XFile(file.path)],
-      text: "Here is the stock report PDF",
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("PDF saved and ready to share!")),
-    );
-  // } else {
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(content: Text("Storage permission denied")),
-  //   );
-  // }
+  await Printing.layoutPdf(
+    onLayout: (format) async => pdf.save(),
+  );
 }
+
+
+
+// // inside your _StockScreenState class
+// Future<void> generatePdf(StockProvider stockProvider) async {
+//   final pdf = pw.Document();
+//   final temple = stockProvider.viewStockModel?.temple;
+
+//   String supplierName = "All";
+//   if (selectedSupplierId != null) {
+//     final supplier = stockProvider.supplierList.firstWhere(
+//       (e) => e.id == selectedSupplierId,
+//       orElse: () => stockProvider.supplierList.first,
+//     );
+//     supplierName = supplier.name ?? "All";
+//   }
+
+//   pdf.addPage(
+//     pw.Page(
+//       build: (context) {
+//         return pw.Column(
+//           crossAxisAlignment: pw.CrossAxisAlignment.start,
+//           children: [
+//             pw.Text("Stock Report",
+//                 style: pw.TextStyle(
+//                     fontSize: 18, fontWeight: pw.FontWeight.bold)),
+//             pw.SizedBox(height: 10),
+//             pw.Text("Name: ${temple?.name}(${temple?.nameMal})",
+//                 style: pw.TextStyle(
+//                     fontSize: 18, fontWeight: pw.FontWeight.normal)),
+//                     pw.SizedBox(height: 10),
+//              pw.Text("Address: ${temple?.addressLine1},${temple?.addressLine2}",
+//                 style: pw.TextStyle(
+//                     fontSize: 18, fontWeight: pw.FontWeight.normal)),
+//                     pw.SizedBox(height: 10),
+//              pw.Text("Phone: ${temple?.phone}",
+//                 style: pw.TextStyle(
+//                     fontSize: 18, fontWeight: pw.FontWeight.normal)),
+//                     pw.SizedBox(height: 10),
+//              pw.Text("Email: ${temple?.email}",
+//                 style: pw.TextStyle(
+//                     fontSize: 18, fontWeight: pw.FontWeight.normal)),
+//                     pw.SizedBox(height: 10),
+//                      pw.Text("Website: ${temple?.website}",
+//                 style: pw.TextStyle(
+//                     fontSize: 18, fontWeight: pw.FontWeight.normal)),
+//                     pw.SizedBox(height: 10),        
+//             pw.SizedBox(height: 15),
+//             pw.Table(
+//               border: pw.TableBorder.all(),
+//               columnWidths: {
+//                 0: const pw.FlexColumnWidth(2),
+//                 1: const pw.FlexColumnWidth(1),
+//               },
+//               children: [
+//                 pw.TableRow(
+//                   decoration: pw.BoxDecoration(color: PdfColors.green),
+//                   children: [
+//                     pw.Padding(
+//                         padding: const pw.EdgeInsets.all(8),
+//                         child: pw.Text("Product",
+//                             style: pw.TextStyle(color: PdfColors.white))),
+//                     pw.Padding(
+//                         padding: const pw.EdgeInsets.all(8),
+//                         child: pw.Text("Total",
+//                             style: pw.TextStyle(color: PdfColors.white))),
+//                   ],
+//                 ),
+//                 ...stockProvider.stockList.map((stock) {
+//                   return pw.TableRow(children: [
+//                     pw.Padding(
+//                         padding: const pw.EdgeInsets.all(8),
+//                         child: pw.Text(stock.name ?? '')),
+//                     pw.Padding(
+//                         padding: const pw.EdgeInsets.all(8),
+//                         child: pw.Text(stock.total.toString())),
+//                   ]);
+//                 }).toList()
+//               ],
+//             ),
+//           ],
+//         );
+//       },
+//     ),
+//   );
+
+//   // 🔹 Request permission for storage
+//   //if (await Permission.storage.request().isGranted) {
+//     // 🔹 Save file
+//     // final dir = await getExternalStorageDirectory();
+//     // final path = '${dir!.path}/stock_report_${DateTime.now().millisecondsSinceEpoch}.pdf';
+//     // final file = File(path);
+//     // await file.writeAsBytes(await pdf.save());
+//     final dir = Directory('/storage/emulated/0/Download');
+
+// final path =
+//     '${dir.path}/stock_report_${DateTime.now().millisecondsSinceEpoch}.pdf';
+
+// final file = File(path);
+// await file.writeAsBytes(await pdf.save());
+//     // 🔹 Share via WhatsApp (or other apps)
+//     //await Share.shareFiles([file.path], text: "Here is the stock report PDF");
+//     await Share.shareXFiles(
+//       [XFile(file.path)],
+//       text: "Here is the stock report PDF",
+//     );
+
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(content: Text("PDF saved and ready to share!")),
+//     );
+//   // } else {
+//   //   ScaffoldMessenger.of(context).showSnackBar(
+//   //     SnackBar(content: Text("Storage permission denied")),
+//   //   );
+//   // }
+// }
 }

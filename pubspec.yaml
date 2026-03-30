@@ -54,7 +54,7 @@ dependencies:
   image: ^4.2.0
   auto_height_grid_view: ^1.0.0
   # blue_thermal_printer: ^1.2.3
-#  bitmap: ^0.2.0
+  #  bitmap: ^0.2.0
   flutter_svg: ^2.0.9
   flutter_sunmi_printer_plus: ^0.0.1
   pdf: ^3.10.7
@@ -62,7 +62,6 @@ dependencies:
   path_provider: ^2.1.2
   share_plus: ^12.0.1
   
-
  
 
  
