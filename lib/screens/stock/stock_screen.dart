@@ -338,6 +338,7 @@ import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 import 'package:stock_manager/providers/stock_provider.dart';
 import 'package:stock_manager/screens/stock/add_stock.dart';
+import 'package:stock_manager/screens/stock/view_stock.dart';
 import 'package:stock_manager/services/provider_helper_class.dart';
 import 'package:stock_manager/services/shared_preference_helper.dart';
 
@@ -403,35 +404,70 @@ class _StockScreenState extends State<StockScreen> {
         children: [
 
           /// 🔹 ADD STOCK
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: InkWell(
-                onTap: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AddStock(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: InkWell(
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ViewStock(),
+                        ),
+                      );
+                      context.read<StockProvider>().getStockList();
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      width: 120.w,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Text(
+                        "View Purchase",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
-                  );
-                  context.read<StockProvider>().getStockList();
-                },
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  width: 120.w,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Text(
-                    "Add Stock",
-                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: InkWell(
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AddStock(),
+                        ),
+                      );
+                      context.read<StockProvider>().getStockList();
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      width: 120.w,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Text(
+                        "Add Stock",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 10,),
           Padding(

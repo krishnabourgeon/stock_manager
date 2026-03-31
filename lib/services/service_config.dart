@@ -5,6 +5,7 @@ import 'package:stock_manager/models/category_model.dart';
 import 'package:stock_manager/models/counter_wise_summary_response.dart';
 import 'package:stock_manager/models/counters_model.dart';
 import 'package:stock_manager/models/create_customer_body.dart';
+import 'package:stock_manager/models/delete_purchase_model.dart';
 import 'package:stock_manager/models/dieties_response_model.dart';
 import 'package:stock_manager/models/error_response_model.dart';
 import 'package:stock_manager/models/gothra_response.dart';
@@ -15,6 +16,7 @@ import 'package:stock_manager/models/pooja_summary_response.dart';
 import 'package:stock_manager/models/preview_bill_response.dart';
 import 'package:stock_manager/models/product_model.dart';
 import 'package:stock_manager/models/product_store_model.dart';
+import 'package:stock_manager/models/purchase_details_model.dart';
 import 'package:stock_manager/models/quickbill_datamodel.dart';
 import 'package:stock_manager/models/rashi_datamodel.dart';
 import 'package:stock_manager/models/register_body.dart';
@@ -28,6 +30,7 @@ import 'package:stock_manager/models/starts_response_model.dart';
 import 'package:stock_manager/models/supplier_model.dart';
 import 'package:stock_manager/models/unit_model.dart';
 import 'package:stock_manager/models/version_datamodel.dart';
+import 'package:stock_manager/models/view_purchase_model.dart';
 import 'package:stock_manager/models/view_stock_model.dart';
 import 'package:stock_manager/services/app_config.dart';
 import 'package:stock_manager/services/base_client.dart';
@@ -162,6 +165,42 @@ class ServiceConfig {
     }
   }
 
+
+     Future<Result> getPurchases() async {
+    Result res = await BaseClient.get('purchases');
+    if (res.isError) {
+      ErrorResponseModel errorResponseModel =
+          ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+      debugPrint('category response $response');
+      ViewPurchaseModel purchaseModel = ViewPurchaseModel.fromJson(response);
+      return (purchaseModel.status ?? false)
+          ? Result.value(purchaseModel)
+          : Result.error(purchaseModel);
+    }
+  }
+
+    Future<Result> purchaseDetails(String id) async {
+    Result res =
+        await BaseClient.post('purchase-details', body: {'purchase_id': id});
+        print("purchase details id : ${id}");
+    if (res.isError) {
+      ErrorResponseModel errorResponseModel =
+          ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+      debugPrint('purchase details response $response');
+      PurchaseDetailsModel purchaseDetailsModel = PurchaseDetailsModel.fromJson(response);
+
+      return (purchaseDetailsModel.status ?? false)
+          ? Result.value(purchaseDetailsModel)
+          : Result.error(purchaseDetailsModel);
+    }
+  }
+
 // Future<Result> getStockList() async {
 //   //  LOAD storeId first
 //   String storeId = await SharedPreferenceHelper.getStoreID();
@@ -191,6 +230,28 @@ class ServiceConfig {
 //   }
 // }
 
+
+
+Future<Result> deletePurchaseDetails(String id) async {
+  Result res = await BaseClient.delete(
+    'delete-purchase-details?id=$id',
+  );
+
+  if (res.isError) {
+    ErrorResponseModel errorResponseModel =
+        ErrorResponseModel(errorMessage: 'Oops...! Something went wrong');
+    return Result.error(errorResponseModel);
+  } else {
+    var response = res.asValue!.value;
+
+    DeletePurchaseModel deleteModel =
+        DeletePurchaseModel.fromJson(response);
+
+    return (deleteModel.status ?? false)
+        ? Result.value(deleteModel)
+        : Result.error(deleteModel);
+  }
+}
 
 Future<Result> getStockList({
   String? fromDate,
