@@ -463,9 +463,10 @@ Future<void> getStockList({
           qty: int.parse(e['qty'].toString()),
           tax: 0,
           subTot: int.parse(e['rate'].toString()), //  RATE HERE
+          salesRate: int.parse(e['salesRate'].toString()),
         );
       }).toList();
-
+      debugPrint("salesRate: ${addedStocks.first['salesRate']}");
       //  FIXED (num → int issue solved)
       int totalAmt = addedStocks.fold<int>(
         0,

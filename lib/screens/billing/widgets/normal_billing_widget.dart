@@ -623,7 +623,32 @@ class _NormalBillingWidgetState extends State<NormalBillingWidget> {
         //     );
         //   },
         //  ),
-
+       //10.verticalSpace,
+      PunnyamTextField(
+          hintText: "Customer",
+          height: 45.h,
+          textEditingController: widget.billingProvider.nameController,
+          inputFormatter: [
+            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+          ],
+          keyboardType: TextInputType.name,
+          hintStyle: TextStyle(
+            fontSize: 13.5.sp,
+            fontWeight: FontWeight.normal,
+            color: Colors.black,
+          ),
+          onChanged: (value) {
+            widget.billingProvider.updateBillingFormState();
+          }
+          // => widget.billingProvider.updateValidationMessage(
+          //     validationTypes: ValidationTypes.name,
+          //     validationMessage:
+          //         ValidationHelperClass.validateName(value.trim()) ?? ''),
+          ),
+      if (widget.billingProvider.nameErrorMessage != null)
+        ValidationWidget(
+            validationMessage: widget.billingProvider.nameErrorMessage ?? ''),
+      10.verticalSpace,
         Selector<BillingProvider, BillingProvider>(
           selector: (_, p) => p,
           builder: (_, provider, __) {
@@ -711,17 +736,35 @@ class _NormalBillingWidgetState extends State<NormalBillingWidget> {
                   color: Colors.grey.shade600,
                 ),
                 onChanged: (value) => widget.billingProvider
-                    .updateValidationMessage(
-                        validationTypes: ValidationTypes.rate,
-                        validationMessage:
-                            ValidationHelperClass.validateRate(value.trim()) ??
-                                ''),
+                  .updateValidationMessage(
+                    validationTypes: ValidationTypes.rate,
+                    validationMessage:
+                    ValidationHelperClass.validateRate(value.trim()) ??
+                ''),
               ),
             ],
           )),
         ],
       ),
       10.verticalSpace,
+      PunnyamTextField(
+        hintText: "Discount",
+        height: 45.h,
+        textEditingController: widget.billingProvider.discountController,
+        textInputAction: TextInputAction.done,
+        keyboardType: TextInputType.number,
+        //isEnabled: BillingProvider.ratefield == true ? true : false,
+        hintStyle: TextStyle(
+          fontSize: 14.sp,
+          color: Colors.grey.shade600,
+        ),
+        onChanged: (value) => widget.billingProvider
+          .updateValidationMessage(
+              validationTypes: ValidationTypes.rate,
+              validationMessage:
+                ValidationHelperClass.validateRate(value.trim()) ?? ''),
+        ),
+        
       // BillingProvider.address
       //     ? const SizedBox()
       //     : Row(

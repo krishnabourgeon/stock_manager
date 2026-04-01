@@ -25,6 +25,7 @@ class _AddStockState extends State<AddStock> {
   int? selectedUnitId;
   final TextEditingController qtyController = TextEditingController();
   final TextEditingController rateController = TextEditingController();
+   final TextEditingController salesRateController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   bool isSupplierLocked = false;
   String? selectedUnitName;
@@ -166,6 +167,7 @@ void _saveAndNext() {
   if (formKey.currentState!.validate()) {
     double qtyValue = double.tryParse(qtyController.text) ?? 0;
     double rateValue = double.tryParse(rateController.text) ?? 0;
+    double salesRateValue = double.tryParse(salesRateController.text) ?? 0;
     double total = qtyValue * rateValue;
 
     setState(() {
@@ -175,6 +177,7 @@ void _saveAndNext() {
         'unit': selectedUnitName, 
         'qty': qtyValue.toInt(),  
         'rate': rateValue.toInt(),
+        'salesRate': salesRateValue.toInt(),
         'total': total,
       });
 
@@ -187,6 +190,7 @@ void _saveAndNext() {
       qty = 0;
       qtyController.clear();
       rateController.clear();
+      salesRateController.clear();
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -347,6 +351,7 @@ void _saveAll() async {
   if (formKey.currentState!.validate()) {
     double qtyValue = double.tryParse(qtyController.text) ?? 0;
     double rateValue = double.tryParse(rateController.text) ?? 0;
+    double salesRateValue = double.tryParse(salesRateController.text) ?? 0;
     double total = qtyValue * rateValue;
 
     //  Add current item before saving
@@ -356,6 +361,7 @@ void _saveAll() async {
       'unit': selectedUnitName, // must be STRING (kg, pcs...)
       'qty': qtyValue.toInt(),
       'rate': rateValue.toInt(),
+      'salesRate': salesRateValue.toInt(),
       'total': total,
     });
   }
@@ -440,6 +446,7 @@ if (selectedDate == null) {
         qty = 0;
         qtyController.clear();
         rateController.clear();
+        salesRateController.clear();
       });
 
       Navigator.pop(context);
@@ -912,10 +919,10 @@ Row(
                             if (value.isNotEmpty) {
                               int qty = int.tryParse(value) ?? 0;
 
-                              // 👉 If using BillingProvider
+                              // If using BillingProvider
                               // context.read<BillingProvider>().qtyController.text = value;
 
-                              // 👉 If you need to update rate dynamically
+                              // If you need to update rate dynamically
                               // context.read<BillingProvider>().updateRateWithProduct();
                             }
                           },
@@ -941,9 +948,10 @@ Row(
                               },
                             ),
                           ),
+                          10.verticalSpace,
                         ],
                       ),
-                      // 10.verticalSpace,
+                       10.verticalSpace,
                       // TextFormField(
                       //   controller: rateController,
                       //   keyboardType: TextInputType.number,
@@ -952,7 +960,23 @@ Row(
                       //     border: OutlineInputBorder(),
                       //   ),
                       // ),
-        
+                      TextFormField(
+                        controller: salesRateController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: "Sales Rate",
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (value) {
+                          setState(() {}); //  THIS FIXES LIVE TOTAL
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please enter sales rate";
+                          }
+                          return null;
+                        },
+                      ),
                       SizedBox(height: 20,),
                       Container(
                         width: double.infinity,

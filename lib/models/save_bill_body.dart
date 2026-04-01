@@ -70,6 +70,8 @@ class PoojaDetails {
   int? prasadamStatus;
   int? postalAmount;
   String? star;
+  double? discount;
+  String? discountType;
   PoojaDetails({
     this.name,
     this.address,
@@ -92,6 +94,8 @@ class PoojaDetails {
     this.postalAmount,
     this.pooja,
     this.star,
+    this.discount,
+    this.discountType
   });
   PoojaDetails.fromJson(Map<String, dynamic> json) {
     name = json['name'];
@@ -116,6 +120,8 @@ class PoojaDetails {
     postalAmount = json['postal_amount'];
     star = json['star'];
     pooja = json['pooja'];
+    discount = json['discount'];
+    discountType = json['discount_type'];
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -138,6 +144,8 @@ class PoojaDetails {
     data['special_star_id'] = specialStarId;
     data['prasadam_status'] = prasadamStatus;
     data['postal_amount'] = postalAmount;
+    data['discount'] = discount;
+    data['discount_type'] = discountType;
     return data;
   }
 }

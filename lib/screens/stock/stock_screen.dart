@@ -558,33 +558,33 @@ class _StockScreenState extends State<StockScreen> {
             ),
           ),
 
-          /// 🔹 SUPPLIER FILTER
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: DropdownButtonFormField<int>(
-              decoration: const InputDecoration(
-                labelText: "Select Supplier",
-                border: OutlineInputBorder(),
-              ),
-              value: stockProvider.supplierList
-                      .any((e) => e.id == selectedSupplierId)
-                  ? selectedSupplierId
-                  : null,
-              items: stockProvider.supplierList.map((item) {
-                return DropdownMenuItem<int>(
-                  value: item.id,
-                  child: Text(item.name ?? ''),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  selectedSupplierId = value;
-                });
+          // /// 🔹 SUPPLIER FILTER
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 16),
+          //   child: DropdownButtonFormField<int>(
+          //     decoration: const InputDecoration(
+          //       labelText: "Select Supplier",
+          //       border: OutlineInputBorder(),
+          //     ),
+          //     value: stockProvider.supplierList
+          //             .any((e) => e.id == selectedSupplierId)
+          //         ? selectedSupplierId
+          //         : null,
+          //     items: stockProvider.supplierList.map((item) {
+          //       return DropdownMenuItem<int>(
+          //         value: item.id,
+          //         child: Text(item.name ?? ''),
+          //       );
+          //     }).toList(),
+          //     onChanged: (value) {
+          //       setState(() {
+          //         selectedSupplierId = value;
+          //       });
 
-                fetchStock(); //  AUTO FILTER
-              },
-            ),
-          ),
+          //       fetchStock(); //  AUTO FILTER
+          //     },
+          //   ),
+          // ),
 
           SizedBox(height: 10.h),
 

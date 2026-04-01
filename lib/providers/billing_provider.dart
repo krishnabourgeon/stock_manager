@@ -1734,6 +1734,7 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   TextEditingController paidAmountController = TextEditingController();
   TextEditingController noOfWeeksController = TextEditingController();
   TextEditingController totalRateController = TextEditingController();
+  TextEditingController discountController = TextEditingController();
   TextEditingController noOfDaysController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController nameController2 = TextEditingController();
@@ -1915,6 +1916,36 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     paidAmountController.text = totalAmount.toStringAsFixed(0);
     notifyListeners();
   }
+
+//   updatePreviewRate() {
+//   totalAmount = 0;
+
+//   if (previewDetailsList.isNotEmpty) {
+//     for (var element in previewDetailsList) {
+//       totalAmount = totalAmount + element.rate;
+//     }
+//   }
+
+//   double discount = 0;
+
+//   if (discountController.text.isNotEmpty) {
+//     discount = double.parse(discountController.text);
+//   }
+
+//   //  Apply discount
+
+//   //  OPTION 1: Flat Discount
+//   double finalAmount = totalAmount - discount;
+
+
+//   if (finalAmount < 0) finalAmount = 0;
+
+//   totalRateController.text = finalAmount.toStringAsFixed(0);
+//   paidAmountController.text = finalAmount.toStringAsFixed(0);
+
+//   notifyListeners();
+// }
+
 
   Future<Uint8List?> getImageData(String imageUrl) async {
     final network = await CommonFunctions.checkInternetConnection();
@@ -2260,7 +2291,7 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     if (name == element.name) {
       poojaId = '${element.poojaId}';
 
-      // ✅ ADD THIS
+      //  ADD THIS
       selectedProductId = element.poojaId.toString();
 
       poojacountrow = element.rowcount;
@@ -2294,6 +2325,36 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     }
     notifyListeners();
   }
+
+//   updateRate() {
+//    if (qtyController.text.isNotEmpty) {
+//      double totalRate =
+//         (poojaRate ?? 0) * (int.parse(qtyController.text));
+
+//      double discount = 0;
+
+//     if (discountController.text.isNotEmpty) {
+//       discount = double.parse(discountController.text);
+//     }
+
+//     double finalRate = totalRate;
+
+//     if (discountType == 'flat') {
+//       finalRate = totalRate - discount;
+//     } else {
+//       finalRate = totalRate - ((totalRate * discount) / 100);
+//     }
+
+//     if (finalRate < 0) finalRate = 0;
+
+//     rateController.text =
+//         finalRate == 0 ? '' : finalRate.toStringAsFixed(0);
+//   } else {
+//     rateController.text = '';
+//   }
+
+//   notifyListeners();
+// }
 
   updateStarId(String id) {
     starId = id;
@@ -2336,7 +2397,7 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   }
 
 
-//     Future<void> fetchProductStock() async {
+//   Future<void> fetchProductStock() async {
 //   String storeId = await SharedPreferenceHelper.getStoreID();
 
 //   if (selectedProductId.isEmpty) return;
@@ -2363,6 +2424,9 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
 
 bool isStockLoading = false;
 bool hasFetchedStock = false;
+
+
+
 
 Future<void> fetchProductStock() async {
     hasFetchedStock = false;
@@ -2681,6 +2745,11 @@ Future<void> fetchProductStock() async {
   saveAndNextFunction() {
     updateLoadState(LoaderState.loading);
     Future.delayed(const Duration(seconds: 1), () {
+      double discount = 0;
+
+      if (discountController.text.isNotEmpty) {
+        discount = double.parse(discountController.text);
+      }
       PoojaDetails poojaDetails = PoojaDetails(
 
           // gothraname: gothraName,
@@ -2714,7 +2783,10 @@ Future<void> fetchProductStock() async {
               : int.parse(starId ?? '28'),
           specialStarId: specialStarId,
           monthStar: starName,
-          weekDays: weekDays);
+          weekDays: weekDays,
+          discount: discount,
+          );
+          print("Discount : ${discount}");
       if (paidAmountController.text.isNotEmpty) {
         paidAmount = paidAmount + int.parse(paidAmountController.text.trim());
       }
@@ -2755,9 +2827,11 @@ Future<void> fetchProductStock() async {
                 : int.parse(starId ?? '28'),
             specialStarId: specialStarId,
             monthStar: starName1,
-            weekDays: weekDays);
+            weekDays: weekDays,
+            discount: discount,);
         poojaDetailsList.add(poojaDetails1);
       }
+      print("Discount : ${discount}");
       clearValues(isClearDate: false);
       updateFromDate(DateFormat('y-MM-dd').format(DateTime.now()));
       getStarIdFromName("Nodata"); // reset star
@@ -2772,6 +2846,11 @@ Future<void> fetchProductStock() async {
   }
 
   saveAndPreviewFunction(BuildContext context) {
+    double discount = 0;
+
+    if (discountController.text.isNotEmpty) {
+      discount = double.parse(discountController.text);
+    }
     PoojaDetails poojaDetails = PoojaDetails(
         // gothra: int.parse(gothraId ?? '0'),
         // rashi: int.parse(rashiId ?? '0'),
@@ -2802,7 +2881,9 @@ Future<void> fetchProductStock() async {
         starId: int.parse(starId ?? '28'),
         specialStarId: specialStarId,
         monthStar: starName,
-        weekDays: weekDays);
+        weekDays: weekDays,
+        discount: discount,);
+    print("Discount : ${discount}");
     if (paidAmountController.text.isNotEmpty) {
       paidAmount = paidAmount + int.parse(paidAmountController.text.trim());
     }
@@ -2843,9 +2924,11 @@ Future<void> fetchProductStock() async {
               : int.parse(starId ?? '28'),
           specialStarId: specialStarId,
           monthStar: starName1,
-          weekDays: weekDays);
+          weekDays: weekDays,
+          discount: discount,);
       poojaDetailsList.add(poojaDetails1);
     }
+    print("Discount : ${discount}");
     //clearValues(isClearPaymentMode: false, isClearDate: false);
     clearValues();
     getStarIdFromName("Nodata");

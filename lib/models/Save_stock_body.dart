@@ -43,6 +43,8 @@ class StockItem {
   int qty;
   int tax;
   int subTot;
+  int salesRate;
+  
 
   StockItem({
     required this.productId,
@@ -50,6 +52,7 @@ class StockItem {
     required this.qty,
     required this.tax,
     required this.subTot,
+    required this.salesRate,
   });
 
   Map<String, dynamic> toJson() => {
@@ -58,5 +61,6 @@ class StockItem {
         "qty": qty,
         "tax": tax,
         "sub_tot": subTot,
+        "sales_rate": salesRate,
       };
 }

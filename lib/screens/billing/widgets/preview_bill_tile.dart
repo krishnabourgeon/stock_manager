@@ -114,7 +114,7 @@ class PreviewBillTile extends StatelessWidget {
               //     .getrashianameFromid(poojaDetails.rashi ?? 0);
               // print(name);
               return Container(
-                height: 155.h,
+                height: 170.h,
                 width: double.maxFinite,
                 margin: EdgeInsets.symmetric(vertical: 10.h),
                 padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
@@ -139,6 +139,11 @@ class PreviewBillTile extends StatelessWidget {
                     PreviewBillRowWidget(
                       labelText: 'Product',
                       valueText: poojaDetails.pooja ?? '',
+                    ),
+                    5.verticalSpace,
+                    PreviewBillRowWidget(
+                      labelText: 'Name',
+                      valueText: poojaDetails.name ?? '',
                     ),
                     5.verticalSpace,
                     PreviewBillRowWidget(
