@@ -10,6 +10,7 @@ import 'package:stock_manager/models/supplier_model.dart';
 import 'package:stock_manager/services/app_config.dart';
 import 'package:stock_manager/services/provider_helper_class.dart';
 import 'package:stock_manager/services/shared_preference_helper.dart';
+import 'package:intl/intl.dart';
 class AddStock extends StatefulWidget {
   const AddStock({super.key});
 
@@ -26,13 +27,14 @@ class _AddStockState extends State<AddStock> {
   final TextEditingController qtyController = TextEditingController();
   final TextEditingController rateController = TextEditingController();
    final TextEditingController salesRateController = TextEditingController();
+   TextEditingController productCodeController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   bool isSupplierLocked = false;
   String? selectedUnitName;
   TextEditingController invoiceController = TextEditingController();
   DateTime? fromDate;
   DateTime? toDate;
-  DateTime? selectedDate;
+  DateTime? selectedDate = DateTime.now();
   
 
   List<Map<String, dynamic>> addedStocks = [];
@@ -56,95 +58,6 @@ class _AddStockState extends State<AddStock> {
       context.read<StockProvider>().getCategories();
     });
   }
-
-  
-
-//  void _saveAndNext() {
-//   if (formKey.currentState!.validate()) {
-//     setState(() {
-//       addedStocks.add({
-//         'supplier': selectedSupplier?.id,
-//         'category': selectedCategory?.id,
-//         'product': selectedProduct?.id,
-//         'unit': selectedUnit?.id,
-//         'qty': qtyController.text,
-//         'rate': rateController.text,
-//         'date': DateTime.now(),
-//         'customerName': AppConfig.customerName
-//       });
-
-//       selectedSupplier = null;
-//       selectedCategory = null;
-//       selectedProduct = null;
-//       selectedUnit = null;
-
-//       qty = 0;
-//       qtyController.clear();
-//       rateController.clear();
-//     });
-
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(content: Text('Stock added to list')),
-//     );
-//   }
-// }
-
-
-// void _saveAndNext() {
-//   if (formKey.currentState!.validate()) {
-//     double qtyValue = double.tryParse(qtyController.text) ?? 0;
-//     double rateValue = double.tryParse(rateController.text) ?? 0;
-//     double total = qtyValue * rateValue;
-
-//     setState(() {
-//       addedStocks.add({
-//         'supplier': selectedSupplierId,
-//         'category': selectedCategoryId,
-//         'product': selectedProductId,
-//         'unit': selectedUnitId,
-//         'qty': qtyController.text,
-//         'rate': rateController.text,
-//         'total': total, //  ADD THIS
-//         'date': DateTime.now(),
-//         'customerName': AppConfig.customerName
-//       });
-
-//       //selectedSupplierId = null;
-//        isSupplierLocked = true;
-//       selectedCategoryId = null;
-//       selectedProductId = null;
-//       selectedUnitId = null;
-
-//       qty = 0;
-//       qtyController.clear();
-//       rateController.clear();
-//     });
-
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(content: Text('Stock added (Total: ₹$total)')),
-//     );
-//   }
-// }
-
-// Future<void> selectDate(BuildContext context, bool isFromDate) async {
-//   DateTime? picked = await showDatePicker(
-//     context: context,
-//     initialDate: DateTime.now(),
-//     firstDate: DateTime(2000),
-//     lastDate: DateTime(2100),
-//   );
-
-//   if (picked != null) {
-//     setState(() {
-//       if (isFromDate) {
-//         fromDate = picked;
-//       } else {
-//         toDate = picked;
-//       }
-//     });
-//   }
-// }
-
 
 Future<void> pickDate() async {
   DateTime? picked = await showDatePicker(
@@ -191,6 +104,7 @@ void _saveAndNext() {
       qtyController.clear();
       rateController.clear();
       salesRateController.clear();
+      productCodeController.clear();
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -198,152 +112,6 @@ void _saveAndNext() {
     );
   }
 }
-
-// void _saveAll() {
-//   if (formKey.currentState!.validate()) {
-//     // ALWAYS add current item before saving
-//     addedStocks.add({
-//       'supplier': selectedSupplier?.id,
-//       'category': selectedCategory?.id,
-//       'product': selectedProduct?.id,
-//       'unit': selectedUnit?.id,
-//       'qty': qtyController.text,
-//       'rate': rateController.text,
-//       'date': DateTime.now()
-//     });
-//   }
-
-//   if (addedStocks.isEmpty) {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(content: Text('No stocks to save')),
-//     );
-//     return;
-//   }
-
-//   ScaffoldMessenger.of(context).showSnackBar(
-//     const SnackBar(content: Text('All stocks saved successfully!')),
-//   );
-
-//   Navigator.pop(context, addedStocks);
-// }
-
-
-// void _saveAll() {
-//   if (formKey.currentState!.validate()) {
-//     double qtyValue = double.tryParse(qtyController.text) ?? 0;
-//     double rateValue = double.tryParse(rateController.text) ?? 0;
-//     double total = qtyValue * rateValue;
-
-//     addedStocks.add({
-//       'supplier': selectedSupplierId,
-//       'category': selectedCategoryId,
-//       'product': selectedProductId,
-//       'unit': selectedUnitId,
-//       'qty': qtyController.text,
-//       'rate': rateController.text,
-//       'total': total, // ✅ ADD THIS
-//       'date': DateTime.now()
-//     });
-//   }
-
-//   if (addedStocks.isEmpty) {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(content: Text('No stocks to save')),
-//     );
-//     return;
-//   }
-
-//   // ✅ Calculate GRAND TOTAL
-//   double grandTotal = addedStocks.fold(
-//     0,
-//     (sum, item) => sum + (item['total'] ?? 0),
-//   );
-
-//   ScaffoldMessenger.of(context).showSnackBar(
-//     SnackBar(content: Text('Saved! Grand Total: ₹$grandTotal')),
-//   );
-
-//   Navigator.pop(context, addedStocks);
-// }
-
-
-
-// void _saveAll() {
-//   //  Validate form
-//   if (formKey.currentState!.validate()) {
-//     double qtyValue = double.tryParse(qtyController.text) ?? 0;
-//     double rateValue = double.tryParse(rateController.text) ?? 0;
-//     double total = qtyValue * rateValue;
-
-//     //  Add current item before saving
-//     addedStocks.add({
-//       'supplier': selectedSupplierId,
-//       'product': selectedProductId,
-//       'unit': selectedUnitName, //  must be STRING (pcs, kg...)
-//       'qty': qtyValue.toInt(),
-//       'rate': rateValue.toInt(),
-//       'total': total,
-//     });
-//   }
-
-//   //  Check empty list
-//   if (addedStocks.isEmpty) {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(content: Text('No stocks to save')),
-//     );
-//     return;
-//   }
-
-//   //  Validate supplier
-//   if (selectedSupplierId == null) {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(content: Text('Please select supplier')),
-//     );
-//     return;
-//   }
-
-//   //  Calculate GRAND TOTAL (FIXED TYPE)
-//   double grandTotal = addedStocks.fold(
-//     0.0,
-//     (sum, item) => sum + ((item['total'] ?? 0) as num).toDouble(),
-//   );
-
-//   //  Show total (optional)
-//   ScaffoldMessenger.of(context).showSnackBar(
-//     SnackBar(content: Text('Grand Total: ₹${grandTotal.toStringAsFixed(2)}')),
-//   );
-
-//   //  CALL API
-//   context.read<StockProvider>().saveStock(
-//     addedStocks: addedStocks,
-//     onSuccess: () {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(content: Text('Stock saved successfully')),
-//       );
-      
-//       //  Reset UI after success
-//       setState(() {
-//         addedStocks.clear();
-//         isSupplierLocked = false;
-//         selectedSupplierId = null;
-//         selectedProductId = null;
-//         selectedUnitId = null;
-//         selectedUnitName = null;
-//         qty = 0;
-//         qtyController.clear();
-//         rateController.clear();
-//       });
-
-//       Navigator.pop(context);
-//     },
-//     onFailure: () {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(content: Text('Failed to save stock')),
-//       );
-//     },
-//   );
-// }
-
 
 
 void _saveAll() async {
@@ -447,6 +215,9 @@ if (selectedDate == null) {
         qtyController.clear();
         rateController.clear();
         salesRateController.clear();
+        productCodeController.clear();
+        invoiceController.clear();
+        selectedDate = DateTime.now();
       });
 
       Navigator.pop(context);
@@ -486,7 +257,7 @@ double getCombinedTotal() {
       appBar: AppBar(
         backgroundColor: Colors.white,
         centerTitle: true,
-        title: Text('Add Stock', style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w500)),
+        title: Text('Add Purchase', style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w500)),
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -501,51 +272,6 @@ double getCombinedTotal() {
                       Consumer<StockProvider>(
                         builder: (context, stockProvider, child) {
                           return 
-                          // DropdownButtonFormField<int>(
-                          //   decoration: InputDecoration(
-                          //     labelText: "Select Supplier",
-                          //     border: const OutlineInputBorder(),
-                          //     prefixIcon: stockProvider.loaderState == LoaderState.loading
-                          //         ? const Padding(
-                          //             padding: EdgeInsets.all(12.0),
-                          //             child: SizedBox(
-                          //               width: 20,
-                          //               height: 20,
-                          //               child: CircularProgressIndicator(strokeWidth: 2),
-                          //             ),
-                          //           )
-                          //         : null,
-                          //   ),
-                          //   value: stockProvider.supplierList.any((e) => e.id == selectedSupplierId) ? selectedSupplierId : null,
-                          //   items: stockProvider.supplierList.isEmpty
-                          //       ? const [
-                          //           DropdownMenuItem<int>(
-                          //             value: null,
-                          //             child: Text("No suppliers available"),
-                          //           )
-                          //         ]
-                          //       : stockProvider.supplierList
-                          //           .fold<List<Data>>([], (prev, item) {
-                          //             if (!prev.any((e) => e.id == item.id)) prev.add(item);
-                          //             return prev;
-                          //           })
-                          //           .map((item) => DropdownMenuItem<int>(
-                          //                 value: item.id,
-                          //                 child: Text(item.name.toString()),
-                          //               ))
-                          //           .toList(),
-                          //   onChanged: (value) {
-                          //     setState(() {
-                          //       selectedSupplierId = value;
-                          //     });
-                          //   },
-                          //   validator: (value) {
-                          //     if (value == null) {
-                          //       return "Please select supplier";
-                          //     }
-                          //     return null;
-                          //   },
-                          // );
                           DropdownButtonFormField<int>(
                             decoration: InputDecoration(
                               labelText: isSupplierLocked ? "Supplier (Locked)" : "Select Supplier",
@@ -607,50 +333,50 @@ double getCombinedTotal() {
                       10.verticalSpace,
                       10.verticalSpace,
 
-/// 🔹 INVOICE + DATE (SAME ROW)
-Row(
-  children: [
-    /// 📄 Invoice Number
-    Expanded(
-      child: TextFormField(
-        controller: invoiceController,
-        decoration: const InputDecoration(
-          labelText: "Invoice No",
-          border: OutlineInputBorder(),
-        ),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return "Enter invoice";
-          }
-          return null;
-        },
-      ),
-    ),
+                      /// 🔹 INVOICE + DATE (SAME ROW)
+                      Row(
+                        children: [
+                          /// 📄 Invoice Number
+                          Expanded(
+                            child: TextFormField(
+                              controller: invoiceController,
+                              decoration: const InputDecoration(
+                                labelText: "Invoice No",
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Enter invoice";
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
 
-    SizedBox(width: 10.w),
+                          SizedBox(width: 10.w),
 
-    /// 📅 Date Picker
-    Expanded(
-      child: InkWell(
-        onTap: pickDate,
-        child: InputDecorator(
-          decoration: const InputDecoration(
-            labelText: "Date",
-            border: OutlineInputBorder(),
-            suffixIcon: Icon(Icons.calendar_today),
-          ),
-          child: Text(
-            selectedDate == null
-                ? "Select"
-                : "${selectedDate!.day}-${selectedDate!.month}-${selectedDate!.year}",
-          ),
-        ),
-      ),
-    ),
-  ],
-),
+                          ///  Date Picker
+                          Expanded(
+                            child: InkWell(
+                              onTap: pickDate,
+                              child: InputDecorator(
+                                decoration: const InputDecoration(
+                                  labelText: "Date",
+                                  border: OutlineInputBorder(),
+                                  suffixIcon: Icon(Icons.calendar_today),
+                                ),
+                                  child: Text(
+                                    selectedDate == null
+                                        ? "Select"
+                                        : DateFormat('dd-MM-yyyy').format(selectedDate!),
+                                  ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
 
-10.verticalSpace,
+                      10.verticalSpace,
                       Consumer<StockProvider>(
                         builder: (context, stockProvider, child) {
                           return DropdownButtonFormField<int>(
@@ -736,9 +462,23 @@ Row(
                                           child: Text(item.name.toString()),
                                         ))
                                     .toList(),
+                            // onChanged: (value) {
+                            //   setState(() {
+                            //     selectedProductId = value;
+                            //   });
+                            // },
                             onChanged: (value) {
                               setState(() {
                                 selectedProductId = value;
+
+                                //  Find selected product
+                                final selectedProduct = context
+                                    .read<StockProvider>()
+                                    .productList
+                                    .firstWhere((e) => e.id == value);
+
+                                //  Set product code
+                                productCodeController.text = selectedProduct.code ?? "";
                               });
                             },
                             validator: (value) {
@@ -751,61 +491,123 @@ Row(
                         },
                       ),
                        10.verticalSpace,
-                      Consumer<StockProvider>(
-                        builder: (context, stockProvider, child) {
-                          return DropdownButtonFormField<int>(
-                            decoration: InputDecoration(
-                              labelText: "Select Unit",
-                              border: const OutlineInputBorder(),
-                              prefixIcon: stockProvider.loaderState == LoaderState.loading
-                                  ? const Padding(
-                                      padding: EdgeInsets.all(12.0),
-                                      child: SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(strokeWidth: 2),
-                                      ),
-                                    )
-                                  : null,
-                            ),
-                            value: stockProvider.unitList.any((e) => e.id == selectedUnitId) ? selectedUnitId : null,
-                            items: stockProvider.unitList.isEmpty
-                                ? const [
-                                    DropdownMenuItem<int>(
-                                      value: null,
-                                      child: Text("No units available"),
-                                    )
-                                  ]
-                                : stockProvider.unitList
-                                    .fold<List<Unit>>([], (prev, item) {
-                                      if (!prev.any((e) => e.id == item.id)) prev.add(item);
-                                      return prev;
-                                    })
-                                    .map((item) => DropdownMenuItem<int>(
-                                          value: item.id,
-                                          child: Text(item.name.toString()),
-                                        ))
-                                    .toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                selectedUnitId = value;
+                      // Row(
+                      //   children: [
+                      //     TextFormField(
+                      //       controller: productCodeController,
+                      //       readOnly: true, //  important (auto-filled)
+                      //       decoration: const InputDecoration(
+                      //         labelText: "Product Code",
+                      //         border: OutlineInputBorder(),
+                      //       ),
+                      //     ),
+                      //     Expanded(
+                      //       child: Consumer<StockProvider>(
+                      //         builder: (context, stockProvider, child) {
+                      //           return DropdownButtonFormField<int>(
+                      //             decoration: InputDecoration(
+                      //               labelText: "Select Unit",
+                      //               border: const OutlineInputBorder(),
+                      //               prefixIcon: stockProvider.loaderState == LoaderState.loading
+                      //                   ? const Padding(
+                      //                       padding: EdgeInsets.all(12.0),
+                      //                       child: SizedBox(
+                      //                         width: 20,
+                      //                         height: 20,
+                      //                         child: CircularProgressIndicator(strokeWidth: 2),
+                      //                       ),
+                      //                     )
+                      //                   : null,
+                      //             ),
+                      //             value: stockProvider.unitList.any((e) => e.id == selectedUnitId) ? selectedUnitId : null,
+                      //             items: stockProvider.unitList.isEmpty
+                      //                 ? const [
+                      //                     DropdownMenuItem<int>(
+                      //                       value: null,
+                      //                       child: Text("No units available"),
+                      //                     )
+                      //                   ]
+                      //                 : stockProvider.unitList
+                      //                     .fold<List<Unit>>([], (prev, item) {
+                      //                       if (!prev.any((e) => e.id == item.id)) prev.add(item);
+                      //                       return prev;
+                      //                     })
+                      //                     .map((item) => DropdownMenuItem<int>(
+                      //                           value: item.id,
+                      //                           child: Text(item.name.toString()),
+                      //                         ))
+                      //                     .toList(),
+                      //             onChanged: (value) {
+                      //               setState(() {
+                      //                 selectedUnitId = value;
+                            
+                      //                 selectedUnitName = context
+                      //                     .read<StockProvider>()
+                      //                     .unitList
+                      //                     .firstWhere((e) => e.id == value)
+                      //                     .name;
+                      //               });
+                      //             },
+                      //             validator: (value) {
+                      //               if (value == null) {
+                      //                 return "Please select unit";
+                      //               }
+                      //               return null;
+                      //             },
+                      //           );
+                      //         },
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
+                      Row(
+  children: [
+    Expanded( //  FIX
+      child: TextFormField(
+        controller: productCodeController,
+        readOnly: true,
+        decoration: const InputDecoration(
+          labelText: "Product Code",
+          border: OutlineInputBorder(),
+        ),
+      ),
+    ),
 
-                                selectedUnitName = context
-                                    .read<StockProvider>()
-                                    .unitList
-                                    .firstWhere((e) => e.id == value)
-                                    .name;
-                              });
-                            },
-                            validator: (value) {
-                              if (value == null) {
-                                return "Please select unit";
-                              }
-                              return null;
-                            },
-                          );
-                        },
-                      ),
+    SizedBox(width: 10), // spacing
+
+    Expanded(
+      child: Consumer<StockProvider>(
+        builder: (context, stockProvider, child) {
+          return DropdownButtonFormField<int>(
+            decoration: const InputDecoration(
+              labelText: "Select Unit",
+              border: OutlineInputBorder(),
+            ),
+            value: stockProvider.unitList.any((e) => e.id == selectedUnitId)
+                ? selectedUnitId
+                : null,
+            items: stockProvider.unitList
+                .map((item) => DropdownMenuItem<int>(
+                      value: item.id,
+                      child: Text(item.name.toString()),
+                    ))
+                .toList(),
+            onChanged: (value) {
+              setState(() {
+                selectedUnitId = value;
+                selectedUnitName = context
+                    .read<StockProvider>()
+                    .unitList
+                    .firstWhere((e) => e.id == value)
+                    .name;
+              });
+            },
+          );
+        },
+      ),
+    ),
+  ],
+),
                       10.verticalSpace,
                       /// 🔹 Invoice Number
                       // TextFormField(
@@ -883,6 +685,7 @@ Row(
                         children: [
                       Container(
                         width: 100,
+                        height: 55,
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(5),
@@ -934,7 +737,7 @@ Row(
                               controller: rateController,
                               keyboardType: TextInputType.number,
                               decoration: const InputDecoration(
-                                labelText: "Rate",
+                                labelText: "Purchase Rate",
                                 border: OutlineInputBorder(),
                               ),
                               onChanged: (value) {
@@ -942,7 +745,12 @@ Row(
                               },
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return "Please enter rate";
+                                  return "Please enter Purchase rate";
+                                }
+                                double? purchaseVal = double.tryParse(value);
+                                double? salesVal = double.tryParse(salesRateController.text);
+                                if (purchaseVal != null && salesVal != null && purchaseVal > salesVal) {
+                                  return "Cannot be greater than Sales Rate";
                                 }
                                 return null;
                               },
@@ -974,6 +782,11 @@ Row(
                           if (value == null || value.isEmpty) {
                             return "Please enter sales rate";
                           }
+                          double? salesVal = double.tryParse(value);
+                          double? purchaseVal = double.tryParse(rateController.text);
+                          if (salesVal != null && purchaseVal != null && salesVal < purchaseVal) {
+                            return "Cannot be less than Purchase Rate";
+                          }
                           return null;
                         },
                       ),
@@ -1001,7 +814,7 @@ Row(
                       CommonButton(
                         title: "Save and Add Next",
                         titleColor: Colors.white,
-                        colors: const [Colors.green, Colors.greenAccent],
+                        colors: const [Colors.green, Colors.green],
                         onPressed: _saveAndNext,
                       ),
                       // if (addedStocks.isNotEmpty) ...[
@@ -1042,7 +855,7 @@ Row(
                 CommonButton(
                   title: "Save the Stock",
                   titleColor: Colors.white,
-                  colors: const [Colors.lightGreen, Colors.lightGreenAccent],
+                  colors: const [Colors.green, Colors.green],
                   onPressed: _saveAll,
                 ),
               ],

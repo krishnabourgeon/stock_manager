@@ -307,7 +307,7 @@ void applyFilters() {
 
 Future<void> getDetailPurchases(String id) async {
   final network = await CommonFunctions.checkInternetConnection();
-
+  purchasedetailList = [];
   if (network) {
     updateLoadState(LoaderState.loading);
 

@@ -34,7 +34,7 @@ class _HomeState extends State<Home> {
   List<String> titleCards = [
     "Billing",
     "Bill List",
-    'Product Summary',
+    'Sales Summary',
     //'Counter Wise Summary',
     "Stock"
   ];

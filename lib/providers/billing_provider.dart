@@ -1610,7 +1610,6 @@ import 'package:stock_manager/services/shared_preference_helper.dart';
 import 'package:stock_manager/services/validation_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:whatsapp_unilink/whatsapp_unilink.dart';
-
 import '../models/preview_bill_response.dart';
 import '../screens/billing/widgets/preview_bill_btn.dart';
 
@@ -1734,6 +1733,7 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   TextEditingController paidAmountController = TextEditingController();
   TextEditingController noOfWeeksController = TextEditingController();
   TextEditingController totalRateController = TextEditingController();
+  TextEditingController subTotalController = TextEditingController();
   TextEditingController discountController = TextEditingController();
   TextEditingController noOfDaysController = TextEditingController();
   TextEditingController nameController = TextEditingController();
@@ -1905,46 +1905,36 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     notifyListeners();
   }
 
+  // updatePreviewRate() {
+  //   totalAmount = 0;
+  //   if (previewDetailsList.isNotEmpty) {
+  //     for (var element in previewDetailsList) {
+  //       totalAmount = totalAmount + element.rate;
+  //     }
+  //   }
+  //   totalRateController.text = totalAmount.toStringAsFixed(0);
+  //   paidAmountController.text = totalAmount.toStringAsFixed(0);
+  //   notifyListeners();
+  // }
+
   updatePreviewRate() {
-    totalAmount = 0;
-    if (previewDetailsList.isNotEmpty) {
-      for (var element in previewDetailsList) {
-        totalAmount = totalAmount + element.rate;
-      }
+  totalAmount = 0;
+  if (previewDetailsList.isNotEmpty) {
+    for (var element in previewDetailsList) {
+      totalAmount = totalAmount + element.rate;
     }
-    totalRateController.text = totalAmount.toStringAsFixed(0);
-    paidAmountController.text = totalAmount.toStringAsFixed(0);
-    notifyListeners();
   }
-
-//   updatePreviewRate() {
-//   totalAmount = 0;
-
-//   if (previewDetailsList.isNotEmpty) {
-//     for (var element in previewDetailsList) {
-//       totalAmount = totalAmount + element.rate;
-//     }
-//   }
-
-//   double discount = 0;
-
-//   if (discountController.text.isNotEmpty) {
-//     discount = double.parse(discountController.text);
-//   }
-
-//   //  Apply discount
-
-//   //  OPTION 1: Flat Discount
-//   double finalAmount = totalAmount - discount;
-
-
-//   if (finalAmount < 0) finalAmount = 0;
-
-//   totalRateController.text = finalAmount.toStringAsFixed(0);
-//   paidAmountController.text = finalAmount.toStringAsFixed(0);
-
-//   notifyListeners();
-// }
+  subTotalController.text = totalAmount.toStringAsFixed(0);
+  double discount = 0;
+  if (discountController.text.isNotEmpty) {
+    discount = double.parse(discountController.text);
+  }
+  double finalAmount = totalAmount - discount;
+  if (finalAmount < 0) finalAmount = 0;
+  totalRateController.text = finalAmount.toStringAsFixed(0);
+  paidAmountController.text = finalAmount.toStringAsFixed(0);
+  notifyListeners();
+}
 
 
   Future<Uint8List?> getImageData(String imageUrl) async {
@@ -1972,11 +1962,12 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
       debugPrint("STEP 1 AppConfig.storeId: ${AppConfig.storeId}");
       SaveBillBody saveBillBody = SaveBillBody(
           billAmount: double.parse(totalRateController.text.trim()),
+          subTotal: double.tryParse(subTotalController.text.trim()),
+          discount: double.tryParse(discountController.text.trim()),
           counterId: int.parse(AppConfig.counterID ?? '0'),
           customerId: AppConfig.customerId ?? 1,
           paidAmount: double.parse(paidAmountController.text.trim()),
           storeId: AppConfig.storeId,
-          
           paymentMode: paymentModeId ?? 0,
           transactionid: transid == null || transid == '' ? null : transid,
           poojaDetails: previewBillResponse?.data?.poojaDetails);
@@ -2326,35 +2317,7 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     notifyListeners();
   }
 
-//   updateRate() {
-//    if (qtyController.text.isNotEmpty) {
-//      double totalRate =
-//         (poojaRate ?? 0) * (int.parse(qtyController.text));
-
-//      double discount = 0;
-
-//     if (discountController.text.isNotEmpty) {
-//       discount = double.parse(discountController.text);
-//     }
-
-//     double finalRate = totalRate;
-
-//     if (discountType == 'flat') {
-//       finalRate = totalRate - discount;
-//     } else {
-//       finalRate = totalRate - ((totalRate * discount) / 100);
-//     }
-
-//     if (finalRate < 0) finalRate = 0;
-
-//     rateController.text =
-//         finalRate == 0 ? '' : finalRate.toStringAsFixed(0);
-//   } else {
-//     rateController.text = '';
-//   }
-
-//   notifyListeners();
-// }
+  
 
   updateStarId(String id) {
     starId = id;
@@ -3036,10 +2999,12 @@ Future<void> fetchProductStock() async {
   qtyController = TextEditingController(text: '1');
   rateController.clear();
   totalRateController.clear();
+  subTotalController.clear();
   paidAmountController.clear();
   noOfDaysController.clear();
   noOfWeeksController.clear();
   noOfMonthsController.clear();
+  discountController.clear();
 
   // IDs & selections
   deityId = '1';

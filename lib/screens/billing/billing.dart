@@ -140,13 +140,13 @@ class _BillingState extends State<Billing> {
                         billingProvider.poojaDetailsList.isEmpty
                             ? billingProvider.isBillingFormValidated
                                 ? Colors.green
-                                : Colors.green.withOpacity(.5)
+                                : Colors.green
                             : Colors.green,
                         billingProvider.poojaDetailsList.isEmpty
                             ? billingProvider.isBillingFormValidated
-                                ? Colors.greenAccent
-                                : Colors.greenAccent.withOpacity(.5)
-                            : Colors.greenAccent
+                                ? Colors.green
+                                : Colors.green
+                            : Colors.green
                       ],
                       // onPressed: billingProvider.poojaDetailsList.isEmpty
                       //     ? billingProvider.isBillingFormValidated

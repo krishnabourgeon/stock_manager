@@ -2,8 +2,10 @@ class SaveBillBody {
   int? customerId;
   int? counterId;
   int? paymentMode;
-   String? storeId;
+  String? storeId;
   double? billAmount;
+  double? subTotal;
+  double? discount;
   double? paidAmount;
   String? transactionid;
   List<PoojaDetails>? poojaDetails;
@@ -14,6 +16,8 @@ class SaveBillBody {
       this.storeId,
       this.paymentMode,
       this.billAmount,
+      this.subTotal,
+      this.discount,
       this.paidAmount,
       this.poojaDetails});
   SaveBillBody.fromJson(Map<String, dynamic> json) {
@@ -22,6 +26,8 @@ class SaveBillBody {
     storeId = json['store_id'];
     paymentMode = json['payment_mode'];
     billAmount = json['bill_amount'];
+    subTotal = json['sub_total'];
+    discount = json['discount'];
     paidAmount = json['paid_amount'];
     transactionid = json['transaction_id'];
     if (json['pooja_details'] != null) {
@@ -38,6 +44,8 @@ class SaveBillBody {
     data['store_id'] = storeId;
     data['payment_mode'] = paymentMode;
     data['bill_amount'] = billAmount;
+    data['sub_total'] = subTotal;
+    data['discount'] = discount;
     data['paid_amount'] = paidAmount;
     data['transaction_id'] = transactionid;
     if (poojaDetails != null) {

@@ -324,7 +324,7 @@ Future<void> downloadPreviewBillPdf() async {
                               .trim()
                               .isNotEmpty
                       ? Colors.greenAccent
-                      : Colors.greenAccent.withOpacity(.5)
+                      : Colors.green
                 ],
               ),
               // CommonButton(
