@@ -40,7 +40,11 @@ class SearchResultTile extends StatelessWidget {
                     ..clearValues()
                     ..clearPaymentValues()
                     ..poojaDetailsList.clear()
-                    ..nameController.clear();
+                    ..nameController.clear()
+                    ..previewDetailsList.clear()
+                    ..poojaDataList.clear()
+                    ..poojaDetailsList.clear();
+
                   AppConfig.customerName = null;
                 });
               },

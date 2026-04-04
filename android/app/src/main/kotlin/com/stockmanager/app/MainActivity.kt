@@ -1,0 +1,140 @@
+package com.stockmanager.app
+
+import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodChannel
+
+import com.cloudpos.POSTerminal
+import com.cloudpos.printer.PrinterDevice
+
+class MainActivity : FlutterActivity() {
+
+    private val CHANNEL = "cloudpos/printer"
+
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        super.configureFlutterEngine(flutterEngine)
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
+            .setMethodCallHandler { call, result ->
+
+                when (call.method) {
+
+                    "printReceipt" -> {
+                        try {
+                            val shop = call.argument<String>("shop") ?: ""
+                            val shopaddress = call.argument<String>("shopaddress") ?: ""
+                              val shopaddress2 = call.argument<String>("shopaddress2") ?: ""
+                          
+                            val items = call.argument<List<Map<String, Any>>>("items") ?: listOf()
+                            val mode = call.argument<String>("mode") ?: ""
+                            val bill = call.argument<Int>("bill") ?: 0
+                            val billdate = call.argument<String>("billdate") ?: ""
+                          val billtime = call.argument<String>("billtime") ?: ""
+                             printReceipt(shop, shopaddress,shopaddress2, items, mode, bill, billdate,billtime)
+
+                            result.success("Printed")
+
+                        } catch (e: Exception) {
+                            result.error("PRINT_ERROR", e.message, null)
+                        }
+                    }
+
+                    else -> result.notImplemented()
+                }
+            }
+    }
+
+    private fun printReceipt(
+        shop: String,
+        address: String,
+        address2: String,
+        items: List<Map<String, Any>>,
+        mode: String,
+        bill: Int,
+        billdate: String,
+        billtime: String
+    ) {
+        try {
+           
+            val printer = POSTerminal.getInstance(this)
+                .getDevice("cloudpos.device.printer") as PrinterDevice
+
+            printer.open()
+
+            val builder = StringBuilder()
+    
+            // ✅ CENTER SHOP NAME (manual)
+            builder.append(centerText(shop))
+ 
+            // ✅ CENTER ADDRESS
+            builder.append(centerText(address))
+             builder.append(centerText(address2))
+           
+
+
+            builder.append("--------------------------------\n")
+            builder.append(leftRightAlign("Bill No : $bill", "$billdate"))
+            builder.append(rightAlign("$billtime\n"))
+              
+
+            var total = 0
+
+           for ((index, item) in items.withIndex()) {
+                builder.append("${index + 1}. ${item["type"].toString()}\n")
+                val name = item["name"].toString()
+                val qty = (item["qty"] as? Number)?.toInt()
+    ?: item["qty"]?.toString()?.toIntOrNull()
+    ?: 0
+
+val rate = (item["rate"] as? Number)?.toInt()
+    ?: item["rate"]?.toString()?.toIntOrNull()
+    ?: 0
+
+val amount = qty * rate
+total += amount
+
+builder.append(formatItem(name, qty, rate))
+            }
+
+            builder.append("--------------------------------\n")
+
+            
+           builder.append(leftRightAlign("Mode: $mode", "TOTAL: Rs $total"))
+            builder.append("--------------------------------\n")
+             builder.append(centerText("THANK YOU"))
+           
+            builder.append("\n\n")
+
+            printer.printText(builder.toString())
+            printer.printText("\n\n\n")
+            printer.close()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    // 🔥 CENTER TEXT FUNCTION
+    private fun centerText(text: String, width: Int = 32): String {
+        val padding = (width - text.length) / 2
+        return " ".repeat(if (padding > 0) padding else 0) + text + "\n"
+    }
+
+    // 🔥 RIGHT ALIGN FUNCTION
+    private fun rightAlign(text: String, width: Int = 32): String {
+        val padding = width - text.length
+        return " ".repeat(if (padding > 0) padding else 0) + text
+    }
+
+    // 🔥 ITEM FORMAT (LIKE BILL)
+    private fun formatItem(name: String, qty: Int, rate: Int): String {
+         return "   $name $qty x $rate\n\n"
+    }
+
+//in row
+    private fun leftRightAlign(left: String, right: String, width: Int = 32): String {
+    val space = width - (left.length + right.length)
+    return left + " ".repeat(if (space > 0) space else 1) + right + "\n"
+}
+ 
+}

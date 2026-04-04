@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -11,10 +12,10 @@ import 'package:pdf/pdf.dart';
 // import 'package:flutter/material.dart' as pw;
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_sunmi_printer_plus/column_maker.dart';
-import 'package:flutter_sunmi_printer_plus/flutter_sunmi_printer_plus.dart';
+// import 'package:flutter_sunmi_printer_plus/column_maker.dart';
+// import 'package:flutter_sunmi_printer_plus/flutter_sunmi_printer_plus.dart';
 // import 'package:pdf/widgets.dart';
-// import 'package:pdf/widgets.dart' as pw; 
+// import 'package:pdf/widgets.dart' as pw;
 // // import 'package:pdf/widgets.dart' as pw;
 // import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
@@ -24,8 +25,8 @@ import 'package:stock_manager/services/helpers.dart';
 import 'package:stock_manager/services/validation_helper.dart';
 import 'package:stock_manager/widgets/punnyam_textfiled.dart';
 import '../../../common/common_button.dart';
-import 'package:flutter_sunmi_printer_plus/sunmi_style.dart';
-import 'package:flutter_sunmi_printer_plus/enums.dart';
+// import 'package:flutter_sunmi_printer_plus/sunmi_style.dart';
+// import 'package:flutter_sunmi_printer_plus/enums.dart';
 import '../../../models/save_bill_response.dart';
 
 class PreviewBillButton extends StatefulWidget {
@@ -51,7 +52,7 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
   @override
   void initState() {
     Future.microtask(() {
-      widget.previewBillProvider.checkPrinter();
+      // widget.previewBillProvider.checkPrinter();
       initAll();
     });
     super.initState();
@@ -125,89 +126,85 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
 //   );
 // }
 
+  Future<void> downloadPreviewBillPdf() async {
+    final pdf = pw.Document();
 
-Future<void> downloadPreviewBillPdf() async {
-  final pdf = pw.Document();
+    final provider = widget.previewBillProvider;
 
-  final provider = widget.previewBillProvider;
+    /// ✅ Extract data BEFORE pdf build
+    final summary = provider.summary;
+    final temple = provider.temple;
+    final persons = provider.person;
 
-  /// ✅ Extract data BEFORE pdf build
-  final summary = provider.summary;
-  final temple = provider.temple;
-  final persons = provider.person;
+    /// ✅ Create pooja list string
+    List<String> poojaString = [];
 
-  /// ✅ Create pooja list string
-  List<String> poojaString = [];
+    for (int i = 0; i < persons.length; i++) {
+      poojaString.add(
+        "${persons[i].id}) ${persons[i].date}\n"
+        "Category: ${persons[i].dietyName}\n"
+        "Product: ${persons[i].poojaName} - ${persons[i].rate}\n",
+      );
+    }
 
-  for (int i = 0; i < persons.length; i++) {
-    poojaString.add(
-      "${persons[i].id}) ${persons[i].date}\n"
-      "Category: ${persons[i].dietyName}\n"
-      "Product: ${persons[i].poojaName} - ${persons[i].rate}\n",
-    );
-  }
-
-  pdf.addPage(
-    pw.Page(
-      pageFormat: PdfPageFormat.a4,
-      build: (pw.Context context) {
-        return pw.Padding(
-          padding: const pw.EdgeInsets.all(16),
-          child: pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-
-              /// 🔷 TITLE
-              pw.Center(
-                child: pw.Text(
-                  "TEMPLE RECEIPT",
-                  style: pw.TextStyle(
-                    fontSize: 20,
-                    fontWeight: pw.FontWeight.bold,
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return pw.Padding(
+            padding: const pw.EdgeInsets.all(16),
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                /// 🔷 TITLE
+                pw.Center(
+                  child: pw.Text(
+                    "TEMPLE RECEIPT",
+                    style: pw.TextStyle(
+                      fontSize: 20,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
 
-              pw.SizedBox(height: 20),
+                pw.SizedBox(height: 20),
 
-              /// 🔷 DETAILS
-              pw.Text("Date: ${summary?.billDate ?? ''}"),
-              pw.Text("Bill No: ${summary?.id ?? ''}"),
-              pw.Text("Customer: ${temple?.name ?? ''}"),
-              pw.Text("Branch: ${summary?.counter ?? ''}"),
-              pw.Text("Email: ${temple?.email ?? ''}"),
+                /// 🔷 DETAILS
+                pw.Text("Date: ${summary?.billDate ?? ''}"),
+                pw.Text("Bill No: ${summary?.id ?? ''}"),
+                pw.Text("Customer: ${temple?.name ?? ''}"),
+                pw.Text("Branch: ${summary?.counter ?? ''}"),
+                pw.Text("Email: ${temple?.email ?? ''}"),
 
-              pw.SizedBox(height: 10),
+                pw.SizedBox(height: 10),
 
-              /// 🔷 PRODUCT DETAILS
-              pw.Text(
-                "Product Details:\n${poojaString.join("\n")}",
-              ),
+                /// 🔷 PRODUCT DETAILS
+                pw.Text(
+                  "Product Details:\n${poojaString.join("\n")}",
+                ),
 
-              pw.SizedBox(height: 10),
+                pw.SizedBox(height: 10),
 
-              /// 🔷 PAYMENT
-              pw.Text("Payment Mode: ${summary?.mode ?? ''}"),
-              pw.Text("Total Amount: ${summary?.total ?? ''}"),
-              pw.Text("Amount Paid: ${summary?.recvAmt ?? ''}"),
+                /// 🔷 PAYMENT
+                pw.Text("Payment Mode: ${summary?.mode ?? ''}"),
+                pw.Text("Total Amount: ${summary?.total ?? ''}"),
+                pw.Text("Amount Paid: ${summary?.recvAmt ?? ''}"),
 
-              pw.SizedBox(height: 10),
+                pw.SizedBox(height: 10),
 
-              pw.Text("Book Online: ${temple?.website ?? ''}"),
-            ],
-          ),
-        );
-      },
-    ),
-  );
+                pw.Text("Book Online: ${temple?.website ?? ''}"),
+              ],
+            ),
+          );
+        },
+      ),
+    );
 
-  /// ✅ DOWNLOAD / PREVIEW
-  await Printing.layoutPdf(
-    onLayout: (format) async => pdf.save(),
-  );
-}
-
-
+    /// ✅ DOWNLOAD / PREVIEW
+    await Printing.layoutPdf(
+      onLayout: (format) async => pdf.save(),
+    );
+  }
 
   BillingProvider? bill;
   routeTo(BuildContext buildContext) {
@@ -251,8 +248,6 @@ Future<void> downloadPreviewBillPdf() async {
 
     bill = widget.previewBillProvider;
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -303,7 +298,7 @@ Future<void> downloadPreviewBillPdf() async {
                                   }).then((value) {
                                     routeTo(widget.buildContext);
                                     //showpop(widget.buildContext);
-                                     showAfterSaveOptions(widget.buildContext);
+                                    showAfterSaveOptions(widget.buildContext);
                                   });
                                 },
                                 onFailure: () => Helpers.successToast(
@@ -334,117 +329,109 @@ Future<void> downloadPreviewBillPdf() async {
               //   margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
               //   title: 'Download PDF',
               // ),
-              SizedBox(height: 50.h,)
+              SizedBox(
+                height: 50.h,
+              )
             ],
           ),
         ));
   }
 
-  
-void showAfterSaveOptions(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text("Bill Saved Successfully"),
-       // content: const Text("Choose an option"),
-        actions: [
+  void showAfterSaveOptions(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Bill Saved Successfully"),
+          // content: const Text("Choose an option"),
+          actions: [
+            // /// 📄 DOWNLOAD PDF
+            // TextButton(
+            //   onPressed: () async {
+            //     Navigator.pop(context);
+            //     await downloadPreviewBillPdf();
+            //   },
+            //   child: const Text("Download PDF"),
+            // ),
 
-          // /// 📄 DOWNLOAD PDF
-          // TextButton(
-          //   onPressed: () async {
-          //     Navigator.pop(context);
-          //     await downloadPreviewBillPdf();
-          //   },
-          //   child: const Text("Download PDF"),
-          // ),
-
-          /// 📲 SHARE PDF
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              await sharePdfToWhatsApp();
-            },
-            child: const Text("Share WhatsApp"),
-          ),
-        ],
-      );
-    },
-  );
-}
-
-
-
-
-Future<void> sharePdfToWhatsApp() async {
-  final pdf = pw.Document();
-
-  final provider = widget.previewBillProvider;
-  final summary = provider.summary;
-  final temple = provider.temple;
-  final persons = provider.person;
-
-  List<String> poojaString = [];
-
-  for (int i = 0; i < persons.length; i++) {
-    poojaString.add(
-      "${persons[i].id}) ${persons[i].date}\n"
-      "Category: ${persons[i].dietyName}\n"
-      "Product: ${persons[i].poojaName} - ${persons[i].rate}\n",
-    );
-  }
-
-  pdf.addPage(
-    pw.Page(
-      build: (context) {
-        return pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.start,
-          children: [
-            pw.Text("BILL RECEIPT",
-                style: pw.TextStyle(fontSize: 20,)),
-
-            pw.SizedBox(height: 15),
-
-            pw.Text("Bill No: ${summary?.id ?? ''}"),
-            pw.SizedBox(height: 10),
-            pw.Text("Customer: ${temple?.name ?? ''}"),
-            pw.SizedBox(height: 10),
-            pw.Text("Date: ${summary?.billDate ?? ''}"),
-            pw.SizedBox(height: 10),
-            pw.Text("Branch: ${summary?.counter}"),
-            pw.SizedBox(height: 10),
-            pw.Text("Email: ${temple?.email}"),
-
-            pw.SizedBox(height: 10),
-
-            pw.Text("Details:\n${poojaString.join("\n")}"),
-
-            pw.SizedBox(height: 10),
-            pw.Text("Payment Mode: ${summary?.mode ?? ''}"),
-            pw.SizedBox(height: 10),
-            pw.Text("Total Amount: ${summary?.total ?? ''}"),
-            pw.SizedBox(height: 10),
-            pw.Text("Amount Paid: ${summary?.recvAmt ?? ''}"),
-            pw.SizedBox(height: 10),
-            pw.Text("Book Online: ${temple?.website ?? ''}"),
-            pw.SizedBox(height: 10),
+            /// 📲 SHARE PDF
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                await sharePdfToWhatsApp();
+              },
+              child: const Text("Share WhatsApp"),
+            ),
           ],
         );
       },
-    ),
-  );
+    );
+  }
 
-  ///  Convert to bytes
-  final bytes = await pdf.save();
+  Future<void> sharePdfToWhatsApp() async {
+    final pdf = pw.Document();
 
-  ///  Share
-  await Printing.sharePdf(
-    bytes: bytes,
-    filename: "bill_${summary?.id ?? 'receipt'}.pdf",
-  );
-}
+    final provider = widget.previewBillProvider;
+    final summary = provider.summary;
+    final temple = provider.temple;
+    final persons = provider.person;
 
+    List<String> poojaString = [];
 
+    for (int i = 0; i < persons.length; i++) {
+      poojaString.add(
+        "${persons[i].id}) ${persons[i].date}\n"
+        "Category: ${persons[i].dietyName}\n"
+        "Product: ${persons[i].poojaName} - ${persons[i].rate}\n",
+      );
+    }
+
+    pdf.addPage(
+      pw.Page(
+        build: (context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text("BILL RECEIPT",
+                  style: pw.TextStyle(
+                    fontSize: 20,
+                  )),
+              pw.SizedBox(height: 15),
+              pw.Text("Bill No: ${summary?.id ?? ''}"),
+              pw.SizedBox(height: 10),
+              pw.Text("Customer: ${temple?.name ?? ''}"),
+              pw.SizedBox(height: 10),
+              pw.Text("Date: ${summary?.billDate ?? ''}"),
+              pw.SizedBox(height: 10),
+              pw.Text("Branch: ${summary?.counter}"),
+              pw.SizedBox(height: 10),
+              pw.Text("Email: ${temple?.email}"),
+              pw.SizedBox(height: 10),
+              pw.Text("Details:\n${poojaString.join("\n")}"),
+              pw.SizedBox(height: 10),
+              pw.Text("Payment Mode: ${summary?.mode ?? ''}"),
+              pw.SizedBox(height: 10),
+              pw.Text("Total Amount: ${summary?.total ?? ''}"),
+              pw.SizedBox(height: 10),
+              pw.Text("Amount Paid: ${summary?.recvAmt ?? ''}"),
+              pw.SizedBox(height: 10),
+              pw.Text("Book Online: ${temple?.website ?? ''}"),
+              pw.SizedBox(height: 10),
+            ],
+          );
+        },
+      ),
+    );
+
+    ///  Convert to bytes
+    final bytes = await pdf.save();
+
+    ///  Share
+    await Printing.sharePdf(
+      bytes: bytes,
+      filename: "bill_${summary?.id ?? 'receipt'}.pdf",
+    );
+  }
 
   showPopUp(BuildContext context) {
     showDialog<void>(
@@ -578,190 +565,231 @@ Future<void> sharePdfToWhatsApp() async {
         });
   }
 
+  static const platform = MethodChannel('cloudpos/printer');
 
+  // Future<void> printReceipt() async {
+  //   try {
+  //     await platform.invokeMethod('printReceipt', {
+  //       "shop": "MY SHOP",
+  //       "items": [
+  //         {"name": "Milk", "qty": 2, "rate": 30},
+  //         {"name": "Bread", "qty": 1, "rate": 50},
+  //       ]
+  //     });
+  //   } catch (e) {
+  //     print("Error: $e");
+  //   }
+  // }
 
 //? sunmi printer
   posPrinter(BillingProvider previewBillProvider) async {
-    DateTime time = DateTime.now();
-    String? today = "${time.day}/${time.month}/${time.year}";
+    List<Map<String, dynamic>> items = [];
 
-    if (widget.previewBillProvider.isConnected) {
-      if (widget.previewBillProvider.printerErrorMessage.isEmpty) {
-        await SunmiPrinter.initPrinter();
-        SunmiStyle(fontSize: 26, bold: true);
-        await SunmiPrinter.setAlignment(align: SunmiPrintAlign.CENTER);
-        await SunmiPrinter.lineWrap(1);
-        previewBillProvider.saveBillResponse?.billImage == null ||
-                previewBillProvider.saveBillResponse?.billImage == '' ||
-                previewBillProvider.imageData == null
-            ? null
-            : await SunmiPrinter.printImage(
-                image: previewBillProvider.imageData!,
-                align: SunmiPrintAlign.CENTER);
-        previewBillProvider.saveBillResponse?.billImage == null ||
-                previewBillProvider.saveBillResponse?.billImage == ''
-            ? null
-            : await SunmiPrinter.lineWrap(2);
-        await SunmiPrinter.printText(
-            content: "${temple?.nameMal}",
-            style: SunmiStyle(
-                fontSize: 28,
-                isUnderLine: false,
-                bold: true,
-                align: SunmiPrintAlign.CENTER));
-        await SunmiPrinter.lineWrap(1);
-        await SunmiPrinter.printText(
-            content: "${temple?.addressLine1}\n",
-            style: SunmiStyle(
-                fontSize: 24,
-                isUnderLine: false,
-                bold: true,
-                align: SunmiPrintAlign.CENTER));
-        await SunmiPrinter.printText(
-            content: "${temple?.addressLine2}\n",
-            style: SunmiStyle(
-                fontSize: 24,
-                isUnderLine: false,
-                bold: true,
-                align: SunmiPrintAlign.CENTER));
-        await SunmiPrinter.printText(
-            content: "${temple?.phone}\n",
-            style: SunmiStyle(
-                fontSize: 25,
-                isUnderLine: false,
-                bold: true,
-                align: SunmiPrintAlign.CENTER));
-        await SunmiPrinter.lineWrap(1);
-        await SunmiPrinter.printTable(
-          // style: SunmiStyle(fontSize: 25),
-          cols: [
-            ColumnMaker(
-                text: "Bill No: ${summary?.id}",
-                align: SunmiPrintAlign.LEFT,
-                width: 10),
-            ColumnMaker(text: today, align: SunmiPrintAlign.RIGHT)
-          ],
-        );
-        await SunmiPrinter.lineWrap(1);
-        int? lenn = previewBillProvider.saveBillResponse?.details?.length;
-        List<Details>? data = previewBillProvider.saveBillResponse?.details;
-        for (int i = 0; i < lenn!; i++) {
-          List datass = [];
-          RegExp datePattern = RegExp(r'\d{2}-\d{2}-\d{4}');
-          Iterable<Match> matches = datePattern.allMatches("${data![i].date}");
+    final details = previewBillProvider.saveBillResponse?.details ?? [];
+    DateTime dateTime = DateTime.parse(DateTime.now().toString());
 
-          for (Match match in matches) {
-            datass.add("${match.group(0)}");
-          }
-          print(
-              "...${previewBillProvider.person[i].id}) ${data[i].deityMal}\n${previewBillProvider.person[i].name} - ${data[i].starMal}\n${data[i].poojaMal} ${data[i].qty}x${data[i].rate}\n");
-          await SunmiPrinter.printText(
-              content:
-                  "${previewBillProvider.person[i].id}) ${data[i].deityMal}\n",
-              style: SunmiStyle(
-                  fontSize: 26,
-                  isUnderLine: false,
-                  bold: false,
-                  align: SunmiPrintAlign.LEFT));
-
-          await SunmiPrinter.printText(
-              content:
-                  "${previewBillProvider.person[i].name} - ${data[i].starMal}\n",
-              style: SunmiStyle(
-                  fontSize: 26,
-                  isUnderLine: false,
-                  bold: false,
-                  align: SunmiPrintAlign.LEFT));
-          // await SunmiPrinter.printText(
-          //     content:
-          //         "${previewBillProvider.person[i].gothra} - ${previewBillProvider.person[i].rashi}\n",
-          //     style: SunmiStyle(
-          //         fontSize: 26,
-          //         isUnderLine: false,
-          //         bold: false,
-          //         align: SunmiPrintAlign.LEFT));
-          await SunmiPrinter.printText(
-              content: "${data[i].poojaMal} ${data[i].qty}x${data[i].rate}\n",
-              style: SunmiStyle(
-                  fontSize: 26,
-                  isUnderLine: false,
-                  bold: false,
-                  align: SunmiPrintAlign.LEFT));
-          for (int n = 0; n < datass.length; n += 2) {
-            if (n + 1 < datass.length) {
-              print("..${datass[n]}, ${datass[n + 1]}");
-              await SunmiPrinter.printText(
-                  content: "${datass[n]}, ${datass[n + 1]}",
-                  style: SunmiStyle(
-                      fontSize: 26,
-                      isUnderLine: false,
-                      bold: false,
-                      align: SunmiPrintAlign.LEFT));
-            } else {
-              if (datass.length > 1) {
-                await SunmiPrinter.printText(
-                    content: ",\n${datass[n]}\n",
-                    style: SunmiStyle(
-                        fontSize: 26,
-                        isUnderLine: false,
-                        bold: false,
-                        align: SunmiPrintAlign.LEFT));
-              } else {
-                await SunmiPrinter.printText(
-                    content: "${datass[n]}\n",
-                    style: SunmiStyle(
-                        fontSize: 26,
-                        isUnderLine: false,
-                        bold: false,
-                        align: SunmiPrintAlign.LEFT));
-              }
-            }
-          }
-          data[i].address == null
-              ? ''
-              : await SunmiPrinter.printText(
-                  content: "${data[i].address}\n",
-                  style: SunmiStyle(
-                      fontSize: 26,
-                      isUnderLine: false,
-                      bold: false,
-                      align: SunmiPrintAlign.LEFT));
-          await SunmiPrinter.lineWrap(1);
-        }
-        await SunmiPrinter.printTable(
-          // style: SunmiStyle(fontSize: 27, bold: true),
-          cols: [
-            ColumnMaker(
-              text: "Mode: ${summary?.mode}",
-              align: SunmiPrintAlign.LEFT,
-            ),
-            ColumnMaker(
-              text: "Total: ${summary?.total}",
-              align: SunmiPrintAlign.RIGHT,
-            ),
-          ],
-        );
-        await SunmiPrinter.lineWrap(1);
-        await SunmiPrinter.printText(
-            content: "Book Online ${temple?.website} \n",
-            style: SunmiStyle(
-                fontSize: 24,
-                isUnderLine: false,
-                bold: true,
-                align: SunmiPrintAlign.CENTER));
-        await SunmiPrinter.lineWrap(1);
-        await SunmiPrinter.feedPaper();
-        await SunmiPrinter.cutPaper().then((value) {
-          Helpers.successToast('Bill Saved & Printed Successfully');
-        });
-        // bill?.clearValues();
-        // widget.previewBillProvider.clearValues();
-        // widget.previewBillProvider.previewDetailsList.clear();
-        // widget.previewBillProvider.poojaDetailsList.clear();
-      } else {
-        Helpers.successToast(widget.previewBillProvider.printerErrorMessage);
-      }
+// 🔹 Format
+    String formattedDate = DateFormat('dd-MM-yyyy').format(dateTime);
+    String formattedTime = DateFormat('hh:mm a').format(dateTime);
+    for (var item in details) {
+      items.add({
+        "type": item.deity ?? '',
+        "name": item.pooja ?? "",
+        "qty": item.qty ?? 0,
+        "rate": item.rate ?? 0,
+      });
     }
+    try {
+      await platform.invokeMethod('printReceipt', {
+        "shop": temple?.name,
+        "shopaddress": temple?.addressLine1,
+        "shopaddress2": temple?.addressLine2,
+        "items": items,
+        "mode": summary?.mode,
+        "bill": summary?.id,
+        "billdate": formattedDate,
+        "billtime": formattedTime
+      });
+    } catch (e) {
+      print("Error: $e");
+    }
+    // if (widget.previewBillProvider.isConnected) {
+    //   if (widget.previewBillProvider.printerErrorMessage.isEmpty) {
+    //     await SunmiPrinter.initPrinter();
+    //     SunmiStyle(fontSize: 26, bold: true);
+    //     await SunmiPrinter.setAlignment(align: SunmiPrintAlign.CENTER);
+    //     await SunmiPrinter.lineWrap(1);
+    //     previewBillProvider.saveBillResponse?.billImage == null ||
+    //             previewBillProvider.saveBillResponse?.billImage == '' ||
+    //             previewBillProvider.imageData == null
+    //         ? null
+    //         : await SunmiPrinter.printImage(
+    //             image: previewBillProvider.imageData!,
+    //             align: SunmiPrintAlign.CENTER);
+    //     previewBillProvider.saveBillResponse?.billImage == null ||
+    //             previewBillProvider.saveBillResponse?.billImage == ''
+    //         ? null
+    //         : await SunmiPrinter.lineWrap(2);
+    //     await SunmiPrinter.printText(
+    //         content: "${temple?.nameMal}",
+    //         style: SunmiStyle(
+    //             fontSize: 28,
+    //             isUnderLine: false,
+    //             bold: true,
+    //             align: SunmiPrintAlign.CENTER));
+    //     await SunmiPrinter.lineWrap(1);
+    //     await SunmiPrinter.printText(
+    //         content: "${temple?.addressLine1}\n",
+    //         style: SunmiStyle(
+    //             fontSize: 24,
+    //             isUnderLine: false,
+    //             bold: true,
+    //             align: SunmiPrintAlign.CENTER));
+    //     await SunmiPrinter.printText(
+    //         content: "${temple?.addressLine2}\n",
+    //         style: SunmiStyle(
+    //             fontSize: 24,
+    //             isUnderLine: false,
+    //             bold: true,
+    //             align: SunmiPrintAlign.CENTER));
+    //     await SunmiPrinter.printText(
+    //         content: "${temple?.phone}\n",
+    //         style: SunmiStyle(
+    //             fontSize: 25,
+    //             isUnderLine: false,
+    //             bold: true,
+    //             align: SunmiPrintAlign.CENTER));
+    //     await SunmiPrinter.lineWrap(1);
+    //     await SunmiPrinter.printTable(
+    //       // style: SunmiStyle(fontSize: 25),
+    //       cols: [
+    //         ColumnMaker(
+    //             text: "Bill No: ${summary?.id}",
+    //             align: SunmiPrintAlign.LEFT,
+    //             width: 10),
+    //         ColumnMaker(text: today, align: SunmiPrintAlign.RIGHT)
+    //       ],
+    //     );
+    //     await SunmiPrinter.lineWrap(1);
+    //     int? lenn = previewBillProvider.saveBillResponse?.details?.length;
+    //     List<Details>? data = previewBillProvider.saveBillResponse?.details;
+    //     for (int i = 0; i < lenn!; i++) {
+    //       List datass = [];
+    //       RegExp datePattern = RegExp(r'\d{2}-\d{2}-\d{4}');
+    //       Iterable<Match> matches = datePattern.allMatches("${data![i].date}");
+
+    //       for (Match match in matches) {
+    //         datass.add("${match.group(0)}");
+    //       }
+    //       print(
+    //           "...${previewBillProvider.person[i].id}) ${data[i].deityMal}\n${previewBillProvider.person[i].name} - ${data[i].starMal}\n${data[i].poojaMal} ${data[i].qty}x${data[i].rate}\n");
+    //       await SunmiPrinter.printText(
+    //           content:
+    //               "${previewBillProvider.person[i].id}) ${data[i].deityMal}\n",
+    //           style: SunmiStyle(
+    //               fontSize: 26,
+    //               isUnderLine: false,
+    //               bold: false,
+    //               align: SunmiPrintAlign.LEFT));
+
+    //       await SunmiPrinter.printText(
+    //           content:
+    //               "${previewBillProvider.person[i].name} - ${data[i].starMal}\n",
+    //           style: SunmiStyle(
+    //               fontSize: 26,
+    //               isUnderLine: false,
+    //               bold: false,
+    //               align: SunmiPrintAlign.LEFT));
+    //       // await SunmiPrinter.printText(
+    //       //     content:
+    //       //         "${previewBillProvider.person[i].gothra} - ${previewBillProvider.person[i].rashi}\n",
+    //       //     style: SunmiStyle(
+    //       //         fontSize: 26,
+    //       //         isUnderLine: false,
+    //       //         bold: false,
+    //       //         align: SunmiPrintAlign.LEFT));
+    //       await SunmiPrinter.printText(
+    //           content: "${data[i].poojaMal} ${data[i].qty}x${data[i].rate}\n",
+    //           style: SunmiStyle(
+    //               fontSize: 26,
+    //               isUnderLine: false,
+    //               bold: false,
+    //               align: SunmiPrintAlign.LEFT));
+    //       for (int n = 0; n < datass.length; n += 2) {
+    //         if (n + 1 < datass.length) {
+    //           print("..${datass[n]}, ${datass[n + 1]}");
+    //           await SunmiPrinter.printText(
+    //               content: "${datass[n]}, ${datass[n + 1]}",
+    //               style: SunmiStyle(
+    //                   fontSize: 26,
+    //                   isUnderLine: false,
+    //                   bold: false,
+    //                   align: SunmiPrintAlign.LEFT));
+    //         } else {
+    //           if (datass.length > 1) {
+    //             await SunmiPrinter.printText(
+    //                 content: ",\n${datass[n]}\n",
+    //                 style: SunmiStyle(
+    //                     fontSize: 26,
+    //                     isUnderLine: false,
+    //                     bold: false,
+    //                     align: SunmiPrintAlign.LEFT));
+    //           } else {
+    //             await SunmiPrinter.printText(
+    //                 content: "${datass[n]}\n",
+    //                 style: SunmiStyle(
+    //                     fontSize: 26,
+    //                     isUnderLine: false,
+    //                     bold: false,
+    //                     align: SunmiPrintAlign.LEFT));
+    //           }
+    //         }
+    //       }
+    //       data[i].address == null
+    //           ? ''
+    //           : await SunmiPrinter.printText(
+    //               content: "${data[i].address}\n",
+    //               style: SunmiStyle(
+    //                   fontSize: 26,
+    //                   isUnderLine: false,
+    //                   bold: false,
+    //                   align: SunmiPrintAlign.LEFT));
+    //       await SunmiPrinter.lineWrap(1);
+    //     }
+    //     await SunmiPrinter.printTable(
+    //       // style: SunmiStyle(fontSize: 27, bold: true),
+    //       cols: [
+    //         ColumnMaker(
+    //           text: "Mode: ${summary?.mode}",
+    //           align: SunmiPrintAlign.LEFT,
+    //         ),
+    //         ColumnMaker(
+    //           text: "Total: ${summary?.total}",
+    //           align: SunmiPrintAlign.RIGHT,
+    //         ),
+    //       ],
+    //     );
+    //     await SunmiPrinter.lineWrap(1);
+    //     await SunmiPrinter.printText(
+    //         content: "Book Online ${temple?.website} \n",
+    //         style: SunmiStyle(
+    //             fontSize: 24,
+    //             isUnderLine: false,
+    //             bold: true,
+    //             align: SunmiPrintAlign.CENTER));
+    //     await SunmiPrinter.lineWrap(1);
+    //     await SunmiPrinter.feedPaper();
+    //     await SunmiPrinter.cutPaper().then((value) {
+    //       Helpers.successToast('Bill Saved & Printed Successfully');
+    //     });
+    //     // bill?.clearValues();
+    //     // widget.previewBillProvider.clearValues();
+    //     // widget.previewBillProvider.previewDetailsList.clear();
+    //     // widget.previewBillProvider.poojaDetailsList.clear();
+    //   } else {
+    //     Helpers.successToast(widget.previewBillProvider.printerErrorMessage);
+    //   }
+    // }
 
 //? .....thermal bluetooth print
 
@@ -915,10 +943,7 @@ Future<void> sharePdfToWhatsApp() async {
 //     }
     bill?.clearValues();
   }
-  
 }
-
-
 
 class PoojaPersons {
   String? name = 'Customer';
