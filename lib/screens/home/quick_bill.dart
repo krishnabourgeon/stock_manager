@@ -2,10 +2,10 @@ import 'package:auto_height_grid_view/auto_height_grid_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_sunmi_printer_plus/column_maker.dart';
-import 'package:flutter_sunmi_printer_plus/enums.dart';
-import 'package:flutter_sunmi_printer_plus/flutter_sunmi_printer_plus.dart';
-import 'package:flutter_sunmi_printer_plus/sunmi_style.dart';
+// import 'package:flutter_sunmi_printer_plus/column_maker.dart';
+// import 'package:flutter_sunmi_printer_plus/enums.dart';
+// import 'package:flutter_sunmi_printer_plus/flutter_sunmi_printer_plus.dart';
+// import 'package:flutter_sunmi_printer_plus/sunmi_style.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:stock_manager/common/custom_drop_down_search.dart';
@@ -34,7 +34,7 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
     final billingProvider = context.read<BillingProvider>();
 
     Future.microtask(() {
-      billingProvider.checkPrinter();
+      // billingProvider.checkPrinter();
     });
     super.initState();
   }
@@ -476,11 +476,11 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
                         amt: amt, modeid: modeid, poojalist: poojalist);
                     if (bill.savequickbills?.status == true) {
                       if (bill.isConnected == true) {
-                        await posPrinter(bill);
+                        // await posPrinter(bill);
                       } else {
-                        await bill.checkPrinter();
+                        // await bill.checkPrinter();
                         if (bill.isConnected == true) {
-                          await posPrinter(bill);
+                          // await posPrinter(bill);
                         } else {
                           Helpers.successToast("Printer is not connected");
                         }
@@ -515,181 +515,181 @@ class _QuickBillScreenState extends State<QuickBillScreen> {
     );
   }
 
-  posPrinter(BillingProvider previewBillProvider) async {
-    final home = context.read<HomeProvider>();
-    DateTime time = DateTime.parse(
-        "${previewBillProvider.savequickbills?.summary?.billDate}");
-    // String? today = "${time.day}/${time.month}/${time.year} ";
-    String? today = DateFormat('dd/MM/yyyy').format(time);
+  // posPrinter(BillingProvider previewBillProvider) async {
+  //   final home = context.read<HomeProvider>();
+  //   DateTime time = DateTime.parse(
+  //       "${previewBillProvider.savequickbills?.summary?.billDate}");
+  //   // String? today = "${time.day}/${time.month}/${time.year} ";
+  //   String? today = DateFormat('dd/MM/yyyy').format(time);
 
-    if (previewBillProvider.isConnected) {
+  //   if (previewBillProvider.isConnected) {
 
-      await SunmiPrinter.initPrinter();
-      SunmiStyle(fontSize: 26, bold: true);
-      await SunmiPrinter.setAlignment(align: SunmiPrintAlign.CENTER);
-      await SunmiPrinter.lineWrap(1);
-      previewBillProvider.savequickbills?.billImage == null ||
-              previewBillProvider.savequickbills?.billImage == ''
-          ? null
-          : await SunmiPrinter.printImage(
-              image: previewBillProvider.imageData!,
-              align: SunmiPrintAlign.CENTER);
-      previewBillProvider.savequickbills?.billImage == null ||
-              previewBillProvider.savequickbills?.billImage == ''
-          ? null
-          : await SunmiPrinter.lineWrap(2);
-      await SunmiPrinter.printText(
-          content: "${previewBillProvider.savequickbills?.temple?.nameMal}",
-          style: SunmiStyle(
-              fontSize: 28,
-              isUnderLine: false,
-              bold: true,
-              align: SunmiPrintAlign.CENTER));
-      await SunmiPrinter.lineWrap(1);
-      await SunmiPrinter.printText(
-          content:
-              "${previewBillProvider.savequickbills?.temple?.addressLine1}\n",
-          style: SunmiStyle(
-              fontSize: 24,
-              isUnderLine: false,
-              bold: true,
-              align: SunmiPrintAlign.CENTER));
-      await SunmiPrinter.printText(
-          content:
-              "${previewBillProvider.savequickbills?.temple?.addressLine2}\n",
-          style: SunmiStyle(
-              fontSize: 24,
-              isUnderLine: false,
-              bold: true,
-              align: SunmiPrintAlign.CENTER));
-      await SunmiPrinter.printText(
-          content: "${previewBillProvider.savequickbills?.temple?.phone}\n",
-          style: SunmiStyle(
-              fontSize: 25,
-              isUnderLine: false,
-              bold: true,
-              align: SunmiPrintAlign.CENTER));
+  //     await SunmiPrinter.initPrinter();
+  //     SunmiStyle(fontSize: 26, bold: true);
+  //     await SunmiPrinter.setAlignment(align: SunmiPrintAlign.CENTER);
+  //     await SunmiPrinter.lineWrap(1);
+  //     previewBillProvider.savequickbills?.billImage == null ||
+  //             previewBillProvider.savequickbills?.billImage == ''
+  //         ? null
+  //         : await SunmiPrinter.printImage(
+  //             image: previewBillProvider.imageData!,
+  //             align: SunmiPrintAlign.CENTER);
+  //     previewBillProvider.savequickbills?.billImage == null ||
+  //             previewBillProvider.savequickbills?.billImage == ''
+  //         ? null
+  //         : await SunmiPrinter.lineWrap(2);
+  //     await SunmiPrinter.printText(
+  //         content: "${previewBillProvider.savequickbills?.temple?.nameMal}",
+  //         style: SunmiStyle(
+  //             fontSize: 28,
+  //             isUnderLine: false,
+  //             bold: true,
+  //             align: SunmiPrintAlign.CENTER));
+  //     await SunmiPrinter.lineWrap(1);
+  //     await SunmiPrinter.printText(
+  //         content:
+  //             "${previewBillProvider.savequickbills?.temple?.addressLine1}\n",
+  //         style: SunmiStyle(
+  //             fontSize: 24,
+  //             isUnderLine: false,
+  //             bold: true,
+  //             align: SunmiPrintAlign.CENTER));
+  //     await SunmiPrinter.printText(
+  //         content:
+  //             "${previewBillProvider.savequickbills?.temple?.addressLine2}\n",
+  //         style: SunmiStyle(
+  //             fontSize: 24,
+  //             isUnderLine: false,
+  //             bold: true,
+  //             align: SunmiPrintAlign.CENTER));
+  //     await SunmiPrinter.printText(
+  //         content: "${previewBillProvider.savequickbills?.temple?.phone}\n",
+  //         style: SunmiStyle(
+  //             fontSize: 25,
+  //             isUnderLine: false,
+  //             bold: true,
+  //             align: SunmiPrintAlign.CENTER));
 
-      await SunmiPrinter.printTable(
-        // style: SunmiStyle(fontSize: 25),
-        cols: [
-          ColumnMaker(
-              text:
-                  "Bill No:${previewBillProvider.savequickbills?.summary?.id}",
-              align: SunmiPrintAlign.LEFT,
-              width: 9),
-          ColumnMaker(text: today, align: SunmiPrintAlign.RIGHT)
-        ],
-      );
-      await SunmiPrinter.lineWrap(1);
-      await SunmiPrinter.printText(
-          content: "${previewBillProvider.savequickbills?.summary?.name}\n",
-          style: SunmiStyle(
-              fontSize: 26,
-              isUnderLine: false,
-              bold: false,
-              align: SunmiPrintAlign.LEFT));
-      await SunmiPrinter.lineWrap(1);
-      int? lenn = previewBillProvider.savequickbills?.details?.length;
-      final data = previewBillProvider.savequickbills?.details;
-      // List<Details>? data = previewBillProvider.saveBillResponse?.details;
-      for (int i = 0; i < lenn!; i++) {
-        previewBillProvider.getPoojanamefromid(
-            int.parse(
-                "${previewBillProvider.savequickbills?.details![0].pooja}"),
-            home.quickbills);
-        await SunmiPrinter.printText(
-            content:
-                "${i + 1}) ${previewBillProvider.savequickbills?.details![i].pooja}  ${data![i].qty}x${data[i].rate}\n",
-            style: SunmiStyle(
-                fontSize: 26,
-                isUnderLine: false,
-                bold: false,
-                align: SunmiPrintAlign.LEFT));
+  //     await SunmiPrinter.printTable(
+  //       // style: SunmiStyle(fontSize: 25),
+  //       cols: [
+  //         ColumnMaker(
+  //             text:
+  //                 "Bill No:${previewBillProvider.savequickbills?.summary?.id}",
+  //             align: SunmiPrintAlign.LEFT,
+  //             width: 9),
+  //         ColumnMaker(text: today, align: SunmiPrintAlign.RIGHT)
+  //       ],
+  //     );
+  //     await SunmiPrinter.lineWrap(1);
+  //     await SunmiPrinter.printText(
+  //         content: "${previewBillProvider.savequickbills?.summary?.name}\n",
+  //         style: SunmiStyle(
+  //             fontSize: 26,
+  //             isUnderLine: false,
+  //             bold: false,
+  //             align: SunmiPrintAlign.LEFT));
+  //     await SunmiPrinter.lineWrap(1);
+  //     int? lenn = previewBillProvider.savequickbills?.details?.length;
+  //     final data = previewBillProvider.savequickbills?.details;
+  //     // List<Details>? data = previewBillProvider.saveBillResponse?.details;
+  //     for (int i = 0; i < lenn!; i++) {
+  //       previewBillProvider.getPoojanamefromid(
+  //           int.parse(
+  //               "${previewBillProvider.savequickbills?.details![0].pooja}"),
+  //           home.quickbills);
+  //       await SunmiPrinter.printText(
+  //           content:
+  //               "${i + 1}) ${previewBillProvider.savequickbills?.details![i].pooja}  ${data![i].qty}x${data[i].rate}\n",
+  //           style: SunmiStyle(
+  //               fontSize: 26,
+  //               isUnderLine: false,
+  //               bold: false,
+  //               align: SunmiPrintAlign.LEFT));
 
-        // await SunmiPrinter.printText(
-        //     content:
-        //         "${previewBillProvider.person[i].name} ${data[i].starMal}\n",
-        //     style: SunmiStyle(
-        //         fontSize: 26,
-        //         isUnderLine: false,
-        //         bold: false,
-        //         align: SunmiPrintAlign.LEFT));
-        // await SunmiPrinter.printText(
-        //     content: "${data[i].poojaMal} ${data[i].qty}x${data[i].rate}\n",
-        //     style: SunmiStyle(
-        //         fontSize: 26,
-        //         isUnderLine: false,
-        //         bold: false,
-        //         align: SunmiPrintAlign.LEFT));
-        // for (int n = 0; n < datass.length; n += 2) {
-        //   if (n + 1 < datass.length) {
-        //     await SunmiPrinter.printText(
-        //         content: "${datass[n]}, ${datass[n + 1]}",
-        //         style: SunmiStyle(
-        //             fontSize: 26,
-        //             isUnderLine: false,
-        //             bold: false,
-        //             align: SunmiPrintAlign.LEFT));
-        //   } else {
-        //     if (datass.length > 1) {
-        //       await SunmiPrinter.printText(
-        //           content: ",\n${datass[n]}\n",
-        //           style: SunmiStyle(
-        //               fontSize: 26,
-        //               isUnderLine: false,
-        //               bold: false,
-        //               align: SunmiPrintAlign.LEFT));
-        //     } else {
-        //       await SunmiPrinter.printText(
-        //           content: "${datass[n]}\n",
-        //           style: SunmiStyle(
-        //               fontSize: 26,
-        //               isUnderLine: false,
-        //               bold: false,
-        //               align: SunmiPrintAlign.LEFT));
-        //     }
-        // }
-      }
-      // data[i].address == null
-      //     ? ''
-      //     : await SunmiPrinter.printText(
-      //         content: "${data[i].address}\n",
-      //         style: SunmiStyle(
-      //             fontSize: 26,
-      //             isUnderLine: false,
-      //             bold: false,
-      //             align: SunmiPrintAlign.LEFT));
+  //       // await SunmiPrinter.printText(
+  //       //     content:
+  //       //         "${previewBillProvider.person[i].name} ${data[i].starMal}\n",
+  //       //     style: SunmiStyle(
+  //       //         fontSize: 26,
+  //       //         isUnderLine: false,
+  //       //         bold: false,
+  //       //         align: SunmiPrintAlign.LEFT));
+  //       // await SunmiPrinter.printText(
+  //       //     content: "${data[i].poojaMal} ${data[i].qty}x${data[i].rate}\n",
+  //       //     style: SunmiStyle(
+  //       //         fontSize: 26,
+  //       //         isUnderLine: false,
+  //       //         bold: false,
+  //       //         align: SunmiPrintAlign.LEFT));
+  //       // for (int n = 0; n < datass.length; n += 2) {
+  //       //   if (n + 1 < datass.length) {
+  //       //     await SunmiPrinter.printText(
+  //       //         content: "${datass[n]}, ${datass[n + 1]}",
+  //       //         style: SunmiStyle(
+  //       //             fontSize: 26,
+  //       //             isUnderLine: false,
+  //       //             bold: false,
+  //       //             align: SunmiPrintAlign.LEFT));
+  //       //   } else {
+  //       //     if (datass.length > 1) {
+  //       //       await SunmiPrinter.printText(
+  //       //           content: ",\n${datass[n]}\n",
+  //       //           style: SunmiStyle(
+  //       //               fontSize: 26,
+  //       //               isUnderLine: false,
+  //       //               bold: false,
+  //       //               align: SunmiPrintAlign.LEFT));
+  //       //     } else {
+  //       //       await SunmiPrinter.printText(
+  //       //           content: "${datass[n]}\n",
+  //       //           style: SunmiStyle(
+  //       //               fontSize: 26,
+  //       //               isUnderLine: false,
+  //       //               bold: false,
+  //       //               align: SunmiPrintAlign.LEFT));
+  //       //     }
+  //       // }
+  //     }
+  //     // data[i].address == null
+  //     //     ? ''
+  //     //     : await SunmiPrinter.printText(
+  //     //         content: "${data[i].address}\n",
+  //     //         style: SunmiStyle(
+  //     //             fontSize: 26,
+  //     //             isUnderLine: false,
+  //     //             bold: false,
+  //     //             align: SunmiPrintAlign.LEFT));
 
-      await SunmiPrinter.lineWrap(1);
-      await SunmiPrinter.printTable(
-        // style: SunmiStyle(fontSize: 27, bold: true),
-        cols: [
-          ColumnMaker(
-            text: "Mode: ${previewBillProvider.savequickbills?.summary?.mode}",
-            align: SunmiPrintAlign.LEFT,
-          ),
-          ColumnMaker(
-            text:
-                "Total: ${previewBillProvider.savequickbills?.summary?.total}",
-            align: SunmiPrintAlign.RIGHT,
-          ),
-        ],
-      );
-      await SunmiPrinter.lineWrap(1);
-      await SunmiPrinter.printText(
-          content:
-              "Book Online ${previewBillProvider.savequickbills?.temple?.website} \n",
-          style: SunmiStyle(
-              fontSize: 24,
-              isUnderLine: false,
-              bold: true,
-              align: SunmiPrintAlign.CENTER));
-      await SunmiPrinter.lineWrap(1);
-      await SunmiPrinter.feedPaper();
-      await SunmiPrinter.cutPaper().then((value) {
-        Helpers.successToast('Bill Saved & Printed Successfully');
-      });
-    }
-  }
+  //     await SunmiPrinter.lineWrap(1);
+  //     await SunmiPrinter.printTable(
+  //       // style: SunmiStyle(fontSize: 27, bold: true),
+  //       cols: [
+  //         ColumnMaker(
+  //           text: "Mode: ${previewBillProvider.savequickbills?.summary?.mode}",
+  //           align: SunmiPrintAlign.LEFT,
+  //         ),
+  //         ColumnMaker(
+  //           text:
+  //               "Total: ${previewBillProvider.savequickbills?.summary?.total}",
+  //           align: SunmiPrintAlign.RIGHT,
+  //         ),
+  //       ],
+  //     );
+  //     await SunmiPrinter.lineWrap(1);
+  //     await SunmiPrinter.printText(
+  //         content:
+  //             "Book Online ${previewBillProvider.savequickbills?.temple?.website} \n",
+  //         style: SunmiStyle(
+  //             fontSize: 24,
+  //             isUnderLine: false,
+  //             bold: true,
+  //             align: SunmiPrintAlign.CENTER));
+  //     await SunmiPrinter.lineWrap(1);
+  //     await SunmiPrinter.feedPaper();
+  //     await SunmiPrinter.cutPaper().then((value) {
+  //       Helpers.successToast('Bill Saved & Printed Successfully');
+  //     });
+  //   }
+  // }
 }

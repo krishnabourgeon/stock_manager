@@ -59,7 +59,7 @@
 //   List<Cat> categoryList = [];
 //   List<Datum> allProductList = [];
 //   List<Datum> productList = [];
-//   List<Cat> allCategoryList = [];  
+//   List<Cat> allCategoryList = [];
 
 // String? selectedCategoryName;
 // String? selectedProductName;
@@ -233,8 +233,6 @@
 //   notifyListeners();
 // }
 
-
-
 //   Future<void> getCategories() async {
 //     final network = await CommonFunctions.checkInternetConnection();
 //     if (network) {
@@ -255,7 +253,7 @@
 //         updateLoadState(LoaderState.loaded);
 //       }
 //     }
-//   } 
+//   }
 
 //     updateProductsList(ProductModel? productModel) {
 //     productList = productModel?.data ?? [];
@@ -270,7 +268,6 @@
 //     // updateDeityId('${deitiesList[0].id}');  // cleared
 //     notifyListeners();
 //   }
-
 
 //   Future<void> getProducts() async {
 //     final network = await CommonFunctions.checkInternetConnection();
@@ -486,12 +483,12 @@
 //           amt: amt, modeid: modeid, poojalist: poojalist);
 //       if (res.isValue) {
 //         savequickbills = res.asValue!.value;
-        
+
 //         String billImage = savequickbills?.billImage ?? '';
 //         String imageUrl = billImage.isEmpty
 //             ? 'https://miro.medium.com/v2/resize:fit:912/1*2EF1A0OGnlsPE8z07zmP9g.jpeg'
-//             : (billImage.startsWith('http') 
-//                 ? billImage 
+//             : (billImage.startsWith('http')
+//                 ? billImage
 //                 : 'http://appuser.templesoftware.in/public/$billImage');
 
 //         try {
@@ -1397,8 +1394,6 @@
 //   //   navigateToPreviewBill(context);
 //   // }
 
-
-
 //   saveAndPreviewFunction(BuildContext context) {
 //   PoojaDetails poojaDetails = PoojaDetails(
 //     name: nameController.text.isEmpty
@@ -1487,9 +1482,6 @@
 //     },
 //   );
 // }
-
-
-
 
 //   launchWhatsAppUri(String text) async {
 //     String mobileNumber =
@@ -1580,13 +1572,10 @@
 //   }
 // }
 
-
-
-
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter_sunmi_printer_plus/flutter_sunmi_printer_plus.dart';
+// import 'package:flutter_sunmi_printer_plus/flutter_sunmi_printer_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:stock_manager/common/common_functions.dart';
 import 'package:stock_manager/models/dieties_response_model.dart';
@@ -1621,16 +1610,16 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   static bool ratefield = false;
 // print close
 
-  checkPrinter() async {
-    try {
-      isConnected = await SunmiPrinter.initPrinter() ?? false;
+  // checkPrinter() async {
+  //   try {
+  //     isConnected = await SunmiPrinter.initPrinter() ?? false;
 
-      notifyListeners();
-    } catch (err) {
-      printerErrorMessage = err.toString();
-      notifyListeners();
-    }
-  }
+  //     notifyListeners();
+  //   } catch (err) {
+  //     printerErrorMessage = err.toString();
+  //     notifyListeners();
+  //   }
+  // }
 
   DeitiesResponse? deitiesResponse;
   SavequickbillDatamodel? savequickbills;
@@ -1726,7 +1715,6 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   static bool address = false;
   double availableStock = 0;
   String selectedProductId = '';
-
 
   TextEditingController mobileNumberController = TextEditingController();
   TextEditingController noOfMonthsController = TextEditingController();
@@ -1971,8 +1959,8 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
           paymentMode: paymentModeId ?? 0,
           transactionid: transid == null || transid == '' ? null : transid,
           poojaDetails: previewBillResponse?.data?.poojaDetails);
-          debugPrint("STEP 2 Body.storeId: ${saveBillBody.storeId}");
-          debugPrint("STEP 3 JSON: ${saveBillBody.toJson()}");
+      debugPrint("STEP 2 Body.storeId: ${saveBillBody.storeId}");
+      debugPrint("STEP 3 JSON: ${saveBillBody.toJson()}");
       try {
         var res = await serviceConfig.saveBill(saveBillBody);
         if (res.isValue) {
@@ -2260,7 +2248,6 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   //   for (var element in poojaDataList) {
   //     if (name == element.name) {
   //       poojaId = '${element.poojaId}';
-        
 
   //       poojacountrow = element.rowcount;
   //       qtyController.text = '1';
@@ -2273,27 +2260,26 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   //   notifyListeners();
   // }
 
-
   getPoojaIdFromName(String name) {
-  poojaName = name;
-  updateIsDeityUpdated(true);
+    poojaName = name;
+    updateIsDeityUpdated(true);
 
-  for (var element in poojaDataList) {
-    if (name == element.name) {
-      poojaId = '${element.poojaId}';
+    for (var element in poojaDataList) {
+      if (name == element.name) {
+        poojaId = '${element.poojaId}';
 
       //  ADD THIS
       selectedProductId = element.poojaId.toString();
 
-      poojacountrow = element.rowcount;
-      qtyController.text = '1';
-      poojaRate = double.parse(element.rate ?? '0');
-      updateRate();
+        poojacountrow = element.rowcount;
+        qtyController.text = '1';
+        poojaRate = double.parse(element.rate ?? '0');
+        updateRate();
+      }
     }
-  }
 
-  notifyListeners();
-}
+    notifyListeners();
+  }
 
   String? name;
   String getPoojanamefromid(int id, QuickbillDatamodel? quickdata) {
@@ -2385,45 +2371,45 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
 //   notifyListeners();
 // }
 
-bool isStockLoading = false;
-bool hasFetchedStock = false;
+  bool isStockLoading = false;
+  bool hasFetchedStock = false;
 
 
 
 
 Future<void> fetchProductStock() async {
     hasFetchedStock = false;
-  isStockLoading = true;
-  notifyListeners();
-
-  String storeId = await SharedPreferenceHelper.getStoreID();
-
-  if (selectedProductId.isEmpty) {
-    isStockLoading = false;
+    isStockLoading = true;
     notifyListeners();
-    return;
-  }
 
-  final res = await serviceConfig.getProductStock(
-    storeId: storeId,
-    productId: selectedProductId,
-  );
+    String storeId = await SharedPreferenceHelper.getStoreID();
 
-  if (!res.isError) {
-    ProductStoreModel model = res.asValue!.value;
+    if (selectedProductId.isEmpty) {
+      isStockLoading = false;
+      notifyListeners();
+      return;
+    }
 
-    if (model.data.isNotEmpty) {
-      availableStock = model.data.first.total;
+    final res = await serviceConfig.getProductStock(
+      storeId: storeId,
+      productId: selectedProductId,
+    );
+
+    if (!res.isError) {
+      ProductStoreModel model = res.asValue!.value;
+
+      if (model.data.isNotEmpty) {
+        availableStock = model.data.first.total;
+      } else {
+        availableStock = 0;
+      }
     } else {
       availableStock = 0;
     }
-  } else {
-    availableStock = 0;
+    hasFetchedStock = true;
+    isStockLoading = false;
+    notifyListeners();
   }
-   hasFetchedStock = true;
-  isStockLoading = false;
-  notifyListeners();
-}
 
   getrashiIdFromName(String name) {
     rashiName = name;
@@ -2987,6 +2973,39 @@ Future<void> fetchProductStock() async {
   //   notifyListeners();
   // }
 
+  clearValues({
+    bool isClearPaymentMode = true,
+    bool isClearDate = true,
+  }) {
+    // Controllers
+    addressController.clear();
+    nameController.clear();
+    nameController2.clear();
+    qtyController = TextEditingController(text: '1');
+    rateController.clear();
+    totalRateController.clear();
+    paidAmountController.clear();
+    noOfDaysController.clear();
+    noOfWeeksController.clear();
+    noOfMonthsController.clear();
+
+    // IDs & selections
+    deityId = '1';
+    poojaId = '';
+    deityname = null;
+    poojaName = null;
+    starId = '';
+    starName = null;
+    starName1 = null;
+    specialStarName = null;
+    specialStarId = null;
+    gothraId = '';
+    rashiId = '';
+
+    // Stock reset ✅
+    availableStock = 0;
+    hasFetchedStock = false;
+    selectedProductId = '';
 
    clearValues({
   bool isClearPaymentMode = true,

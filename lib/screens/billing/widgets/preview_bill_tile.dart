@@ -219,6 +219,7 @@ class PreviewBillTile extends StatelessWidget {
               );
             },
           ),
+          30.verticalSpace
         ]),
       ),
     );

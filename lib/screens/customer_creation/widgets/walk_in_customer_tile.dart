@@ -24,6 +24,8 @@ class WalkingCustomerTile extends StatelessWidget {
           ..getPoojas()
           ..nameController.clear()
           ..clearPaymentValues()
+          ..poojaDataList.clear()
+          ..previewDetailsList.clear()
           ..poojaDetailsList.clear());
       },
       child: Container(
