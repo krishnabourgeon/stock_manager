@@ -319,7 +319,7 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
                               .trim()
                               .isNotEmpty
                       ? Colors.greenAccent
-                      : Colors.greenAccent.withOpacity(.5)
+                      : Colors.green
                 ],
               ),
               // CommonButton(

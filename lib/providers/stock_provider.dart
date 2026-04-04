@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:stock_manager/common/common_functions.dart';
 import 'package:stock_manager/models/Save_stock_body.dart';
 import 'package:stock_manager/models/category_model.dart';
+import 'package:stock_manager/models/delete_purchase_model.dart';
 import 'package:stock_manager/models/product_model.dart';
+import 'package:stock_manager/models/purchase_details_model.dart';
 import 'package:stock_manager/models/save_stock_model.dart';
 import 'package:stock_manager/models/supplier_model.dart';
 import 'package:stock_manager/models/unit_model.dart';
+import 'package:stock_manager/models/view_purchase_model.dart';
 import 'package:stock_manager/models/view_stock_model.dart';
 import 'package:stock_manager/services/app_config.dart';
 import 'package:stock_manager/services/helpers.dart';
@@ -18,9 +21,18 @@ SupplierModel? supplierModel;
 UnitModel? unitModel;
 CategoryModel? categoryModel;
 ViewStockModel? viewStockModel;
+ViewPurchaseModel? viewPurchaseModel;
+PurchaseDetailsModel? purchaseDetailsModel;
 
 List<Datum> productList = [];
 List<Datum> allPoojaDataList = [];  
+
+
+List<Details> purchasedetailList = [];
+List<Details> allpurchasedetailList = [];  
+
+List<Purchases> viewPurchaseList = [];
+List<Purchases> allViewPurchaseList = [];  
 
 List<Data> supplierList = [];
 List<Data> allSupplierList = [];  
@@ -40,15 +52,82 @@ DateTime? toDate;
 List filterstockList = [];
 List allfilterStockList = [];
 int? selectedSupplierFilter;
-
-
-
 List<String> productNames = [];
 
 
 void setSupplierFilter(int? value) {
   selectedSupplierFilter = value;
   applyFilters(); // auto apply
+  notifyListeners();
+}
+
+
+// 🔽 SELECTION VARIABLES
+int? selectedSupplierId;
+int? selectedPurchaseId;
+DateTime? selectedInvoiceDate;
+
+//  GET UNIQUE SUPPLIERS FROM PURCHASE LIST
+// List<int> get supplierIds {
+//   return viewPurchaseList
+//       .map((e) => e.supplierId!)
+//       .toSet()
+//       .toList();
+// }
+
+//  FILTER INVOICES BASED ON SUPPLIER
+List<Purchases> get filteredInvoices {
+  if (selectedSupplierId == null) return [];
+
+  return viewPurchaseList
+      .where((e) => e.supplierId == selectedSupplierId)
+      .toList();
+}
+
+//  SET SUPPLIER
+void setSupplier(int? id) {
+  selectedSupplierId = id;
+
+  // reset
+  selectedPurchaseId = null;
+  selectedInvoiceDate = null;
+  purchasedetailList = [];
+
+  notifyListeners();
+}
+
+
+List<Supplier> get uniqueSuppliers {
+  final Map<int, Supplier> map = {};
+
+  for (var purchase in viewPurchaseList) {
+    if (purchase.supplier != null) {
+      map[purchase.supplier!.id!] = purchase.supplier!;
+    }
+  }
+
+  return map.values.toList();
+}
+//  SET INVOICE + CALL DETAILS API
+void setInvoice(Purchases purchase) {
+  selectedPurchaseId = purchase.id;
+  selectedInvoiceDate = purchase.date;
+
+  // API CALL
+  getDetailPurchases(purchase.id.toString());
+
+  notifyListeners();
+}
+
+
+
+
+
+
+
+/// Reset selection state when screen reloads
+void resetPurchaseSelection() {
+  purchasedetailList = [];
   notifyListeners();
 }
 
@@ -73,6 +152,38 @@ Future<void> getProducts() async {
       }
     }
   } 
+
+
+  Future<void> deletePurchaseItem({
+  required String id,
+  required int index,
+}) async {
+  final network = await CommonFunctions.checkInternetConnection();
+
+  if (network) {
+    updateLoadState(LoaderState.loading);
+
+    try {
+      var res = await serviceConfig.deletePurchaseDetails(id);
+
+      if (res.isValue) {
+        DeletePurchaseModel response = res.asValue!.value;
+
+        // ✅ Remove item from list (instant UI update)
+        purchasedetailList.removeAt(index);
+
+        Helpers.successToast(response.message ?? "Deleted successfully");
+      } else {
+        Helpers.successToast("Delete failed");
+      }
+
+      updateLoadState(LoaderState.loaded);
+    } catch (e) {
+      debugPrint('exception in delete purchase: $e');
+      updateLoadState(LoaderState.loaded);
+    }
+  }
+}
 
   void setProductFilter(String? value) {
   selectedProductFilter = value;
@@ -170,6 +281,52 @@ void applyFilters() {
     }
   } 
 
+  
+  Future<void> getViewPurchases() async {
+    final network = await CommonFunctions.checkInternetConnection();
+    if (network) {
+      updateLoadState(LoaderState.loading);
+      try {
+        var res = await serviceConfig.getPurchases();
+        if (res.isValue) {
+          viewPurchaseModel = res.asValue!.value;
+          if (viewPurchaseModel != null) {
+            updatePurchasesList(viewPurchaseModel);
+          }
+          updateLoadState(LoaderState.loaded);
+        } else {
+          updateLoadState(LoaderState.loaded);
+        }
+      } catch (e) {
+        debugPrint('exception in suppliers: $e');
+        updateLoadState(LoaderState.loaded);
+      }
+    }
+  } 
+
+
+Future<void> getDetailPurchases(String id) async {
+  final network = await CommonFunctions.checkInternetConnection();
+  purchasedetailList = [];
+  if (network) {
+    updateLoadState(LoaderState.loading);
+
+    try {
+      var res = await serviceConfig.purchaseDetails(id);
+
+      if (res.isValue) {
+        purchaseDetailsModel = res.asValue!.value;
+
+        purchasedetailList = purchaseDetailsModel?.data ?? [];
+      }
+
+      updateLoadState(LoaderState.loaded);
+    } catch (e) {
+      debugPrint('exception in purchase details: $e');
+      updateLoadState(LoaderState.loaded);
+    }
+  }
+}
 
 //   Future<void> getStockList() async {
 //   final network = await CommonFunctions.checkInternetConnection();
@@ -230,6 +387,9 @@ Future<void> getStockList({
     }
   }
 }
+
+
+
 
 
   Future<void> getUnits() async {
@@ -303,9 +463,10 @@ Future<void> getStockList({
           qty: int.parse(e['qty'].toString()),
           tax: 0,
           subTot: int.parse(e['rate'].toString()), //  RATE HERE
+          salesRate: int.parse(e['salesRate'].toString()),
         );
       }).toList();
-
+      debugPrint("salesRate: ${addedStocks.first['salesRate']}");
       //  FIXED (num → int issue solved)
       int totalAmt = addedStocks.fold<int>(
         0,
@@ -374,6 +535,22 @@ Future<void> getStockList({
    updateProductsList(ProductModel? productModel) {
     productList = productModel?.data ?? [];
     allPoojaDataList = productModel?.data ?? [];
+    // updateDeityId('${deitiesList[0].id}');  // cleared
+    notifyListeners();
+  }
+
+
+    updatePurchasesList(ViewPurchaseModel? viewPurchaseModel) {
+    viewPurchaseList = viewPurchaseModel?.data ?? [];
+    allViewPurchaseList = viewPurchaseModel?.data ?? [];
+    // updateDeityId('${deitiesList[0].id}');  // cleared
+    notifyListeners();
+  }
+
+
+    updateDetailPurchasesList(PurchaseDetailsModel? purchaseDetailsModel) {
+    purchasedetailList = purchaseDetailsModel?.data ?? [];
+    allpurchasedetailList = purchaseDetailsModel?.data ?? [];
     // updateDeityId('${deitiesList[0].id}');  // cleared
     notifyListeners();
   }

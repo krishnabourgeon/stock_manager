@@ -106,6 +106,36 @@ class BaseClient {
     }
   }
 
+
+  static Future<dynamic> delete(String api, {dynamic body}) async {
+  String bearerToken = await token;
+
+  var uri = Uri.parse(AppConfig.baseUrl + api);
+  bool check = await isInternetAvailable();
+
+  if (check) {
+    try {
+      var response = await http
+          .delete(
+            uri,
+            headers: {
+              HttpHeaders.contentTypeHeader: _appJson,
+              HttpHeaders.authorizationHeader: 'Bearer $bearerToken',
+            },
+            body: body != null ? json.encode(body) : null,
+          )
+          .timeout(const Duration(seconds: timeDuration));
+
+      return _processResponse(response);
+    } on SocketException {
+      throw FetchDataException('No Internet connection', uri.toString());
+    } on TimeoutException {
+      throw ApiNotRespondingException(
+          'API not responded in time', uri.toString());
+    }
+  }
+}
+
   static dynamic _processResponse(http.Response response) {
     print(response.body);
     switch (response.statusCode) {

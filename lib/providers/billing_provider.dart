@@ -1599,7 +1599,6 @@ import 'package:stock_manager/services/shared_preference_helper.dart';
 import 'package:stock_manager/services/validation_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:whatsapp_unilink/whatsapp_unilink.dart';
-
 import '../models/preview_bill_response.dart';
 import '../screens/billing/widgets/preview_bill_btn.dart';
 
@@ -1722,6 +1721,8 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   TextEditingController paidAmountController = TextEditingController();
   TextEditingController noOfWeeksController = TextEditingController();
   TextEditingController totalRateController = TextEditingController();
+  TextEditingController subTotalController = TextEditingController();
+  TextEditingController discountController = TextEditingController();
   TextEditingController noOfDaysController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController nameController2 = TextEditingController();
@@ -1892,17 +1893,37 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     notifyListeners();
   }
 
+  // updatePreviewRate() {
+  //   totalAmount = 0;
+  //   if (previewDetailsList.isNotEmpty) {
+  //     for (var element in previewDetailsList) {
+  //       totalAmount = totalAmount + element.rate;
+  //     }
+  //   }
+  //   totalRateController.text = totalAmount.toStringAsFixed(0);
+  //   paidAmountController.text = totalAmount.toStringAsFixed(0);
+  //   notifyListeners();
+  // }
+
   updatePreviewRate() {
-    totalAmount = 0;
-    if (previewDetailsList.isNotEmpty) {
-      for (var element in previewDetailsList) {
-        totalAmount = totalAmount + element.rate;
-      }
+  totalAmount = 0;
+  if (previewDetailsList.isNotEmpty) {
+    for (var element in previewDetailsList) {
+      totalAmount = totalAmount + element.rate;
     }
-    totalRateController.text = totalAmount.toStringAsFixed(0);
-    paidAmountController.text = totalAmount.toStringAsFixed(0);
-    notifyListeners();
   }
+  subTotalController.text = totalAmount.toStringAsFixed(0);
+  double discount = 0;
+  if (discountController.text.isNotEmpty) {
+    discount = double.parse(discountController.text);
+  }
+  double finalAmount = totalAmount - discount;
+  if (finalAmount < 0) finalAmount = 0;
+  totalRateController.text = finalAmount.toStringAsFixed(0);
+  paidAmountController.text = finalAmount.toStringAsFixed(0);
+  notifyListeners();
+}
+
 
   Future<Uint8List?> getImageData(String imageUrl) async {
     final network = await CommonFunctions.checkInternetConnection();
@@ -1929,6 +1950,8 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
       debugPrint("STEP 1 AppConfig.storeId: ${AppConfig.storeId}");
       SaveBillBody saveBillBody = SaveBillBody(
           billAmount: double.parse(totalRateController.text.trim()),
+          subTotal: double.tryParse(subTotalController.text.trim()),
+          discount: double.tryParse(discountController.text.trim()),
           counterId: int.parse(AppConfig.counterID ?? '0'),
           customerId: AppConfig.customerId ?? 1,
           paidAmount: double.parse(paidAmountController.text.trim()),
@@ -2245,8 +2268,8 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
       if (name == element.name) {
         poojaId = '${element.poojaId}';
 
-        // ✅ ADD THIS
-        selectedProductId = element.poojaId.toString();
+      //  ADD THIS
+      selectedProductId = element.poojaId.toString();
 
         poojacountrow = element.rowcount;
         qtyController.text = '1';
@@ -2279,6 +2302,8 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     }
     notifyListeners();
   }
+
+  
 
   updateStarId(String id) {
     starId = id;
@@ -2320,7 +2345,8 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
         .nameEng;
   }
 
-//     Future<void> fetchProductStock() async {
+
+//   Future<void> fetchProductStock() async {
 //   String storeId = await SharedPreferenceHelper.getStoreID();
 
 //   if (selectedProductId.isEmpty) return;
@@ -2348,7 +2374,10 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   bool isStockLoading = false;
   bool hasFetchedStock = false;
 
-  Future<void> fetchProductStock() async {
+
+
+
+Future<void> fetchProductStock() async {
     hasFetchedStock = false;
     isStockLoading = true;
     notifyListeners();
@@ -2665,6 +2694,11 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   saveAndNextFunction() {
     updateLoadState(LoaderState.loading);
     Future.delayed(const Duration(seconds: 1), () {
+      double discount = 0;
+
+      if (discountController.text.isNotEmpty) {
+        discount = double.parse(discountController.text);
+      }
       PoojaDetails poojaDetails = PoojaDetails(
 
           // gothraname: gothraName,
@@ -2698,7 +2732,10 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
               : int.parse(starId ?? '28'),
           specialStarId: specialStarId,
           monthStar: starName,
-          weekDays: weekDays);
+          weekDays: weekDays,
+          discount: discount,
+          );
+          print("Discount : ${discount}");
       if (paidAmountController.text.isNotEmpty) {
         paidAmount = paidAmount + int.parse(paidAmountController.text.trim());
       }
@@ -2739,9 +2776,11 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
                 : int.parse(starId ?? '28'),
             specialStarId: specialStarId,
             monthStar: starName1,
-            weekDays: weekDays);
+            weekDays: weekDays,
+            discount: discount,);
         poojaDetailsList.add(poojaDetails1);
       }
+      print("Discount : ${discount}");
       clearValues(isClearDate: false);
       updateFromDate(DateFormat('y-MM-dd').format(DateTime.now()));
       getStarIdFromName("Nodata"); // reset star
@@ -2756,6 +2795,11 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   }
 
   saveAndPreviewFunction(BuildContext context) {
+    double discount = 0;
+
+    if (discountController.text.isNotEmpty) {
+      discount = double.parse(discountController.text);
+    }
     PoojaDetails poojaDetails = PoojaDetails(
         // gothra: int.parse(gothraId ?? '0'),
         // rashi: int.parse(rashiId ?? '0'),
@@ -2786,7 +2830,9 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
         starId: int.parse(starId ?? '28'),
         specialStarId: specialStarId,
         monthStar: starName,
-        weekDays: weekDays);
+        weekDays: weekDays,
+        discount: discount,);
+    print("Discount : ${discount}");
     if (paidAmountController.text.isNotEmpty) {
       paidAmount = paidAmount + int.parse(paidAmountController.text.trim());
     }
@@ -2827,9 +2873,11 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
               : int.parse(starId ?? '28'),
           specialStarId: specialStarId,
           monthStar: starName1,
-          weekDays: weekDays);
+          weekDays: weekDays,
+          discount: discount,);
       poojaDetailsList.add(poojaDetails1);
     }
+    print("Discount : ${discount}");
     //clearValues(isClearPaymentMode: false, isClearDate: false);
     clearValues();
     getStarIdFromName("Nodata");
@@ -2959,34 +3007,70 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     hasFetchedStock = false;
     selectedProductId = '';
 
-    // Flags
-    isBillingFormValidated = false;
-    isScheduled = false;
-    scheduleTypes = null;
-    scheduledType = null;
-    isPrasadhamIncluded = null;
+   clearValues({
+  bool isClearPaymentMode = true,
+  bool isClearDate = true,
+}) {
+  // Controllers
+  addressController.clear();
+  nameController.clear();
+  nameController2.clear();
+  qtyController = TextEditingController(text: '1');
+  rateController.clear();
+  totalRateController.clear();
+  subTotalController.clear();
+  paidAmountController.clear();
+  noOfDaysController.clear();
+  noOfWeeksController.clear();
+  noOfMonthsController.clear();
+  discountController.clear();
 
-    // Errors
-    nameErrorMessage = null;
-    qtyErrorMessage = null;
-    rateErrorMessage = null;
-    paidAmountErrorMessage = null;
-    totalRateErrorMessage = null;
+  // IDs & selections
+  deityId = '1';
+  poojaId = '';
+  deityname = null;
+  poojaName = null;
+  starId = '';
+  starName = null;
+  starName1 = null;
+  specialStarName = null;
+  specialStarId = null;
+  gothraId = '';
+  rashiId = '';
 
-    // Payment
-    transid = null;
-    if (isClearPaymentMode) paymentMode = 'COD';
+  // Stock reset ✅
+  availableStock = 0;
+  hasFetchedStock = false;
+  selectedProductId = '';
 
-    // Date
-    if (isClearDate) fromDate = null;
+  // Flags
+  isBillingFormValidated = false;
+  isScheduled = false;
+  scheduleTypes = null;
+  scheduledType = null;
+  isPrasadhamIncluded = null;
 
-    // Numbers
-    numberOfDays = null;
-    numberOfWeeks = null;
-    numberOfMonths = null;
+  // Errors
+  nameErrorMessage = null;
+  qtyErrorMessage = null;
+  rateErrorMessage = null;
+  paidAmountErrorMessage = null;
+  totalRateErrorMessage = null;
 
-    notifyListeners();
-  }
+  // Payment
+  transid = null;
+  if (isClearPaymentMode) paymentMode = 'COD';
+
+  // Date
+  if (isClearDate) fromDate = null;
+
+  // Numbers
+  numberOfDays = null;
+  numberOfWeeks = null;
+  numberOfMonths = null;
+
+  notifyListeners();
+}
 
   clearschedule() {
     isScheduled = false;

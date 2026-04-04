@@ -5,7 +5,6 @@ import 'package:stock_manager/providers/billing_provider.dart';
 import 'package:stock_manager/screens/billing/widgets/preview_bill_row_widget.dart';
 import 'package:stock_manager/screens/register/register_screen.dart';
 import 'package:stock_manager/services/helpers.dart';
-import 'package:stock_manager/services/validation_helper.dart';
 import 'package:stock_manager/widgets/punnyam_textfiled.dart';
 import '../../../common/color_palette.dart';
 import '../../../common/custom_drop_down_search.dart';
@@ -24,24 +23,84 @@ class PreviewBillTile extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          PunnyamTextField(
-            hintText: "Total Rate",
-            isEnabled: false,
-            textEditingController:
-                context.read<BillingProvider>().totalRateController,
-            textInputAction: TextInputAction.next,
-            keyboardType: TextInputType.number,
-            hintStyle: TextStyle(
-              fontSize: 14.sp,
-              // fontWeight: FontWeight.bold,
-              color: Colors.grey.shade600,
-            ),
-            onChanged: (value) => context
-                .read<BillingProvider>()
-                .updateValidationMessage(
-                    validationTypes: ValidationTypes.totalRate,
-                    validationMessage:
-                        ValidationHelperClass.validateRate(value.trim()) ?? ''),
+          Row(
+            children: [
+              Expanded(
+                flex: 4,
+                child: Text(
+                  "Sub Total",
+                  style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
+                ),
+              ),
+              Expanded(
+                flex: 6,
+                child: PunnyamTextField(
+                  isEnabled: false,
+                  textEditingController:
+                      context.read<BillingProvider>().subTotalController,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.number,
+                  hintStyle: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          10.verticalSpace,
+          Row(
+            children: [
+              Expanded(
+                flex: 4,
+                child: Text(
+                  "Discount",
+                  style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
+                ),
+              ),
+              Expanded(
+                flex: 6,
+                child: PunnyamTextField(
+                  height: 45.h,
+                  textEditingController: previewBillProvider.discountController,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.number,
+                  hintStyle: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.grey.shade600,
+                  ),
+                  onChanged: (value) {
+                    previewBillProvider.updatePreviewRate();
+                  },
+                ),
+              ),
+            ],
+          ),
+          10.verticalSpace,
+          Row(
+            children: [
+              Expanded(
+                flex: 4,
+                child: Text(
+                  "Grand Total",
+                  style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
+                ),
+              ),
+              Expanded(
+                flex: 6,
+                child: PunnyamTextField(
+                  isEnabled: false,
+                  textEditingController:
+                      context.read<BillingProvider>().totalRateController,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.number,
+                  hintStyle: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ),
+            ],
           ),
           10.verticalSpace,
           // PunnyamTextField(
@@ -114,7 +173,7 @@ class PreviewBillTile extends StatelessWidget {
               //     .getrashianameFromid(poojaDetails.rashi ?? 0);
               // print(name);
               return Container(
-                height: 155.h,
+                height: 170.h,
                 width: double.maxFinite,
                 margin: EdgeInsets.symmetric(vertical: 10.h),
                 padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
@@ -139,6 +198,11 @@ class PreviewBillTile extends StatelessWidget {
                     PreviewBillRowWidget(
                       labelText: 'Product',
                       valueText: poojaDetails.pooja ?? '',
+                    ),
+                    5.verticalSpace,
+                    PreviewBillRowWidget(
+                      labelText: 'Name',
+                      valueText: poojaDetails.name ?? '',
                     ),
                     5.verticalSpace,
                     PreviewBillRowWidget(
