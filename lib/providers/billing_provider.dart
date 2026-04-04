@@ -1906,24 +1906,23 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   // }
 
   updatePreviewRate() {
-  totalAmount = 0;
-  if (previewDetailsList.isNotEmpty) {
-    for (var element in previewDetailsList) {
-      totalAmount = totalAmount + element.rate;
+    totalAmount = 0;
+    if (previewDetailsList.isNotEmpty) {
+      for (var element in previewDetailsList) {
+        totalAmount = totalAmount + element.rate;
+      }
     }
+    subTotalController.text = totalAmount.toStringAsFixed(0);
+    double discount = 0;
+    if (discountController.text.isNotEmpty) {
+      discount = double.parse(discountController.text);
+    }
+    double finalAmount = totalAmount - discount;
+    if (finalAmount < 0) finalAmount = 0;
+    totalRateController.text = finalAmount.toStringAsFixed(0);
+    paidAmountController.text = finalAmount.toStringAsFixed(0);
+    notifyListeners();
   }
-  subTotalController.text = totalAmount.toStringAsFixed(0);
-  double discount = 0;
-  if (discountController.text.isNotEmpty) {
-    discount = double.parse(discountController.text);
-  }
-  double finalAmount = totalAmount - discount;
-  if (finalAmount < 0) finalAmount = 0;
-  totalRateController.text = finalAmount.toStringAsFixed(0);
-  paidAmountController.text = finalAmount.toStringAsFixed(0);
-  notifyListeners();
-}
-
 
   Future<Uint8List?> getImageData(String imageUrl) async {
     final network = await CommonFunctions.checkInternetConnection();
@@ -2268,8 +2267,8 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
       if (name == element.name) {
         poojaId = '${element.poojaId}';
 
-      //  ADD THIS
-      selectedProductId = element.poojaId.toString();
+        //  ADD THIS
+        selectedProductId = element.poojaId.toString();
 
         poojacountrow = element.rowcount;
         qtyController.text = '1';
@@ -2302,8 +2301,6 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     }
     notifyListeners();
   }
-
-  
 
   updateStarId(String id) {
     starId = id;
@@ -2345,7 +2342,6 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
         .nameEng;
   }
 
-
 //   Future<void> fetchProductStock() async {
 //   String storeId = await SharedPreferenceHelper.getStoreID();
 
@@ -2374,10 +2370,7 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   bool isStockLoading = false;
   bool hasFetchedStock = false;
 
-
-
-
-Future<void> fetchProductStock() async {
+  Future<void> fetchProductStock() async {
     hasFetchedStock = false;
     isStockLoading = true;
     notifyListeners();
@@ -2700,20 +2693,62 @@ Future<void> fetchProductStock() async {
         discount = double.parse(discountController.text);
       }
       PoojaDetails poojaDetails = PoojaDetails(
-
+        // gothraname: gothraName,
+        // rashiname: rashiName,
+        // gothra: int.parse(gothraId ?? '0'),
+        // rashi: int.parse(rashiId ?? '0'),
+        name: nameController.text.isEmpty
+            ? 'Customer'
+            : nameController.text.trim(),
+        address: addressController.text ?? '',
+        date: isScheduled ? date : null,
+        deityId: int.parse(deityId ?? '1'),
+        dwmo: scheduledType,
+        fromDate: fromDate,
+        isScheduled: isScheduled ? 1 : 0,
+        noOfDays: noOfDaysController.text.isNotEmpty
+            ? int.parse(noOfDaysController.text.trim())
+            : null,
+        noOfMonths: noOfMonthsController.text.isNotEmpty
+            ? int.parse(noOfMonthsController.text.trim())
+            : null,
+        noOfWeeks: noOfWeeksController.text.isNotEmpty
+            ? int.parse(noOfWeeksController.text.trim())
+            : null,
+        poojaId: int.parse(poojaId),
+        prasadamStatus: (isPrasadhamIncluded ?? false) ? 1 : 0,
+        qty: int.parse(qtyController.text.trim()),
+        rate: double.parse(rateController.text.trim()),
+        starId:
+            starName == null || starId == null ? 28 : int.parse(starId ?? '28'),
+        specialStarId: specialStarId,
+        monthStar: starName,
+        weekDays: weekDays,
+        discount: discount,
+      );
+      print("Discount : ${discount}");
+      if (paidAmountController.text.isNotEmpty) {
+        paidAmount = paidAmount + int.parse(paidAmountController.text.trim());
+      }
+      if (totalRateController.text.isNotEmpty) {
+        billAmount = billAmount + int.parse(totalRateController.text.trim());
+      }
+      poojaDetailsList.add(poojaDetails);
+      if (poojacountrow == 2) {
+        PoojaDetails poojaDetails1 = PoojaDetails(
           // gothraname: gothraName,
           // rashiname: rashiName,
           // gothra: int.parse(gothraId ?? '0'),
           // rashi: int.parse(rashiId ?? '0'),
-          name: nameController.text.isEmpty
+          name: nameController2.text.isEmpty
               ? 'Customer'
-              : nameController.text.trim(),
-          address: addressController.text ?? '',
+              : nameController2.text.trim(),
+          address: addressController.text,
           date: isScheduled ? date : null,
-          deityId: int.parse(deityId ?? '1'),
+          deityId: int.parse(deityId),
           dwmo: scheduledType,
           fromDate: fromDate,
-          isScheduled: isScheduled ? 1 : 0,
+          isScheduled: 0,
           noOfDays: noOfDaysController.text.isNotEmpty
               ? int.parse(noOfDaysController.text.trim())
               : null,
@@ -2725,59 +2760,16 @@ Future<void> fetchProductStock() async {
               : null,
           poojaId: int.parse(poojaId),
           prasadamStatus: (isPrasadhamIncluded ?? false) ? 1 : 0,
-          qty: int.parse(qtyController.text.trim()),
-          rate: double.parse(rateController.text.trim()),
-          starId: starName == null || starId == null
+          qty: 0,
+          rate: 0,
+          starId: starName1 == null || starId == null
               ? 28
               : int.parse(starId ?? '28'),
           specialStarId: specialStarId,
-          monthStar: starName,
+          monthStar: starName1,
           weekDays: weekDays,
           discount: discount,
-          );
-          print("Discount : ${discount}");
-      if (paidAmountController.text.isNotEmpty) {
-        paidAmount = paidAmount + int.parse(paidAmountController.text.trim());
-      }
-      if (totalRateController.text.isNotEmpty) {
-        billAmount = billAmount + int.parse(totalRateController.text.trim());
-      }
-      poojaDetailsList.add(poojaDetails);
-      if (poojacountrow == 2) {
-        PoojaDetails poojaDetails1 = PoojaDetails(
-            // gothraname: gothraName,
-            // rashiname: rashiName,
-            // gothra: int.parse(gothraId ?? '0'),
-            // rashi: int.parse(rashiId ?? '0'),
-            name: nameController2.text.isEmpty
-                ? 'Customer'
-                : nameController2.text.trim(),
-            address: addressController.text,
-            date: isScheduled ? date : null,
-            deityId: int.parse(deityId),
-            dwmo: scheduledType,
-            fromDate: fromDate,
-            isScheduled: 0,
-            noOfDays: noOfDaysController.text.isNotEmpty
-                ? int.parse(noOfDaysController.text.trim())
-                : null,
-            noOfMonths: noOfMonthsController.text.isNotEmpty
-                ? int.parse(noOfMonthsController.text.trim())
-                : null,
-            noOfWeeks: noOfWeeksController.text.isNotEmpty
-                ? int.parse(noOfWeeksController.text.trim())
-                : null,
-            poojaId: int.parse(poojaId),
-            prasadamStatus: (isPrasadhamIncluded ?? false) ? 1 : 0,
-            qty: 0,
-            rate: 0,
-            starId: starName1 == null || starId == null
-                ? 28
-                : int.parse(starId ?? '28'),
-            specialStarId: specialStarId,
-            monthStar: starName1,
-            weekDays: weekDays,
-            discount: discount,);
+        );
         poojaDetailsList.add(poojaDetails1);
       }
       print("Discount : ${discount}");
@@ -2801,19 +2793,60 @@ Future<void> fetchProductStock() async {
       discount = double.parse(discountController.text);
     }
     PoojaDetails poojaDetails = PoojaDetails(
-        // gothra: int.parse(gothraId ?? '0'),
-        // rashi: int.parse(rashiId ?? '0'),
+      // gothra: int.parse(gothraId ?? '0'),
+      // rashi: int.parse(rashiId ?? '0'),
+      // gothraname: gothraName,
+      // rashiname: rashiName,
+      name:
+          nameController.text.isEmpty ? 'Customer' : nameController.text.trim(),
+      address: addressController.text,
+      date: !isScheduled ? date : null,
+      deityId: int.parse(deityId ?? '1'),
+      dwmo: scheduledType,
+      fromDate: fromDate,
+      isScheduled: isScheduled == true ? 1 : 0,
+      noOfDays: noOfDaysController.text.isNotEmpty
+          ? int.parse(noOfDaysController.text.trim())
+          : null,
+      noOfMonths: noOfMonthsController.text.isNotEmpty
+          ? int.parse(noOfMonthsController.text.trim())
+          : null,
+      noOfWeeks: noOfWeeksController.text.isNotEmpty
+          ? int.parse(noOfWeeksController.text.trim())
+          : null,
+      poojaId: int.parse(poojaId),
+      prasadamStatus: (isPrasadhamIncluded ?? false) ? 1 : 0,
+      qty: int.parse(qtyController.text.trim()),
+      rate: double.parse(rateController.text.trim()),
+      starId: int.parse(starId ?? '28'),
+      specialStarId: specialStarId,
+      monthStar: starName,
+      weekDays: weekDays,
+      discount: discount,
+    );
+    print("Discount : ${discount}");
+    if (paidAmountController.text.isNotEmpty) {
+      paidAmount = paidAmount + int.parse(paidAmountController.text.trim());
+    }
+    if (totalRateController.text.isNotEmpty) {
+      billAmount = billAmount + int.parse(totalRateController.text.trim());
+    }
+    poojaDetailsList.add(poojaDetails);
+    if (poojacountrow == 2) {
+      PoojaDetails poojaDetails1 = PoojaDetails(
         // gothraname: gothraName,
         // rashiname: rashiName,
-        name: nameController.text.isEmpty
+        // gothra: int.parse(gothraId ?? '0'),
+        // rashi: int.parse(rashiId ?? '0'),
+        name: nameController2.text.isEmpty
             ? 'Customer'
-            : nameController.text.trim(),
-        address: addressController.text,
-        date: !isScheduled ? date : null,
+            : nameController2.text.trim(),
+        address: addressController.text ?? '',
+        date: isScheduled ? date : null,
         deityId: int.parse(deityId ?? '1'),
         dwmo: scheduledType,
         fromDate: fromDate,
-        isScheduled: isScheduled == true ? 1 : 0,
+        isScheduled: 0,
         noOfDays: noOfDaysController.text.isNotEmpty
             ? int.parse(noOfDaysController.text.trim())
             : null,
@@ -2825,56 +2858,16 @@ Future<void> fetchProductStock() async {
             : null,
         poojaId: int.parse(poojaId),
         prasadamStatus: (isPrasadhamIncluded ?? false) ? 1 : 0,
-        qty: int.parse(qtyController.text.trim()),
-        rate: double.parse(rateController.text.trim()),
-        starId: int.parse(starId ?? '28'),
+        qty: 0,
+        rate: 0,
+        starId: starName1 == null || starId1 == null || starId == null
+            ? 28
+            : int.parse(starId ?? '28'),
         specialStarId: specialStarId,
-        monthStar: starName,
+        monthStar: starName1,
         weekDays: weekDays,
-        discount: discount,);
-    print("Discount : ${discount}");
-    if (paidAmountController.text.isNotEmpty) {
-      paidAmount = paidAmount + int.parse(paidAmountController.text.trim());
-    }
-    if (totalRateController.text.isNotEmpty) {
-      billAmount = billAmount + int.parse(totalRateController.text.trim());
-    }
-    poojaDetailsList.add(poojaDetails);
-    if (poojacountrow == 2) {
-      PoojaDetails poojaDetails1 = PoojaDetails(
-          // gothraname: gothraName,
-          // rashiname: rashiName,
-          // gothra: int.parse(gothraId ?? '0'),
-          // rashi: int.parse(rashiId ?? '0'),
-          name: nameController2.text.isEmpty
-              ? 'Customer'
-              : nameController2.text.trim(),
-          address: addressController.text ?? '',
-          date: isScheduled ? date : null,
-          deityId: int.parse(deityId ?? '1'),
-          dwmo: scheduledType,
-          fromDate: fromDate,
-          isScheduled: 0,
-          noOfDays: noOfDaysController.text.isNotEmpty
-              ? int.parse(noOfDaysController.text.trim())
-              : null,
-          noOfMonths: noOfMonthsController.text.isNotEmpty
-              ? int.parse(noOfMonthsController.text.trim())
-              : null,
-          noOfWeeks: noOfWeeksController.text.isNotEmpty
-              ? int.parse(noOfWeeksController.text.trim())
-              : null,
-          poojaId: int.parse(poojaId),
-          prasadamStatus: (isPrasadhamIncluded ?? false) ? 1 : 0,
-          qty: 0,
-          rate: 0,
-          starId: starName1 == null || starId1 == null || starId == null
-              ? 28
-              : int.parse(starId ?? '28'),
-          specialStarId: specialStarId,
-          monthStar: starName1,
-          weekDays: weekDays,
-          discount: discount,);
+        discount: discount,
+      );
       poojaDetailsList.add(poojaDetails1);
     }
     print("Discount : ${discount}");
@@ -2984,10 +2977,12 @@ Future<void> fetchProductStock() async {
     qtyController = TextEditingController(text: '1');
     rateController.clear();
     totalRateController.clear();
+    subTotalController.clear();
     paidAmountController.clear();
     noOfDaysController.clear();
     noOfWeeksController.clear();
     noOfMonthsController.clear();
+    discountController.clear();
 
     // IDs & selections
     deityId = '1';
@@ -3007,70 +3002,34 @@ Future<void> fetchProductStock() async {
     hasFetchedStock = false;
     selectedProductId = '';
 
-   clearValues({
-  bool isClearPaymentMode = true,
-  bool isClearDate = true,
-}) {
-  // Controllers
-  addressController.clear();
-  nameController.clear();
-  nameController2.clear();
-  qtyController = TextEditingController(text: '1');
-  rateController.clear();
-  totalRateController.clear();
-  subTotalController.clear();
-  paidAmountController.clear();
-  noOfDaysController.clear();
-  noOfWeeksController.clear();
-  noOfMonthsController.clear();
-  discountController.clear();
+    // Flags
+    isBillingFormValidated = false;
+    isScheduled = false;
+    scheduleTypes = null;
+    scheduledType = null;
+    isPrasadhamIncluded = null;
 
-  // IDs & selections
-  deityId = '1';
-  poojaId = '';
-  deityname = null;
-  poojaName = null;
-  starId = '';
-  starName = null;
-  starName1 = null;
-  specialStarName = null;
-  specialStarId = null;
-  gothraId = '';
-  rashiId = '';
+    // Errors
+    nameErrorMessage = null;
+    qtyErrorMessage = null;
+    rateErrorMessage = null;
+    paidAmountErrorMessage = null;
+    totalRateErrorMessage = null;
 
-  // Stock reset ✅
-  availableStock = 0;
-  hasFetchedStock = false;
-  selectedProductId = '';
+    // Payment
+    transid = null;
+    if (isClearPaymentMode) paymentMode = 'COD';
 
-  // Flags
-  isBillingFormValidated = false;
-  isScheduled = false;
-  scheduleTypes = null;
-  scheduledType = null;
-  isPrasadhamIncluded = null;
+    // Date
+    if (isClearDate) fromDate = null;
 
-  // Errors
-  nameErrorMessage = null;
-  qtyErrorMessage = null;
-  rateErrorMessage = null;
-  paidAmountErrorMessage = null;
-  totalRateErrorMessage = null;
+    // Numbers
+    numberOfDays = null;
+    numberOfWeeks = null;
+    numberOfMonths = null;
 
-  // Payment
-  transid = null;
-  if (isClearPaymentMode) paymentMode = 'COD';
-
-  // Date
-  if (isClearDate) fromDate = null;
-
-  // Numbers
-  numberOfDays = null;
-  numberOfWeeks = null;
-  numberOfMonths = null;
-
-  notifyListeners();
-}
+    notifyListeners();
+  }
 
   clearschedule() {
     isScheduled = false;

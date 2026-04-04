@@ -336,7 +336,7 @@ import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 import 'package:stock_manager/providers/stock_provider.dart';
 import 'package:stock_manager/screens/stock/add_stock.dart';
-import 'package:stock_manager/screens/stock/purchase_details_screen.dart';
+// import 'package:stock_manager/screens/stock/purchase_details_screen.dart';
 import 'package:stock_manager/screens/stock/view_stock.dart';
 import 'package:stock_manager/services/provider_helper_class.dart';
 import 'package:stock_manager/services/shared_preference_helper.dart';
@@ -646,17 +646,20 @@ class _StockScreenState extends State<StockScreen> {
                           DataCell(Text(stock.name ?? '')),
                           DataCell(Text(stock.total.toString())),
                           DataCell(Text(stock.unitName ?? '')),
-                          DataCell(InkWell(onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PurchaseDetailsScreen(),
-                              ),
-                            );
-                          }, child: Text("View",style: TextStyle(color: Colors.blue),)))
-                          
+                          DataCell(InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ViewStock(),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                "View",
+                                style: TextStyle(color: Colors.blue),
+                              )))
                         ]);
-                        
                       }).toList(),
                     ),
                   ),

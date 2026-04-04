@@ -179,13 +179,13 @@ class HomeProvider extends ChangeNotifier with ProviderHelperClass {
               builder: (context) => const StockScreen(),
             ));
         break;
-        // case 4:
-        // Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => const StockScreen(),
-        //     ));
-        // break;
+      // case 4:
+      // Navigator.push(
+      //     context,
+      //     MaterialPageRoute(
+      //       builder: (context) => const StockScreen(),
+      //     ));
+      // break;
     }
   }
 
