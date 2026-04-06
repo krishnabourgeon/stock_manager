@@ -30,6 +30,7 @@ import 'package:stock_manager/models/starts_response_model.dart';
 import 'package:stock_manager/models/supplier_model.dart';
 import 'package:stock_manager/models/unit_model.dart';
 import 'package:stock_manager/models/version_datamodel.dart';
+import 'package:stock_manager/models/view_product_stock.dart';
 import 'package:stock_manager/models/view_purchase_model.dart';
 import 'package:stock_manager/models/view_stock_model.dart';
 import 'package:stock_manager/services/app_config.dart';
@@ -201,6 +202,27 @@ class ServiceConfig {
     }
   }
 
+
+  Future<Result> viewProductStock(String productid) async {
+    Result res =
+        await BaseClient.post('viewproductstock', body: {'product_id': productid});
+        print("view product stock id : ${productid}");
+    if (res.isError) {
+      ErrorResponseModel errorResponseModel =
+          ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+      debugPrint('view product stock response $response');
+        ViewProductStock viewProductStock = ViewProductStock.fromJson(response);
+
+      return (viewProductStock.status ?? false)
+          ? Result.value(viewProductStock)
+          : Result.error(viewProductStock);
+    }
+  }
+
+
 // Future<Result> getStockList() async {
 //   //  LOAD storeId first
 //   String storeId = await SharedPreferenceHelper.getStoreID();
@@ -232,15 +254,37 @@ class ServiceConfig {
 
 
 
-Future<Result> deletePurchaseDetails(String id) async {
-  Result res = await BaseClient.delete(
-    'delete-purchase-details?id=$id',
-  );
+// Future<Result> deletePurchaseDetails(String id) async {
+//   Result res = await BaseClient.delete(
+//     'delete-purchase-details?id=$id',
+//   );
 
+//   if (res.isError) {
+//     ErrorResponseModel errorResponseModel =
+//         ErrorResponseModel(errorMessage: 'Oops...! Something went wrong');
+//     return Result.error(errorResponseModel);
+//   } else {
+//     var response = res.asValue!.value;
+
+//     DeletePurchaseModel deleteModel =
+//         DeletePurchaseModel.fromJson(response);
+
+//     return (deleteModel.status ?? false)
+//         ? Result.value(deleteModel)
+//         : Result.error(deleteModel);
+//   }
+// }
+
+
+Future<Result> deletePurchaseDetails(String id, String productId) async {
+  Result res = await BaseClient.delete(
+    'delete-purchase-details?id=$id&product_id=$productId',
+  );
+  print("-------------------------productid : ${productId}-----------------");
   if (res.isError) {
-    ErrorResponseModel errorResponseModel =
-        ErrorResponseModel(errorMessage: 'Oops...! Something went wrong');
-    return Result.error(errorResponseModel);
+    return Result.error(
+      ErrorResponseModel(errorMessage: 'Oops...! Something went wrong'),
+    );
   } else {
     var response = res.asValue!.value;
 

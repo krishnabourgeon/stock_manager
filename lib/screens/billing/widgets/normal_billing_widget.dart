@@ -22,7 +22,6 @@
 
 // // // class _NormalBillingWidgetState extends State<NormalBillingWidget> {
 
-
 // // //   @override
 // // // void initState() {
 // // //   super.initState();
@@ -161,10 +160,6 @@
 // // //     ]);
 // // //   }
 // // // }
-
-
-
-
 
 // // import 'package:flutter/material.dart';
 // // import 'package:flutter/services.dart';
@@ -378,8 +373,6 @@
 // //   }
 // // }
 
-
-
 // import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -505,11 +498,6 @@
 //   }
 // }
 
-
-
-
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -606,24 +594,67 @@ class _NormalBillingWidgetState extends State<NormalBillingWidget> {
                   (index) =>
                       widget.billingProvider.poojaDataList[index].name ?? ''),
             ),
-       10.verticalSpace,
+      10.verticalSpace,
 
-        //         Selector<BillingProvider, double>(
-        //   selector: (_, p) => p.availableStock,
-        //   builder: (_, stock, __) {
-        //     return Text(
-        //       stock > 0
-        //           ? "Available Stock: $stock"
-        //           : "Out of Stock",
-        //       style: TextStyle(
-        //         fontSize: 14.sp,
-        //         fontWeight: FontWeight.w600,
-        //         color: stock > 0 ? Colors.green : Colors.red,
-        //       ),
-        //     );
-        //   },
-        //  ),
-       //10.verticalSpace,
+      //         Selector<BillingProvider, double>(
+      //   selector: (_, p) => p.availableStock,
+      //   builder: (_, stock, __) {
+      //     return Text(
+      //       stock > 0
+      //           ? "Available Stock: $stock"
+      //           : "Out of Stock",
+      //       style: TextStyle(
+      //         fontSize: 14.sp,
+      //         fontWeight: FontWeight.w600,
+      //         color: stock > 0 ? Colors.green : Colors.red,
+      //       ),
+      //     );
+      //   },
+      //  ),
+      //10.verticalSpace,
+      // PunnyamTextField(
+      //     hintText: "Customer",
+      //     height: 45.h,
+      //     textEditingController: widget.billingProvider.nameController,
+      //     inputFormatter: [
+      //       FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+      //     ],
+      //     keyboardType: TextInputType.name,
+      //     hintStyle: TextStyle(
+      //       fontSize: 13.5.sp,
+      //       fontWeight: FontWeight.normal,
+      //       color: Colors.black,
+      //     ),
+      //     onChanged: (value) {
+      //       widget.billingProvider.updateBillingFormState();
+      //     }
+      //     // => widget.billingProvider.updateValidationMessage(
+      //     //     validationTypes: ValidationTypes.name,
+      //     //     validationMessage:
+      //     //         ValidationHelperClass.validateName(value.trim()) ?? ''),
+      //     ),
+      if (widget.billingProvider.nameErrorMessage != null)
+        ValidationWidget(
+            validationMessage: widget.billingProvider.nameErrorMessage ?? ''),
+      10.verticalSpace,
+      Selector<BillingProvider, BillingProvider>(
+        selector: (_, p) => p,
+        builder: (_, provider, __) {
+          if (!provider.hasFetchedStock) {
+            return SizedBox.shrink();
+          }
+          return Text(
+            provider.availableStock > 0
+                ? "Available Stock: ${provider.availableStock}"
+                : "Out of Stock",
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: provider.availableStock > 0 ? Colors.green : Colors.red,
+            ),
+          );
+        },
+      ),
       PunnyamTextField(
           hintText: "Customer",
           height: 45.h,
@@ -645,32 +676,7 @@ class _NormalBillingWidgetState extends State<NormalBillingWidget> {
           //     validationMessage:
           //         ValidationHelperClass.validateName(value.trim()) ?? ''),
           ),
-      if (widget.billingProvider.nameErrorMessage != null)
-        ValidationWidget(
-            validationMessage: widget.billingProvider.nameErrorMessage ?? ''),
-      10.verticalSpace,
-        Selector<BillingProvider, BillingProvider>(
-          selector: (_, p) => p,
-          builder: (_, provider, __) {
-            // if (provider.isStockLoading) {
-            //   return Text("Checking stock...");
-            // }
-            if (!provider.hasFetchedStock) {
-              return SizedBox.shrink();
-            }
-            return Text(
-              provider.availableStock > 0
-                  ? "Available Stock: ${provider.availableStock}"
-                  : "Out of Stock",
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-                color: provider.availableStock > 0 ? Colors.green : Colors.red,
-              ),
-            );
-          },
-        ),
-
+            20.verticalSpace,
       !widget.billingProvider.isScheduled
           ? PunnyamDatePicker(
               title: widget.billingProvider.fromDate
@@ -688,6 +694,7 @@ class _NormalBillingWidgetState extends State<NormalBillingWidget> {
             )
           : const SizedBox.shrink(),
       !widget.billingProvider.isScheduled ? 10.verticalSpace : 0.verticalSpace,
+
       Row(
         children: [
           Flexible(
@@ -736,11 +743,11 @@ class _NormalBillingWidgetState extends State<NormalBillingWidget> {
                   color: Colors.grey.shade600,
                 ),
                 onChanged: (value) => widget.billingProvider
-                  .updateValidationMessage(
-                    validationTypes: ValidationTypes.rate,
-                    validationMessage:
-                    ValidationHelperClass.validateRate(value.trim()) ??
-                ''),
+                    .updateValidationMessage(
+                        validationTypes: ValidationTypes.rate,
+                        validationMessage:
+                            ValidationHelperClass.validateRate(value.trim()) ??
+                                ''),
               ),
             ],
           )),
@@ -764,7 +771,7 @@ class _NormalBillingWidgetState extends State<NormalBillingWidget> {
       //         validationMessage:
       //           ValidationHelperClass.validateRate(value.trim()) ?? ''),
       //   ),
-        
+
       // BillingProvider.address
       //     ? const SizedBox()
       //     : Row(
@@ -804,7 +811,7 @@ class _NormalBillingWidgetState extends State<NormalBillingWidget> {
       //         //             ValidationHelperClass.validateName(value.trim()) ??
       //         //                 ''),
       //       )
-         // : const SizedBox(),
+      // : const SizedBox(),
     ]);
   }
 }

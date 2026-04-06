@@ -642,17 +642,20 @@ class _StockScreenState extends State<StockScreen> {
                         var stock = entry.value;
                         return DataRow(cells: [
                           DataCell(Text((index + 1).toString())),
-                          DataCell(Text(stock.code ?? '')),
-                          DataCell(Text(stock.name ?? '')),
+                          DataCell(Text(stock.code)),
+                          DataCell(Text(stock.name)),
                           DataCell(Text(stock.total.toString())),
-                          DataCell(Text(stock.unitName ?? '')),
+                          DataCell(Text(stock.unitName)),
                           DataCell(InkWell(
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        PurchaseDetailsScreen(),
+                                        PurchaseDetailsScreen(
+                                          productId: stock.id.toString(),
+                                          productName: stock.name,
+                                        ),
                                   ),
                                 );
                               },

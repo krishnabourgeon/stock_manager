@@ -6,6 +6,7 @@ import 'package:stock_manager/common/common_functions.dart';
 import 'package:stock_manager/providers/billing_provider.dart';
 import 'package:stock_manager/screens/billing/widgets/preview_bill_btn.dart';
 import 'package:stock_manager/screens/billing/widgets/preview_bill_tile.dart';
+import 'package:stock_manager/screens/customer_creation/customer_selection_screen.dart';
 import 'package:stock_manager/services/helpers.dart';
 import '../../services/provider_helper_class.dart';
 
@@ -94,8 +95,14 @@ class _PreviewBillScreenState extends State<PreviewBillScreen> {
             leading: Center(
               child: InkWell(
                 onTap: (() {
-                  context.read<BillingProvider>().updateBillingFormState();
-                  Navigator.pop(context);
+                  // context.read<BillingProvider>().updateBillingFormState();
+                  // Navigator.pop(context);
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const CustomerSelectionScreen()),
+                    (route) => route.isFirst,
+                  );
                 }),
                 child: SizedBox(
                     height: 25.h,

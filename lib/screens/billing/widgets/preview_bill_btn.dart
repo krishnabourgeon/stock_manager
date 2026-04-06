@@ -192,7 +192,7 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
 
                 pw.SizedBox(height: 10),
 
-                pw.Text("Book Online: ${temple?.website ?? ''}"),
+                //pw.Text("Book Online: ${temple?.website ?? ''}"),
               ],
             ),
           );
@@ -346,13 +346,13 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
           // content: const Text("Choose an option"),
           actions: [
             // /// 📄 DOWNLOAD PDF
-            // TextButton(
-            //   onPressed: () async {
-            //     Navigator.pop(context);
-            //     await downloadPreviewBillPdf();
-            //   },
-            //   child: const Text("Download PDF"),
-            // ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                // await downloadPreviewBillPdf();  
+              },
+              child: const Text("Cancel"),
+            ),
 
             /// 📲 SHARE PDF
             TextButton(
@@ -415,8 +415,8 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
               pw.SizedBox(height: 10),
               pw.Text("Amount Paid: ${summary?.recvAmt ?? ''}"),
               pw.SizedBox(height: 10),
-              pw.Text("Book Online: ${temple?.website ?? ''}"),
-              pw.SizedBox(height: 10),
+              // pw.Text("Book Online: ${temple?.website ?? ''}"),
+              // pw.SizedBox(height: 10),
             ],
           );
         },

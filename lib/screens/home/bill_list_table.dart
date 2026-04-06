@@ -203,6 +203,7 @@ class _BillListTableState extends State<BillListTable> {
   _pageView(BillListProvider? billListProvider) {
       double cashTotal = 0;
       double qrTotal = 0;
+      double neftTotal = 0;
 
       final billList = billListProvider?.billListResponseModel?.list ?? [];
 
@@ -213,6 +214,8 @@ class _BillListTableState extends State<BillListTable> {
           cashTotal += amount;
         } else if (item.paymentMode == "QR Code") {
           qrTotal += amount;
+        }else if (item.paymentMode == "NEFT") {
+          neftTotal += amount;
         }
       }
     return Stack(
@@ -681,6 +684,12 @@ class _BillListTableState extends State<BillListTable> {
                 children: [
                   Text('QR Code Total : ', style: TextStyle(color: Colors.white)),
                   Text(qrTotal.toString(), style: TextStyle(color: Colors.white)),
+                ],
+              ),
+              Row(
+                children: [
+                  Text('NEFT Total : ', style: TextStyle(color: Colors.white)),
+                  Text(neftTotal.toString(), style: TextStyle(color: Colors.white)),
                 ],
               ),
               SizedBox(height: 40.h),

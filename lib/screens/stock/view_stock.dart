@@ -179,21 +179,37 @@ class _ViewStockState extends State<ViewStock> {
                               //     color: Colors.red,
                               //   ),
                               // )
-                              IconButton(
-                                onPressed: () {
-                                  final provider = context.read<StockProvider>();
-                                  final item = provider.purchasedetailList[index];
+                              // IconButton(
+                              //   onPressed: () {
+                              //     final provider = context.read<StockProvider>();
+                              //     final item = provider.purchasedetailList[index];
 
-                                  provider.deletePurchaseItem(
-                                    id: item.id.toString(), //  important
-                                    index: index,
-                                  );
-                                },
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
+                              //     provider.deletePurchaseItem(
+                              //       id: item.id.toString(), //  important
+                              //       index: index,
+                              //     );
+                              //   },
+                              //   icon: const Icon(
+                              //     Icons.delete,
+                              //     color: Colors.red,
+                              //   ),
+                              // ),
+                              IconButton(
+                                  onPressed: () {
+                                    final provider = context.read<StockProvider>();
+                                    final item = provider.purchasedetailList[index];
+
+                                    provider.deletePurchaseItem(
+                                      id: item.id.toString(),
+                                      productId: item.productId.toString(), //  added
+                                      index: index,
+                                    );
+                                  },
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
                         );

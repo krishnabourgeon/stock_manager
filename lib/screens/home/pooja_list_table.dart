@@ -50,7 +50,7 @@ class _PoojaListTableState extends State<PoojaListTable> {
           statusBarBrightness: Brightness.light,
         ),
         title: const Text(
-          "Product Summary List",
+          "Sales Summary List",
           style: TextStyle(color: Colors.black),
         ),
       ),

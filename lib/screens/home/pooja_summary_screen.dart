@@ -136,7 +136,7 @@ class _PoojaSummaryScreenState extends State<PoojaSummaryScreen> {
               ),
             ),
             40.verticalSpace,
-            const Text('No Product Summary Found !'),
+            const Text('No Sales Summary Found !'),
           ],
         );
         break;

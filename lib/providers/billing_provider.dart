@@ -2401,6 +2401,7 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     }
     hasFetchedStock = true;
     isStockLoading = false;
+    updateBillingFormState();
     notifyListeners();
   }
 
@@ -2607,7 +2608,13 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
           fromDate != null &&
           nameErrorMessage == null &&
           qtyErrorMessage == null &&
-          rateErrorMessage == null) {
+          rateErrorMessage == null &&
+          (hasFetchedStock
+              ? (ratefield ||
+                  (availableStock > 0 &&
+                      (int.tryParse(qtyController.text) ?? 0) <=
+                          availableStock))
+              : false)) {
         isBillingFormValidated = true;
       } else {
         isBillingFormValidated = false;
@@ -2635,7 +2642,13 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
           fromDate != null &&
           (noOfDaysController.text.isNotEmpty ||
               noOfWeeksController.text.isNotEmpty ||
-              noOfMonthsController.text.isNotEmpty)) {
+              noOfMonthsController.text.isNotEmpty) &&
+          (hasFetchedStock
+              ? (ratefield ||
+                  (availableStock > 0 &&
+                      (int.tryParse(qtyController.text) ?? 0) <=
+                          availableStock))
+              : false)) {
         if (scheduledType == 'O') {
           if (specialStarId != null) {
             isBillingFormValidated = true;

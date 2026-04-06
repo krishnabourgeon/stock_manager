@@ -65,6 +65,10 @@ class PreviewBillTile extends StatelessWidget {
                   textEditingController: previewBillProvider.discountController,
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
+
+                  ///  CHANGE THIS
+                  hintText: "Discount",
+
                   hintStyle: TextStyle(
                     fontSize: 14.sp,
                     color: Colors.grey.shade600,

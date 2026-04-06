@@ -20,7 +20,7 @@ class PunnyamTextField extends StatefulWidget {
   final double? width;
   const PunnyamTextField(
       {super.key,
-      this.hintText = "test",
+      this.hintText = "",
       this.prefixIcon,
       this.contentpadding,
       this.makePasswordField = false,

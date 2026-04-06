@@ -87,7 +87,7 @@ void _saveAndNext() {
       addedStocks.add({
         'supplier': selectedSupplierId,
         'product': selectedProductId,
-        'unit': selectedUnitName, 
+        'unit': selectedUnitId.toString(), 
         'qty': qtyValue.toInt(),  
         'rate': rateValue.toInt(),
         'salesRate': salesRateValue.toInt(),
@@ -126,7 +126,7 @@ void _saveAll() async {
     addedStocks.add({
       'supplier': selectedSupplierId,
       'product': selectedProductId,
-      'unit': selectedUnitName, // must be STRING (kg, pcs...)
+      'unit': selectedUnitId.toString(), // Pass ID as string
       'qty': qtyValue.toInt(),
       'rate': rateValue.toInt(),
       'salesRate': salesRateValue.toInt(),
@@ -160,6 +160,13 @@ void _saveAll() async {
 if (selectedDate == null) {
   ScaffoldMessenger.of(context).showSnackBar(
     const SnackBar(content: Text('Please select date')),
+  );
+  return;
+}
+
+if (selectedUnitId == null) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('Please select unit')),
   );
   return;
 }
@@ -467,18 +474,43 @@ double getCombinedTotal() {
                             //     selectedProductId = value;
                             //   });
                             // },
+                            // onChanged: (value) {
+                            //   setState(() {
+                            //     selectedProductId = value;
+
+                            //     //  Find selected product
+                            //     final selectedProduct = context
+                            //         .read<StockProvider>()
+                            //         .productList
+                            //         .firstWhere((e) => e.id == value);
+
+                            //     //  Set product code
+                            //     productCodeController.text = selectedProduct.code ?? "";
+                            //   });
+                            // },
                             onChanged: (value) {
                               setState(() {
                                 selectedProductId = value;
 
-                                //  Find selected product
-                                final selectedProduct = context
-                                    .read<StockProvider>()
-                                    .productList
-                                    .firstWhere((e) => e.id == value);
+                                final provider = context.read<StockProvider>();
+
+                                //  Get selected product
+                                final selectedProduct =
+                                    provider.productList.firstWhere((e) => e.id == value);
 
                                 //  Set product code
                                 productCodeController.text = selectedProduct.code ?? "";
+
+                                //   AUTO SET UNIT FROM PRODUCT
+                                selectedUnitId = selectedProduct.unit;
+
+                                //  Find unit name from unit list
+                                final unitObj = provider.unitList.firstWhere(
+                                  (u) => u.id == selectedUnitId,
+                                  orElse: () => Unit(id: 0, name: "Unknown"), // safety
+                                );
+
+                                selectedUnitName = unitObj.name;
                               });
                             },
                             validator: (value) {
@@ -561,53 +593,53 @@ double getCombinedTotal() {
                       //   ],
                       // ),
                       Row(
-  children: [
-    Expanded( //  FIX
-      child: TextFormField(
-        controller: productCodeController,
-        readOnly: true,
-        decoration: const InputDecoration(
-          labelText: "Product Code",
-          border: OutlineInputBorder(),
-        ),
-      ),
-    ),
+                        children: [
+                          Expanded( //  FIX
+                            child: TextFormField(
+                              controller: productCodeController,
+                              readOnly: true,
+                              decoration: const InputDecoration(
+                                labelText: "Product Code",
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ),
 
-    SizedBox(width: 10), // spacing
+                          SizedBox(width: 10), // spacing
 
-    Expanded(
-      child: Consumer<StockProvider>(
-        builder: (context, stockProvider, child) {
-          return DropdownButtonFormField<int>(
-            decoration: const InputDecoration(
-              labelText: "Select Unit",
-              border: OutlineInputBorder(),
-            ),
-            value: stockProvider.unitList.any((e) => e.id == selectedUnitId)
-                ? selectedUnitId
-                : null,
-            items: stockProvider.unitList
-                .map((item) => DropdownMenuItem<int>(
-                      value: item.id,
-                      child: Text(item.name.toString()),
-                    ))
-                .toList(),
-            onChanged: (value) {
-              setState(() {
-                selectedUnitId = value;
-                selectedUnitName = context
-                    .read<StockProvider>()
-                    .unitList
-                    .firstWhere((e) => e.id == value)
-                    .name;
-              });
-            },
-          );
-        },
-      ),
-    ),
-  ],
-),
+                          Expanded(
+                            child: Consumer<StockProvider>(
+                              builder: (context, stockProvider, child) {
+                                return DropdownButtonFormField<int>(
+                                  decoration: const InputDecoration(
+                                    labelText: "Select Unit",
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  value: stockProvider.unitList.any((e) => e.id == selectedUnitId)
+                                      ? selectedUnitId
+                                      : null,
+                                  items: stockProvider.unitList
+                                      .map((item) => DropdownMenuItem<int>(
+                                            value: item.id,
+                                            child: Text(item.name.toString()),
+                                          ))
+                                      .toList(),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedUnitId = value;
+                                      selectedUnitName = context
+                                          .read<StockProvider>()
+                                          .unitList
+                                          .firstWhere((e) => e.id == value)
+                                          .name;
+                                    });
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                       10.verticalSpace,
                       /// 🔹 Invoice Number
                       // TextFormField(

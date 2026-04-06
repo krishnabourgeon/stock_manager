@@ -305,11 +305,11 @@ class _HomeState extends State<Home> {
                         Stack(
                           children: [
                             Image.asset(
-                              'assets/image/converted_image.jpeg',
+                              'assets/image/green_dashboard.jpeg',
                               width: double.maxFinite,
                               fit: BoxFit.contain,
                             ),
-                            Positioned( 
+                            Positioned(
                               top: 45.h,
                               left: 20.w,
                               child: Column(
@@ -456,12 +456,12 @@ class _HomeState extends State<Home> {
                         child: Consumer<HomeProvider>(
                             builder: (context, provider, _) {
                           return AlertDialog(
-                            title: const Text("Choose Counter"),
+                            title: const Text("Choose Branch"),
                             content: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  const Text("Please select a counter."),
+                                  const Text("Please select a Branch."),
                                   SingleChildScrollView(
                                       scrollDirection: Axis.horizontal,
                                       child: DropdownButton<String>(
@@ -507,11 +507,11 @@ class _HomeState extends State<Home> {
 
                                   if ((selectedCounterID != null)) {
                                     // Save storeId from the selected counter's Datum
-                                    final selectedDatum = home.counterdata
-                                        ?.firstWhere(
-                                          (d) => '${d.id}' == selectedCounterID,
-                                          orElse: () => Datum(),
-                                        );
+                                    final selectedDatum =
+                                        home.counterdata?.firstWhere(
+                                      (d) => '${d.id}' == selectedCounterID,
+                                      orElse: () => Datum(),
+                                    );
                                     await SharedPreferenceHelper.saveStoreID(
                                         '${selectedDatum?.store ?? ""}');
 
@@ -531,7 +531,7 @@ class _HomeState extends State<Home> {
                                     });
                                   } else {
                                     Helpers.successToast(
-                                        "Should Select Counter");
+                                        "Should Select Branch");
                                   }
                                 },
                               ),

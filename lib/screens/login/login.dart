@@ -43,7 +43,7 @@ class _LoginState extends State<Login> {
                   child: SizedBox(
                     width: double.maxFinite,
                     child: Image.asset(
-                      "assets/image/converted_image.jpeg",
+                      "assets/image/green_dashboard.jpeg",
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -153,31 +153,31 @@ class _LoginState extends State<Login> {
                       SizedBox(
                         height: 60.h,
                       ),
-                      Center(
-                        child: RichText(
-                          text: TextSpan(
-                            text: 'Not a member ? ',
-                            style: TextStyle(color: Colors.grey.shade700),
-                            children: <WidgetSpan>[
-                              WidgetSpan(
-                                  child: InkWell(
-                                onTap: () {
-                                  FocusScope.of(context).unfocus();
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const RegisterScreen()));
-                                },
-                                child: Text('Sign up now',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: ColorPalette.primaryColor)),
-                              ))
-                            ],
-                          ),
-                        ),
-                      ),
+                      // Center(
+                      //   child: RichText(
+                      //     text: TextSpan(
+                      //       text: 'Not a member ? ',
+                      //       style: TextStyle(color: Colors.grey.shade700),
+                      //       children: <WidgetSpan>[
+                      //         WidgetSpan(
+                      //             child: InkWell(
+                      //           onTap: () {
+                      //             FocusScope.of(context).unfocus();
+                      //             Navigator.push(
+                      //                 context,
+                      //                 MaterialPageRoute(
+                      //                     builder: (context) =>
+                      //                         const RegisterScreen()));
+                      //           },
+                      //           child: Text('Sign up now',
+                      //               style: TextStyle(
+                      //                   fontWeight: FontWeight.bold,
+                      //                   color: ColorPalette.primaryColor)),
+                      //         ))
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
