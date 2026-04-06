@@ -23,6 +23,7 @@ class PoojaSummaryProvider extends ChangeNotifier with ProviderHelperClass {
           await serviceConfig.getPoojaSummary(fromDate ?? '', toDate ?? '');
       if (res.isValue) {
         poojaSummaryResponse = res.asValue!.value;
+        print(res.asValue!.value);
         if (poojaSummaryResponse != null) {
           updatePoojaDataList(poojaSummaryResponse);
           paginationLoader = false;

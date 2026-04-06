@@ -5,7 +5,7 @@ import 'package:stock_manager/models/counters_model.dart';
 import 'package:stock_manager/models/quickbill_datamodel.dart';
 import 'package:stock_manager/screens/customer_creation/customer_selection_screen.dart';
 import 'package:stock_manager/screens/home/bill_list_table.dart';
-import 'package:stock_manager/screens/home/pooja_list_table.dart';
+import 'package:stock_manager/screens/home/sales-summary-list.dart';
 import 'package:stock_manager/screens/stock/stock_screen.dart';
 import 'package:stock_manager/services/provider_helper_class.dart';
 import 'billing_provider.dart';

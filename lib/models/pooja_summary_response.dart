@@ -1,11 +1,17 @@
 class PoojaSummaryResponse {
   bool? status;
   List<PoojaSummaryData>? data;
+  Temple? temple;
   var grossTotal;
   Meta? meta;
   Links? links;
   PoojaSummaryResponse(
-      {this.status, this.data, this.meta, this.links, this.grossTotal});
+      {this.status,
+      this.data,
+      this.meta,
+      this.links,
+      this.grossTotal,
+      this.temple});
   PoojaSummaryResponse.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     if (json['data'] != null) {
@@ -14,6 +20,8 @@ class PoojaSummaryResponse {
         data!.add(PoojaSummaryData.fromJson(v));
       });
     }
+    temple = json['temple'] != null ? Temple.fromJson(json['temple']) : null;
+
     grossTotal = json['gross_total'];
     meta = json['meta'] != null ? Meta.fromJson(json['meta']) : null;
     links = json['links'] != null ? Links.fromJson(json['links']) : null;
@@ -59,6 +67,47 @@ class Meta {
     prevPageUrl = json['prev_page_url'];
     from = json['from'];
     to = json['to'];
+  }
+}
+
+class Temple {
+  String? name;
+  String? nameMal;
+  String? addressLine1;
+  String? addressLine2;
+  String? phone;
+  String? email;
+  String? website;
+
+  Temple(
+      {this.name,
+      this.nameMal,
+      this.addressLine1,
+      this.addressLine2,
+      this.phone,
+      this.email,
+      this.website});
+
+  Temple.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+    nameMal = json['name_mal'];
+    addressLine1 = json['address_line_1'];
+    addressLine2 = json['address_line_2'];
+    phone = json['phone'];
+    email = json['email'];
+    website = json['website'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
+    data['name_mal'] = nameMal;
+    data['address_line_1'] = addressLine1;
+    data['address_line_2'] = addressLine2;
+    data['phone'] = phone;
+    data['email'] = email;
+    data['website'] = website;
+    return data;
   }
 }
 

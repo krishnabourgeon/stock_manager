@@ -63,6 +63,8 @@ class _PoojaListTableState extends State<PoojaListTable> {
     );
   }
 
+  static const platform = MethodChannel('cloudpos/printer');
+
   _switchView(PoojaSummaryProvider? poojaSummaryProvider) {
     Widget child = const SizedBox.shrink();
     switch (poojaSummaryProvider?.loaderState) {
@@ -204,6 +206,7 @@ class _PoojaListTableState extends State<PoojaListTable> {
                 ),
                 // columnSpacing: 6,
                 columns: const [
+                  DataColumn(label: SizedBox.shrink()),
                   DataColumn(
                       label: Text(
                     'Product Name',
@@ -230,6 +233,76 @@ class _PoojaListTableState extends State<PoojaListTable> {
                           : MaterialStateProperty.all<Color>(
                               Colors.grey.shade100),
                       cells: [
+                        DataCell(
+                          onTap: () async {
+                            DateTime dateTime =
+                                DateTime.parse(DateTime.now().toString());
+
+// 🔹 Format
+                            String formattedDate =
+                                DateFormat('dd-MM-yyyy').format(dateTime);
+                            String formattedTime =
+                                DateFormat('hh:mm a').format(dateTime);
+                            // for (var item in details) {
+                            //   items.add({
+                            //     "type": item.deity ?? '',
+                            //     "name": item.pooja ?? "",
+                            //     "qty": item.qty ?? 0,
+                            //     "rate": item.rate ?? 0,
+                            //   });
+                            // }
+                            try {
+                              await platform.invokeMethod('printReceipt', {
+                                "shop": poojaSummaryProvider
+                                    ?.poojaSummaryResponse?.temple?.name,
+                                "shopaddress": poojaSummaryProvider
+                                    ?.poojaSummaryResponse
+                                    ?.temple
+                                    ?.addressLine1,
+                                "shopaddress2": poojaSummaryProvider
+                                    ?.poojaSummaryResponse
+                                    ?.temple
+                                    ?.addressLine2,
+                                "items": [
+                                  {
+                                    "type": null,
+                                    "name": poojaSummaryProvider
+                                            ?.poojaSummaryResponse
+                                            ?.data![index]
+                                            .poojaName ??
+                                        "",
+                                    "qty": poojaSummaryProvider
+                                            ?.poojaSummaryResponse
+                                            ?.data![index]
+                                            .poojaCount ??
+                                        0,
+                                    "rate": poojaSummaryProvider
+                                            ?.poojaSummaryResponse
+                                            ?.data![index]
+                                            .totalRate ??
+                                        0,
+                                  }
+                                ],
+                                "mode": null,
+                                "bill": null,
+                                "billdate": formattedDate,
+                                "billtime": formattedTime
+                              });
+                            } catch (e) {
+                              print("Error: $e");
+                            }
+                          },
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.print, size: 18),
+                              Text(
+                                "print",
+                                style: TextStyle(fontSize: 10.sp),
+                              )
+                            ],
+                          ),
+                        ),
                         DataCell(SizedBox(
                           width: 185.w,
                           child: Text(

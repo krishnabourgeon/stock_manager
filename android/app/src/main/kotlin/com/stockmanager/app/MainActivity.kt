@@ -73,14 +73,23 @@ class MainActivity : FlutterActivity() {
 
 
             builder.append("--------------------------------\n")
-            builder.append(leftRightAlign("Bill No : $bill", "$billdate"))
-            builder.append(rightAlign("$billtime\n"))
+            if (bill != null&&bill != 0  ) {
+    builder.append(leftRightAlign("Bill No : $bill", "$billdate"));
+} else {
+    builder.append(rightAlign( "$billdate"));
+}
+             builder.append(rightAlign("$billtime\n"))
               
 
             var total = 0
 
            for ((index, item) in items.withIndex()) {
-                builder.append("${index + 1}. ${item["type"].toString()}\n")
+            if (item["type"] != null&&  item["type"] != "null"&&item["type"] !="") {
+    builder.append("${index + 1}. ${item["type"].toString()}\n");
+} else {
+    
+}
+                
                 val name = item["name"].toString()
                 val qty = (item["qty"] as? Number)?.toInt()
     ?: item["qty"]?.toString()?.toIntOrNull()
@@ -99,7 +108,11 @@ builder.append(formatItem(name, qty, rate))
             builder.append("--------------------------------\n")
 
             
-           builder.append(leftRightAlign("Mode: $mode", "TOTAL: Rs $total"))
+          if (mode != null&&mode != "null"&& mode!="" ) {
+    builder.append(leftRightAlign("Mode: $mode", "TOTAL: Rs $total"));
+} else {
+    builder.append(rightAlign("TOTAL: Rs $total\n"));
+}
             builder.append("--------------------------------\n")
              builder.append(centerText("THANK YOU"))
            
