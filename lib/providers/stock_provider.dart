@@ -3,8 +3,11 @@ import 'package:stock_manager/common/common_functions.dart';
 import 'package:stock_manager/models/Save_stock_body.dart';
 import 'package:stock_manager/models/category_model.dart';
 import 'package:stock_manager/models/delete_purchase_model.dart';
+import 'package:stock_manager/models/get_all_product.dart';
 import 'package:stock_manager/models/product_model.dart';
 import 'package:stock_manager/models/purchase_details_model.dart';
+import 'package:stock_manager/models/save_product_body.dart';
+import 'package:stock_manager/models/save_product_model.dart';
 import 'package:stock_manager/models/save_stock_model.dart';
 import 'package:stock_manager/models/supplier_model.dart';
 import 'package:stock_manager/models/unit_model.dart';
@@ -122,31 +125,89 @@ class StockProvider extends ChangeNotifier with ProviderHelperClass {
 
   /// Reset selection state when screen reloads
   void resetPurchaseSelection() {
+    selectedSupplierId = null;
+    selectedPurchaseId = null;
+    selectedInvoiceDate = null;
     purchasedetailList = [];
     notifyListeners();
   }
 
-  Future<void> getProducts() async {
-    final network = await CommonFunctions.checkInternetConnection();
-    if (network) {
-      updateLoadState(LoaderState.loading);
-      try {
-        var res = await serviceConfig.getProduct();
-        if (res.isValue) {
-          productModel = res.asValue!.value;
-          if (productModel != null) {
-            updateProductsList(productModel);
-          }
-          updateLoadState(LoaderState.loaded);
-        } else {
-          updateLoadState(LoaderState.loaded);
+
+  GetAllProduct? getAllProductModel;
+List<AllProduct> allProductList = [];
+
+Future<void> getAllProducts() async {
+  final network = await CommonFunctions.checkInternetConnection();
+
+  if (network) {
+    updateLoadState(LoaderState.loading);
+
+    try {
+      var res = await serviceConfig.getAllProduct();
+
+      if (res.isValue) {
+        getAllProductModel = res.asValue!.value;
+
+        if (getAllProductModel != null) {
+          allProductList = getAllProductModel!.data;
         }
-      } catch (e) {
-        debugPrint('exception in products: $e');
-        updateLoadState(LoaderState.loaded);
       }
+
+      updateLoadState(LoaderState.loaded);
+    } catch (e) {
+      debugPrint('exception in all products: $e');
+      updateLoadState(LoaderState.loaded);
     }
   }
+}
+
+  // Future<void> getProducts() async {
+  //   final network = await CommonFunctions.checkInternetConnection();
+  //   if (network) {
+  //     updateLoadState(LoaderState.loading);
+  //     try {
+  //       var res = await serviceConfig.getProduct();
+  //       if (res.isValue) {
+  //         productModel = res.asValue!.value;
+  //         if (productModel != null) {
+  //           updateProductsList(productModel);
+  //         }
+  //         updateLoadState(LoaderState.loaded);
+  //       } else {
+  //         updateLoadState(LoaderState.loaded);
+  //       }
+  //     } catch (e) {
+  //       debugPrint('exception in products: $e');
+  //       updateLoadState(LoaderState.loaded);
+  //     }
+  //   }
+  // }
+
+
+  Future<void> getProducts({int? categoryId}) async {
+  final network = await CommonFunctions.checkInternetConnection();
+
+  if (network) {
+    updateLoadState(LoaderState.loading);
+
+    try {
+      var res = await serviceConfig.getProduct(categoryId: categoryId);
+
+      if (res.isValue) {
+        productModel = res.asValue!.value;
+
+        if (productModel != null) {
+          updateProductsList(productModel);
+        }
+      }
+
+      updateLoadState(LoaderState.loaded);
+    } catch (e) {
+      debugPrint('exception in products: $e');
+      updateLoadState(LoaderState.loaded);
+    }
+  }
+}
 
 //   Future<void> deletePurchaseItem({
 //   required String id,
@@ -452,27 +513,106 @@ class StockProvider extends ChangeNotifier with ProviderHelperClass {
     }
   }
 
-  Future<void> getCategories() async {
-    final network = await CommonFunctions.checkInternetConnection();
-    if (network) {
-      updateLoadState(LoaderState.loading);
-      try {
-        var res = await serviceConfig.getCategory();
-        if (res.isValue) {
-          categoryModel = res.asValue!.value;
-          if (categoryModel != null) {
-            updateCategoriesList(categoryModel);
-          }
-          updateLoadState(LoaderState.loaded);
-        } else {
-          updateLoadState(LoaderState.loaded);
-        }
-      } catch (e) {
-        debugPrint('exception in categories: $e');
-        updateLoadState(LoaderState.loaded);
+
+  Future<void> saveProduct({
+  required String name,
+  required String code,
+  required String unit,
+  required String price,
+  required String categoryId,
+  Function? onSuccess,
+  Function? onFailure,
+}) async {
+  final network = await CommonFunctions.checkInternetConnection();
+
+  if (network) {
+    updateLoadState(LoaderState.loading);
+
+    try {
+      /// 🔹 CREATE BODY
+      SaveProductBody body = SaveProductBody(
+        code: code,
+        name: name,
+        catId: categoryId,
+        unit: unit,
+        price: price,
+        storeId: AppConfig.storeId.toString(),
+      );
+
+      debugPrint("SAVE PRODUCT BODY: ${body.toJson()}");
+
+      /// 🔹 API CALL
+      var res = await serviceConfig.saveProduct(body);
+
+      if (res.isValue) {
+        SaveProductModel response = res.asValue!.value;
+
+        Helpers.successToast("Product Added Successfully");
+
+        if (onSuccess != null) onSuccess();
+      } else {
+        Helpers.successToast("Failed to add product");
+
+        if (onFailure != null) onFailure();
       }
+
+      updateLoadState(LoaderState.loaded);
+    } catch (e) {
+      debugPrint("save product error: $e");
+      updateLoadState(LoaderState.loaded);
+      Helpers.successToast("Something went wrong");
     }
   }
+}
+
+
+
+  // Future<void> getCategories() async {
+  //   final network = await CommonFunctions.checkInternetConnection();
+  //   if (network) {
+  //     updateLoadState(LoaderState.loading);
+  //     try {
+  //       var res = await serviceConfig.getCategory();
+  //       if (res.isValue) {
+  //         categoryModel = res.asValue!.value;
+  //         if (categoryModel != null) {
+  //           updateCategoriesList(categoryModel);
+  //         }
+  //         updateLoadState(LoaderState.loaded);
+  //       } else {
+  //         updateLoadState(LoaderState.loaded);
+  //       }
+  //     } catch (e) {
+  //       debugPrint('exception in categories: $e');
+  //       updateLoadState(LoaderState.loaded);
+  //     }
+  //   }
+  // }
+
+  Future<void> getCategories({int? categoryId}) async {
+  final network = await CommonFunctions.checkInternetConnection();
+
+  if (network) {
+    updateLoadState(LoaderState.loading);
+
+    try {
+      var res = await serviceConfig.getCategory(categoryId: categoryId);
+
+      if (res.isValue) {
+        categoryModel = res.asValue!.value;
+
+        if (categoryModel != null) {
+          updateCategoriesList(categoryModel);
+        }
+      }
+
+      updateLoadState(LoaderState.loaded);
+    } catch (e) {
+      debugPrint('exception in categories: $e');
+      updateLoadState(LoaderState.loaded);
+    }
+  }
+}
 
   Future<void> saveStock({
     required List<Map<String, dynamic>> addedStocks,

@@ -47,137 +47,89 @@ class _PurchaseDetailsScreenState extends State<PurchaseDetailsScreen> {
       body: provider.loaderState == LoaderState.loading
           ? const Center(child: CircularProgressIndicator())
           : provider.viewProductStockList.isEmpty
-              ? const Center(child: Text("No stock history found"))
-              : ListView.builder(
-                  padding: const EdgeInsets.all(20),
-                  itemCount: provider.viewProductStockList.length,
-                  itemBuilder: (context, index) {
-                    final item = provider.viewProductStockList[index];
-
-                    return Container(
-                      margin: EdgeInsets.only(bottom: 15.h),
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.grey.shade300)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                "Product Name: ",
-                                style: TextStyle(
-                                    fontSize: 18.sp,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                item.productName,
-                                style: TextStyle(fontSize: 18.sp),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10.h),
-                          Row(
-                            children: [
-                              Text(
-                                "Product Code: ",
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                item.productCode,
-                                style: TextStyle(fontSize: 16.sp),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 9.h),
-                          Row(
-                            children: [
-                              Text(
-                                "Invoice Number: ",
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                item.invoiceNo,
-                                style: TextStyle(fontSize: 16.sp),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 9.h),
-                          Row(
-                            children: [
-                              Text(
-                                "Date: ",
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                DateFormat('dd-MM-yyyy').format(item.addedDate),
-                                style: TextStyle(fontSize: 16.sp),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 9.h),
-                          Row(
-                            children: [
-                              Text(
-                                "Mode: ",
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                item.mode,
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  color: item.mode.toLowerCase().contains("in") 
-                                    ? Colors.green 
-                                    : Colors.red,
-                                  fontWeight: FontWeight.w600
+              ? const Center(child: Text("No stock found"))
+              : Padding(
+                  padding: EdgeInsets.all(10.w),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        headingRowColor: WidgetStateProperty.all(Colors.green),
+                        headingTextStyle: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14.sp,
+                        ),
+                        columnSpacing: 25.w,
+                        border: TableBorder.all(color: Colors.grey.shade200),
+                        columns: const [
+                          DataColumn(label: Text('Sl.No')),
+                          DataColumn(label: Text('Code')),
+                          DataColumn(label: Text('Date')),
+                          DataColumn(label: Text('Invoice No')),
+                          DataColumn(label: Text('Mode')),
+                          DataColumn(label: Text('Qty')),
+                         // DataColumn(label: Text('Qty Out')),
+                          DataColumn(label: Text('Sales Rate')),
+                        ],
+                        rows: provider.viewProductStockList
+                            .asMap()
+                            .entries
+                            .map((entry) {
+                          final index = entry.key;
+                          final item = entry.value;
+                          final bool isIn =
+                              item.mode.toLowerCase().contains("in");
+                          return DataRow(
+                            color: WidgetStateProperty.all(index % 2 != 0
+                                ? Colors.grey.shade50
+                                : Colors.white),
+                            cells: [
+                              DataCell(Text((index + 1).toString())),
+                              DataCell(Text(item.productCode)),
+                            DataCell(Text(
+                                DateFormat('dd-MM-yyyy').format(item.addedDate))),
+                            DataCell(Text(item.invoiceNo)),
+                            DataCell(
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8.w, vertical: 4.h),
+                                decoration: BoxDecoration(
+                                  color: isIn
+                                      ? Colors.green.withOpacity(0.1)
+                                      : Colors.red.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  item.mode,
+                                  style: TextStyle(
+                                    color: isIn ? Colors.green : Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                            ],
-                          ),
-                          SizedBox(height: 9.h),
-                          Row(
-                            children: [
-                              Text(
-                                "Quantity: ",
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                "${item.qty}",
-                                style: TextStyle(fontSize: 16.sp),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 9.h),
-                          Row(
-                            children: [
-                              Text(
-                                "Sales Rate: ",
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                "${item.salesRate ?? '0'}",
-                                style: TextStyle(fontSize: 16.sp),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                            ),
+                            // DataCell(Text(
+                            //   isIn ? "${item.qty}" : "-",
+                            //   style: TextStyle(
+                            //       color: isIn ? Colors.green : Colors.black,
+                            //       fontWeight: isIn ? FontWeight.bold : null),
+                            // )),
+                            DataCell(Text(
+                              !isIn ? "${item.qty}" : "-",
+                              style: TextStyle(
+                                  color: !isIn ? Colors.red : Colors.black,
+                                  fontWeight: !isIn ? FontWeight.bold : null),
+                            )),
+                            DataCell(Text("${item.salesRate ?? '0'}")),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ),
                 ),
+              ),
     );
   }
 }

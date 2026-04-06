@@ -419,11 +419,31 @@ double getCombinedTotal() {
                                           child: Text(item.name.toString()),
                                         ))
                                     .toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                selectedCategoryId = value;
-                              });
-                            },
+                            // onChanged: (value) {
+                            //   setState(() {
+                            //     selectedCategoryId = value;
+                            //   });
+                            // },
+//                             onChanged: (value) {
+//   setState(() {
+//     selectedCategoryId = value;
+//   });
+
+//   // 
+//   // CALL API WITH CATEGORY ID
+//   context.read<StockProvider>().getCategories(categoryId: value);
+// },
+
+onChanged: (value) {
+  setState(() {
+    selectedCategoryId = value;
+    selectedProductId = null; // 🔥 reset product
+  });
+
+  // 🔥 CALL API WITH CATEGORY ID
+  context.read<StockProvider>().getCategories(categoryId: value);
+  context.read<StockProvider>().getProducts(categoryId: value);
+},
                             validator: (value) {
                               if (value == null) {
                                 return "Please select category";

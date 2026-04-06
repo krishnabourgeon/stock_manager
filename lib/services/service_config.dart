@@ -8,6 +8,7 @@ import 'package:stock_manager/models/create_customer_body.dart';
 import 'package:stock_manager/models/delete_purchase_model.dart';
 import 'package:stock_manager/models/dieties_response_model.dart';
 import 'package:stock_manager/models/error_response_model.dart';
+import 'package:stock_manager/models/get_all_product.dart';
 import 'package:stock_manager/models/gothra_response.dart';
 import 'package:stock_manager/models/login_response_model.dart';
 import 'package:stock_manager/models/payment_mode_response.dart';
@@ -22,6 +23,8 @@ import 'package:stock_manager/models/rashi_datamodel.dart';
 import 'package:stock_manager/models/register_body.dart';
 import 'package:stock_manager/models/save_bill_body.dart';
 import 'package:stock_manager/models/save_bill_response.dart';
+import 'package:stock_manager/models/save_product_body.dart';
+import 'package:stock_manager/models/save_product_model.dart';
 import 'package:stock_manager/models/save_stock_model.dart';
 import 'package:stock_manager/models/savequickbillresponse_datamodel.dart';
 import 'package:stock_manager/models/search_response_model.dart';
@@ -97,22 +100,70 @@ class ServiceConfig {
   }
 
 
-
-   Future<Result> getProduct() async {
-    Result res = await BaseClient.get('invproducts');
+    Future<Result> getAllProduct() async {
+    Result res = await BaseClient.post('invproducts_all');
     if (res.isError) {
       ErrorResponseModel errorResponseModel =
           ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
       return Result.error(errorResponseModel);
     } else {
       var response = res.asValue!.value;
-      debugPrint('product response $response');
-      ProductModel productModel = ProductModel.fromJson(response);
-      return (productModel.status ?? false)
-          ? Result.value(productModel)
-          : Result.error(productModel);
+      debugPrint('deities response $response');
+      GetAllProduct getAllProduct = GetAllProduct.fromJson(response);
+      return (getAllProduct.status ?? false)
+          ? Result.value(getAllProduct)
+          : Result.error(getAllProduct);
     }
   }
+
+
+
+  //  Future<Result> getProduct() async {
+  //   Result res = await BaseClient.post('invproducts');
+  //   if (res.isError) {
+  //     ErrorResponseModel errorResponseModel =
+  //         ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+  //     return Result.error(errorResponseModel);
+  //   } else {
+  //     var response = res.asValue!.value;
+  //     debugPrint('product response $response');
+  //     ProductModel productModel = ProductModel.fromJson(response);
+  //     return (productModel.status ?? false)
+  //         ? Result.value(productModel)
+  //         : Result.error(productModel);
+  //   }
+  // }
+
+
+
+  Future<Result> getProduct({int? categoryId}) async {
+  Map<String, dynamic> body = {};
+
+  //  Add category_id if available
+  if (categoryId != null) {
+    body['cat_id'] = categoryId;
+  }
+
+
+  print("product category id $categoryId");
+
+  Result res = await BaseClient.post('invproducts', body: body);
+
+  if (res.isError) {
+    return Result.error(
+      ErrorResponseModel(errorMessage: 'Oops... Something went wrong'),
+    );
+  } else {
+    var response = res.asValue!.value;
+    debugPrint('product response $response');
+
+    ProductModel productModel = ProductModel.fromJson(response);
+
+    return (productModel.status ?? false)
+        ? Result.value(productModel)
+        : Result.error(productModel);
+  }
+}
 
 
   Future<Result> getSupplier() async {
@@ -150,21 +201,48 @@ class ServiceConfig {
   }
 
 
-   Future<Result> getCategory() async {
-    Result res = await BaseClient.get('cat');
-    if (res.isError) {
-      ErrorResponseModel errorResponseModel =
-          ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
-      return Result.error(errorResponseModel);
-    } else {
-      var response = res.asValue!.value;
-      debugPrint('category response $response');
-      CategoryModel categoryModel = CategoryModel.fromJson(response);
-      return (categoryModel.status ?? false)
-          ? Result.value(categoryModel)
-          : Result.error(categoryModel);
-    }
+  //  Future<Result> getCategory() async {
+  //   Result res = await BaseClient.get('cat');
+  //   if (res.isError) {
+  //     ErrorResponseModel errorResponseModel =
+  //         ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+  //     return Result.error(errorResponseModel);
+  //   } else {
+  //     var response = res.asValue!.value;
+  //     debugPrint('category response $response');
+  //     CategoryModel categoryModel = CategoryModel.fromJson(response);
+  //     return (categoryModel.status ?? false)
+  //         ? Result.value(categoryModel)
+  //         : Result.error(categoryModel);
+  //   }
+  // }
+
+
+
+  Future<Result> getCategory({int? categoryId}) async {
+  String url = 'cat';
+
+  if (categoryId != null) {
+    url = 'cat?category_id=$categoryId'; //  pass param here
   }
+
+
+print("category id : $categoryId");
+  Result res = await BaseClient.get(url);
+
+  if (res.isError) {
+    return Result.error(
+      ErrorResponseModel(errorMessage: 'Oops... Something went wrong'),
+    );
+  } else {
+    var response = res.asValue!.value;
+    CategoryModel model = CategoryModel.fromJson(response);
+
+    return (model.status ?? false)
+        ? Result.value(model)
+        : Result.error(model);
+  }
+}
 
 
      Future<Result> getPurchases() async {
@@ -281,6 +359,7 @@ Future<Result> deletePurchaseDetails(String id, String productId) async {
     'delete-purchase-details?id=$id&product_id=$productId',
   );
   print("-------------------------productid : ${productId}-----------------");
+  print("-------------------------id : ${id}-----------------");
   if (res.isError) {
     return Result.error(
       ErrorResponseModel(errorMessage: 'Oops...! Something went wrong'),
@@ -433,6 +512,34 @@ Future<Result> getProductStock({
   }
 }
 
+
+
+
+  Future<Result> saveProduct(SaveProductBody saveProductBody) async {
+  if (kDebugMode) {
+    print("add product..............${saveProductBody.toJson()}");
+  }
+
+  Result res = await BaseClient.post(
+    'addproduct', // make sure this matches your API route
+    body: saveProductBody.toJson(),
+  );
+
+  if (res.isError) {
+    ErrorResponseModel errorResponseModel =
+        ErrorResponseModel(errorMessage: 'Oops...! Something went wrong');
+    return Result.error(errorResponseModel);
+  } else {
+    var response = res.asValue!.value;
+
+    SaveProductModel saveProductResponse =
+        SaveProductModel.fromJson(response);
+
+    return (saveProductResponse.status)
+        ? Result.value(saveProductResponse)
+        : Result.error(saveProductResponse);
+  }
+}
 
 
  
