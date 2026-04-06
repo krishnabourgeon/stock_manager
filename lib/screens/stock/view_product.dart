@@ -324,13 +324,13 @@ class _ViewProductState extends State<ViewProduct> {
                         )),
 
                         /// 🔹 NAME
-                        DataCell(Text(item.name)),
+                        DataCell(Text(item.pname)),
 
                         /// 🔹 CATEGORY (ID for now)
                         DataCell(Text(item.catname.toString())),
 
                         /// 🔹 UNIT (ID for now)
-                        DataCell(Text(item.unit.toString())),
+                        DataCell(Text(item.uname.toString())),
 
                         /// 🔹 PRICE
                         DataCell(Text(item.price)),
