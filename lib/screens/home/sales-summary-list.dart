@@ -236,9 +236,7 @@ class _PoojaListTableState extends State<PoojaListTable> {
                         DataCell(
                           onTap: () async {
                             DateTime dateTime =
-                                DateTime.parse(DateTime.now().toString());
-
-// 🔹 Format
+                                DateTime.parse(DateTime.now().toString()); //  Format
                             String formattedDate =
                                 DateFormat('dd-MM-yyyy').format(dateTime);
                             String formattedTime =
@@ -251,46 +249,80 @@ class _PoojaListTableState extends State<PoojaListTable> {
                             //     "rate": item.rate ?? 0,
                             //   });
                             // }
-                            try {
-                              await platform.invokeMethod('printReceipt', {
-                                "shop": poojaSummaryProvider
-                                    ?.poojaSummaryResponse?.temple?.name,
-                                "shopaddress": poojaSummaryProvider
-                                    ?.poojaSummaryResponse
-                                    ?.temple
-                                    ?.addressLine1,
-                                "shopaddress2": poojaSummaryProvider
-                                    ?.poojaSummaryResponse
-                                    ?.temple
-                                    ?.addressLine2,
-                                "items": [
-                                  {
-                                    "type": null,
-                                    "name": poojaSummaryProvider
-                                            ?.poojaSummaryResponse
-                                            ?.data![index]
-                                            .poojaName ??
-                                        "",
-                                    "qty": poojaSummaryProvider
-                                            ?.poojaSummaryResponse
-                                            ?.data![index]
-                                            .poojaCount ??
-                                        0,
-                                    "rate": poojaSummaryProvider
-                                            ?.poojaSummaryResponse
-                                            ?.data![index]
-                                            .totalRate ??
-                                        0,
-                                  }
-                                ],
-                                "mode": null,
-                                "bill": null,
-                                "billdate": formattedDate,
-                                "billtime": formattedTime
-                              });
-                            } catch (e) {
-                              print("Error: $e");
-                            }
+                          //   try {
+                          //     await platform.invokeMethod('printReceipt', {
+                          //       "shop": poojaSummaryProvider
+                          //           ?.poojaSummaryResponse?.temple?.name,
+                          //       "shopaddress": poojaSummaryProvider
+                          //           ?.poojaSummaryResponse
+                          //           ?.temple
+                          //           ?.addressLine1,
+                          //       "shopaddress2": poojaSummaryProvider
+                          //           ?.poojaSummaryResponse
+                          //           ?.temple
+                          //           ?.addressLine2,
+                          //       "items": [
+                          //         {
+                          //           "type": null,
+                          //           "name": poojaSummaryProvider
+                          //                   ?.poojaSummaryResponse
+                          //                   ?.data![index]
+                          //                   .poojaName ??
+                          //               "",
+                          //           "qty": poojaSummaryProvider
+                          //                   ?.poojaSummaryResponse
+                          //                   ?.data![index]
+                          //                   .poojaCount ??
+                          //               0,
+                          //           "rate": poojaSummaryProvider
+                          //                   ?.poojaSummaryResponse
+                          //                   ?.data![index]
+                          //                   .totalRate ??
+                          //               0,
+                          //         }
+                          //       ],
+                          //       "mode": null,
+                          //       "bill": null,
+                          //       "billdate": formattedDate,
+                          //       "billtime": formattedTime
+                          //     });
+                          //   } catch (e) {
+                          //     print("Error: $e");
+                          //   }
+                          // },
+
+                          try {
+                            DateTime dateTime = DateTime.now();
+                            String formattedDate = DateFormat('dd-MM-yyyy').format(dateTime);
+                            String formattedTime = DateFormat('hh:mm a').format(dateTime);
+
+                            List<Map<String, dynamic>> itemsList =
+                                poojaSummaryProvider?.poojaSummaryResponse?.data?.map((e) {
+                              return {
+                                "type": null,
+                                "name": e.poojaName ?? "",
+                                "qty": e.poojaCount ?? 0,
+                                "rate": e.totalRate ?? 0,
+                              };
+                            }).toList() ?? [];
+
+                            await platform.invokeMethod('printReceipt', {
+                              "shop": poojaSummaryProvider?.poojaSummaryResponse?.temple?.name,
+                              "shopaddress": poojaSummaryProvider?.poojaSummaryResponse?.temple?.addressLine1,
+                              "shopaddress2": poojaSummaryProvider?.poojaSummaryResponse?.temple?.addressLine2,
+
+                              "items": itemsList, //  ALL ITEMS
+
+                              "total": poojaSummaryProvider?.poojaSummaryResponse?.grossTotal ?? 0,
+
+                              "billdate": formattedDate,
+                              "billtime": formattedTime,
+                              "mode": null,
+                              "bill": null,
+                            });
+                          } catch (e) {
+                            print("Error: $e");
+                          }
                           },
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,

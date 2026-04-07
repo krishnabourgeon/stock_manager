@@ -254,6 +254,8 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -294,22 +296,39 @@ class _ViewStockState extends State<ViewStock> {
 
       body: Column(
         children: [
-
-          /// 🔹 PDF BUTTON
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: ElevatedButton(
-                onPressed: () {
-                  generatePdf(stockProvider);
-                },
-                child: const Text("Download Report"),
+          
+          ///  PDF BUTTON
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      generatePdf(stockProvider);
+                    },
+                    child: const Text("Download Report"),
+                  ),
+                ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      printStockReport(stockProvider);
+                    },
+                    child: const Text("Print Report"),
+                  ),
+                ),
+              ),
+            ],
           ),
 
-          /// 🔹 TABLE
+          ///  TABLE
           Expanded(
             child: stockProvider.loaderState == LoaderState.loading
                 ? const Center(child: CircularProgressIndicator())
@@ -344,7 +363,7 @@ class _ViewStockState extends State<ViewStock> {
                           DataCell(Text(stock.total.toString())),
                           DataCell(Text(stock.unitName)),
 
-                          /// 🔹 VIEW DETAILS
+                          ///  VIEW DETAILS
                           DataCell(
                             InkWell(
                               onTap: () {
@@ -375,7 +394,7 @@ class _ViewStockState extends State<ViewStock> {
     );
   }
 
-  /// 🔹 PDF GENERATION
+  ///  PDF GENERATION
   Future<void> generatePdf(StockProvider stockProvider) async {
     final pdf = pw.Document();
 
@@ -400,7 +419,7 @@ class _ViewStockState extends State<ViewStock> {
 
               pw.SizedBox(height: 20),
 
-              /// 🔹 TABLE
+              ///  TABLE
               pw.Table(
                 border: pw.TableBorder.all(),
                 children: [
@@ -460,4 +479,46 @@ class _ViewStockState extends State<ViewStock> {
       ),
     );
   }
+
+
+static const platform = MethodChannel('cloudpos/printer');
+Future<void> printStockReport(StockProvider stockProvider) async {
+  try {
+    DateTime dateTime = DateTime.now();
+    String formattedDate = DateFormat('dd-MM-yyyy').format(dateTime);
+    String formattedTime = DateFormat('hh:mm a').format(dateTime);
+
+    /// 🔹 Convert stock list to items
+    List<Map<String, dynamic>> itemsList =
+        stockProvider.stockList.map((e) {
+      return {
+        "type": null,
+        "name": e.name ?? "",
+        "code": e.code ?? "",
+        "total": e.total ?? 0,
+        "unit": e.unitName ?? "",
+      };
+    }).toList();
+
+    await platform.invokeMethod('printReceipt', {
+      ///  HEADER
+      "shop": stockProvider.viewStockModel?.temple?.name,
+      "shopaddress": stockProvider.viewStockModel?.temple?.addressLine1,
+      "shopaddress2": stockProvider.viewStockModel?.temple?.addressLine2,
+
+      ///  FULL LIST
+      "items": itemsList,
+
+      ///  EXT
+      "totalItems": stockProvider.stockList.length,
+
+      "billdate": formattedDate,
+      "billtime": formattedTime,
+      "mode": null,
+      "bill": null,
+    });
+  } catch (e) {
+    print("Print Error: $e");
+  }
+}
 }
