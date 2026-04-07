@@ -28,9 +28,10 @@ class MainActivity : FlutterActivity() {
                             val items = call.argument<List<Map<String, Any>>>("items") ?: listOf()
                             val mode = call.argument<String>("mode") ?: ""
                             val bill = call.argument<Int>("bill") ?: 0
+                             val total = call.argument<Int>("total") ?: 0
                             val billdate = call.argument<String>("billdate") ?: ""
                           val billtime = call.argument<String>("billtime") ?: ""
-                             printReceipt(shop, shopaddress,shopaddress2, items, mode, bill, billdate,billtime)
+                             printReceipt(shop, shopaddress,shopaddress2, items, mode, bill, billdate,billtime,total)
 
                             result.success("Printed")
 
@@ -52,7 +53,9 @@ class MainActivity : FlutterActivity() {
         mode: String,
         bill: Int,
         billdate: String,
-        billtime: String
+        billtime: String,
+        total:Any,
+       
     ) {
         try {
            
@@ -81,8 +84,7 @@ class MainActivity : FlutterActivity() {
              builder.append(rightAlign("$billtime\n"))
               
 
-            var total = 0
-
+           
            for ((index, item) in items.withIndex()) {
             if (item["type"] != null&&  item["type"] != "null"&&item["type"] !="") {
     builder.append("${index + 1}. ${item["type"].toString()}\n");
@@ -98,11 +100,11 @@ class MainActivity : FlutterActivity() {
 val rate = (item["rate"] as? Number)?.toInt()
     ?: item["rate"]?.toString()?.toIntOrNull()
     ?: 0
+   val unit = item["unit"] as? String
 
-val amount = qty * rate
-total += amount
+ 
 
-builder.append(formatItem(name, qty, rate))
+builder.append(formatItem(item["type"],name, qty, rate,unit))
             }
 
             builder.append("--------------------------------\n")
@@ -111,9 +113,16 @@ builder.append(formatItem(name, qty, rate))
           if (mode != null&&mode != "null"&& mode!="" ) {
     builder.append(leftRightAlign("Mode: $mode", "TOTAL: Rs $total"));
 } else {
-    builder.append(rightAlign("TOTAL: Rs $total\n"));
+    if(total==0){
+
+    }else{
+    builder.append(rightAlign("TOTAL: Rs $total\n"));}
 }
-            builder.append("--------------------------------\n")
+
+if(total!=0){
+
+
+            builder.append("--------------------------------\n")}
              builder.append(centerText("THANK YOU"))
            
             builder.append("\n\n")
@@ -139,10 +148,21 @@ builder.append(formatItem(name, qty, rate))
         return " ".repeat(if (padding > 0) padding else 0) + text
     }
 
-    // 🔥 ITEM FORMAT (LIKE BILL)
-    private fun formatItem(name: String, qty: Int, rate: Int): String {
-         return "   $name $qty x $rate\n\n"
+    // 🔥 ITEM FORMAT  
+    private fun formatItem(itemName: Any?, name: String, qty: Int, rate: Any?,unit:String?): String {
+
+    return if (itemName ==""||itemName==null||itemName=="null") {
+        if(rate==0||rate=="0"){
+            if(unit!=null||unit!="null"||unit!=""){
+            return  "$name $qty$unit\n\n"  
+      }else{
+         return  "$name $qty\n\n"
+      }  }else{  
+        "$name $qty x $rate\n\n"   // 👈 no leading spaces
+   } } else {
+        "   $name $qty x $rate\n\n" // 👈 with spaces
     }
+}
 
 //in row
     private fun leftRightAlign(left: String, right: String, width: Int = 32): String {

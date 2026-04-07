@@ -250,9 +250,6 @@
 //   }
 // }
 
-
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -272,7 +269,6 @@ class ViewStock extends StatefulWidget {
 }
 
 class _ViewStockState extends State<ViewStock> {
-
   @override
   void initState() {
     super.initState();
@@ -289,14 +285,15 @@ class _ViewStockState extends State<ViewStock> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("View Stock",style: TextStyle(color: Colors.white),),
+        title: const Text(
+          "View Stock",
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
         backgroundColor: Colors.green,
       ),
-
       body: Column(
         children: [
-          
           ///  PDF BUTTON
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -336,23 +333,29 @@ class _ViewStockState extends State<ViewStock> {
                     scrollDirection: Axis.horizontal,
                     child: DataTable(
                       border: TableBorder.all(color: Colors.grey),
-                      headingRowColor:
-                          MaterialStateProperty.all(Colors.green),
-
+                      headingRowColor: MaterialStateProperty.all(Colors.green),
                       columns: const [
-                        DataColumn(label: Text("Sl No", style: TextStyle(color: Colors.white))),
-                        DataColumn(label: Text("Code", style: TextStyle(color: Colors.white))),
-                        DataColumn(label: Text("Product", style: TextStyle(color: Colors.white))),
-                        DataColumn(label: Text("Total", style: TextStyle(color: Colors.white))),
-                        DataColumn(label: Text("Unit", style: TextStyle(color: Colors.white))),
-                        DataColumn(label: Text("Action", style: TextStyle(color: Colors.white))),
+                        DataColumn(
+                            label: Text("Sl No",
+                                style: TextStyle(color: Colors.white))),
+                        DataColumn(
+                            label: Text("Code",
+                                style: TextStyle(color: Colors.white))),
+                        DataColumn(
+                            label: Text("Product",
+                                style: TextStyle(color: Colors.white))),
+                        DataColumn(
+                            label: Text("Total",
+                                style: TextStyle(color: Colors.white))),
+                        DataColumn(
+                            label: Text("Unit",
+                                style: TextStyle(color: Colors.white))),
+                        DataColumn(
+                            label: Text("Action",
+                                style: TextStyle(color: Colors.white))),
                       ],
-
-                      rows: stockProvider.stockList
-                          .asMap()
-                          .entries
-                          .map((entry) {
-
+                      rows:
+                          stockProvider.stockList.asMap().entries.map((entry) {
                         int index = entry.key;
                         var stock = entry.value;
 
@@ -370,8 +373,7 @@ class _ViewStockState extends State<ViewStock> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        PurchaseDetailsScreen(
+                                    builder: (context) => PurchaseDetailsScreen(
                                       productId: stock.id.toString(),
                                       productName: stock.name,
                                     ),
@@ -406,7 +408,6 @@ class _ViewStockState extends State<ViewStock> {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-
               pw.Text("Stock Report",
                   style: pw.TextStyle(
                       fontSize: 18, fontWeight: pw.FontWeight.bold)),
@@ -423,7 +424,6 @@ class _ViewStockState extends State<ViewStock> {
               pw.Table(
                 border: pw.TableBorder.all(),
                 children: [
-
                   /// HEADER
                   pw.TableRow(
                     decoration: const pw.BoxDecoration(
@@ -439,11 +439,7 @@ class _ViewStockState extends State<ViewStock> {
                   ),
 
                   /// DATA
-                  ...stockProvider.stockList
-                      .asMap()
-                      .entries
-                      .map((entry) {
-
+                  ...stockProvider.stockList.asMap().entries.map((entry) {
                     int index = entry.key;
                     var stock = entry.value;
 
@@ -480,45 +476,59 @@ class _ViewStockState extends State<ViewStock> {
     );
   }
 
+  static const platform = MethodChannel('cloudpos/printer');
+  Future<void> printStockReport(StockProvider stockProvider) async {
+    try {
+      DateTime dateTime = DateTime.now();
+      String formattedDate = DateFormat('dd-MM-yyyy').format(dateTime);
+      String formattedTime = DateFormat('hh:mm a').format(dateTime);
 
-static const platform = MethodChannel('cloudpos/printer');
-Future<void> printStockReport(StockProvider stockProvider) async {
-  try {
-    DateTime dateTime = DateTime.now();
-    String formattedDate = DateFormat('dd-MM-yyyy').format(dateTime);
-    String formattedTime = DateFormat('hh:mm a').format(dateTime);
+      /// 🔹 Convert stock list to items
+      // List<Map<String, dynamic>> itemsList =
+      //     stockProvider.stockList.map((e) {
+      //   return {
+      //     "type": null,
+      //     "name": e.name,
+      //     "code": e.code,
+      //     "total": e.total,
+      //     "unit": e.unitName,
+      //   };
+      // }).toList();
 
-    /// 🔹 Convert stock list to items
-    List<Map<String, dynamic>> itemsList =
-        stockProvider.stockList.map((e) {
-      return {
-        "type": null,
-        "name": e.name,
-        "code": e.code,
-        "total": e.total,
-        "unit": e.unitName,
-      };
-    }).toList();
+      List<Map<String, dynamic>> itemsList =
+          stockProvider.stockList.asMap().entries.map((entry) {
+                int index = entry.key;
+                var e = entry.value;
+                print(e.unitName);
+                return {
+                  "type": null,
+                  "name": "${index + 1}. ${e.name}",
+                  "qty": e.total,
+                  "rate": 0,
+                  "unit": e.unitName
+                };
+              }).toList() ??
+              [];
 
-    await platform.invokeMethod('printReceipt', {
-      ///  HEADER
-      "shop": stockProvider.viewStockModel?.temple.name,
-      "shopaddress": stockProvider.viewStockModel?.temple.addressLine1,
-      "shopaddress2": stockProvider.viewStockModel?.temple.addressLine2,
+      await platform.invokeMethod('printReceipt', {
+        ///  HEADER
+        "shop": stockProvider.viewStockModel?.temple.name,
+        "shopaddress": stockProvider.viewStockModel?.temple.addressLine1,
+        "shopaddress2": stockProvider.viewStockModel?.temple.addressLine2,
 
-      ///  FULL LIST
-      "items": itemsList,
+        ///  FULL LIST
+        "items": itemsList,
 
-      ///  EXT
-      // "totalItems": stockProvider.stockList.length,
-
-      "billdate": formattedDate,
-      "billtime": formattedTime,
-      "mode": null,
-      "bill": null,
-    });
-  } catch (e) {
-    print("Print Error: $e");
+        ///  EXT
+        // "totalItems": stockProvider.stockList.length,
+        "total": 0,
+        "billdate": formattedDate,
+        "billtime": formattedTime,
+        "mode": null,
+        "bill": null,
+      });
+    } catch (e) {
+      print("Print Error: $e");
+    }
   }
- }
 }

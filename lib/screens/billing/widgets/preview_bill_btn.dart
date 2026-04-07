@@ -349,7 +349,7 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
             TextButton(
               onPressed: () async {
                 Navigator.pop(context);
-                // await downloadPreviewBillPdf();  
+                // await downloadPreviewBillPdf();
               },
               child: const Text("Cancel"),
             ),
@@ -608,7 +608,8 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
         "mode": summary?.mode,
         "bill": summary?.id,
         "billdate": formattedDate,
-        "billtime": formattedTime
+        "billtime": formattedTime,
+        "total": int.parse(bill?.totalRateController.text ?? '0')
       });
     } catch (e) {
       print("Error: $e");
