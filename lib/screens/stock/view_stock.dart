@@ -520,5 +520,5 @@ Future<void> printStockReport(StockProvider stockProvider) async {
   } catch (e) {
     print("Print Error: $e");
   }
-}
+ }
 }
