@@ -510,7 +510,7 @@ Future<void> printStockReport(StockProvider stockProvider) async {
       "items": itemsList,
 
       ///  EXT
-      "totalItems": stockProvider.stockList.length,
+      // "totalItems": stockProvider.stockList.length,
 
       "billdate": formattedDate,
       "billtime": formattedTime,
