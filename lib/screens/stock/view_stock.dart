@@ -277,7 +277,7 @@ class _ViewStockState extends State<ViewStock> {
   void initState() {
     super.initState();
 
-    /// 🔹 LOAD DATA
+    ///  LOAD DATA
     Future.microtask(() {
       context.read<StockProvider>().getStockList();
     });
@@ -493,18 +493,18 @@ Future<void> printStockReport(StockProvider stockProvider) async {
         stockProvider.stockList.map((e) {
       return {
         "type": null,
-        "name": e.name ?? "",
-        "code": e.code ?? "",
-        "total": e.total ?? 0,
-        "unit": e.unitName ?? "",
+        "name": e.name,
+        "code": e.code,
+        "total": e.total,
+        "unit": e.unitName,
       };
     }).toList();
 
     await platform.invokeMethod('printReceipt', {
       ///  HEADER
-      "shop": stockProvider.viewStockModel?.temple?.name,
-      "shopaddress": stockProvider.viewStockModel?.temple?.addressLine1,
-      "shopaddress2": stockProvider.viewStockModel?.temple?.addressLine2,
+      "shop": stockProvider.viewStockModel?.temple.name,
+      "shopaddress": stockProvider.viewStockModel?.temple.addressLine1,
+      "shopaddress2": stockProvider.viewStockModel?.temple.addressLine2,
 
       ///  FULL LIST
       "items": itemsList,
