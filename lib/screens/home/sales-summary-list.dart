@@ -53,6 +53,59 @@ class _PoojaListTableState extends State<PoojaListTable> {
           "Sales Summary List",
           style: TextStyle(color: Colors.black),
         ),
+        actions: [
+          Padding(
+              padding: const EdgeInsets.all(10),
+              child: IconButton(
+                  onPressed: () async {
+                    try {
+                      DateTime dateTime = DateTime.now();
+                      String formattedDate =
+                          DateFormat('dd-MM-yyyy').format(dateTime);
+                      String formattedTime =
+                          DateFormat('hh:mm a').format(dateTime);
+
+                      List<Map<String, dynamic>> itemsList =
+                          poojaSummaryProvider?.poojaSummaryResponse?.data
+                                  ?.asMap()
+                                  .entries
+                                  .map((entry) {
+                                int index = entry.key;
+                                var e = entry.value;
+
+                                return {
+                                  "type": null,
+                                  "name": "${index + 1}. ${e.poojaName}",
+                                  "qty": e.poojaCount ?? 0,
+                                  "rate": e.totalRate ?? 0,
+                                };
+                              }).toList() ??
+                              [];
+
+                      await platform.invokeMethod('printReceipt', {
+                        "shop": poojaSummaryProvider
+                            ?.poojaSummaryResponse?.temple?.name,
+                        "shopaddress": poojaSummaryProvider
+                            ?.poojaSummaryResponse?.temple?.addressLine1,
+                        "shopaddress2": poojaSummaryProvider
+                            ?.poojaSummaryResponse?.temple?.addressLine2,
+
+                        "items": itemsList, //  ALL ITEMS
+
+                        "total": int.parse(poojaSummaryProvider
+                            ?.poojaSummaryResponse?.grossTotal),
+
+                        "billdate": formattedDate,
+                        "billtime": formattedTime,
+                        "mode": null,
+                        "bill": null,
+                      });
+                    } catch (e) {
+                      print("Error: $e");
+                    }
+                  },
+                  icon: Icon(Icons.print))),
+        ],
       ),
       body: ChangeNotifierProvider.value(
         value: poojaSummaryProvider,
@@ -188,6 +241,7 @@ class _PoojaListTableState extends State<PoojaListTable> {
             ),
           ),
         ),
+
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 60.h),
           child: SingleChildScrollView(
@@ -206,7 +260,6 @@ class _PoojaListTableState extends State<PoojaListTable> {
                 ),
                 // columnSpacing: 6,
                 columns: const [
-                  DataColumn(label: SizedBox.shrink()),
                   DataColumn(
                       label: Text(
                     'Product Name',
@@ -233,139 +286,6 @@ class _PoojaListTableState extends State<PoojaListTable> {
                           : MaterialStateProperty.all<Color>(
                               Colors.grey.shade100),
                       cells: [
-                        DataCell(
-                          onTap: () async {
-                            DateTime dateTime = DateTime.parse(
-                                DateTime.now().toString()); //  Format
-                            String formattedDate =
-                                DateFormat('dd-MM-yyyy').format(dateTime);
-                            String formattedTime =
-                                DateFormat('hh:mm a').format(dateTime);
-                            // for (var item in details) {
-                            //   items.add({
-                            //     "type": item.deity ?? '',
-                            //     "name": item.pooja ?? "",
-                            //     "qty": item.qty ?? 0,
-                            //     "rate": item.rate ?? 0,
-                            //   });
-                            // }
-                            //   try {
-                            //     await platform.invokeMethod('printReceipt', {
-                            //       "shop": poojaSummaryProvider
-                            //           ?.poojaSummaryResponse?.temple?.name,
-                            //       "shopaddress": poojaSummaryProvider
-                            //           ?.poojaSummaryResponse
-                            //           ?.temple
-                            //           ?.addressLine1,
-                            //       "shopaddress2": poojaSummaryProvider
-                            //           ?.poojaSummaryResponse
-                            //           ?.temple
-                            //           ?.addressLine2,
-                            //       "items": [
-                            //         {
-                            //           "type": null,
-                            //           "name": poojaSummaryProvider
-                            //                   ?.poojaSummaryResponse
-                            //                   ?.data![index]
-                            //                   .poojaName ??
-                            //               "",
-                            //           "qty": poojaSummaryProvider
-                            //                   ?.poojaSummaryResponse
-                            //                   ?.data![index]
-                            //                   .poojaCount ??
-                            //               0,
-                            //           "rate": poojaSummaryProvider
-                            //                   ?.poojaSummaryResponse
-                            //                   ?.data![index]
-                            //                   .totalRate ??
-                            //               0,
-                            //         }
-                            //       ],
-                            //       "mode": null,
-                            //       "bill": null,
-                            //       "billdate": formattedDate,
-                            //       "billtime": formattedTime
-                            //     });
-                            //   } catch (e) {
-                            //     print("Error: $e");
-                            //   }
-                            // },
-
-                            try {
-                              DateTime dateTime = DateTime.now();
-                              String formattedDate =
-                                  DateFormat('dd-MM-yyyy').format(dateTime);
-                              String formattedTime =
-                                  DateFormat('hh:mm a').format(dateTime);
-
-                              // List<Map<String, dynamic>> itemsList =
-                              //     poojaSummaryProvider
-                              //             ?.poojaSummaryResponse?.data
-                              //             ?.map((e) {
-                              //           return {
-                              //             "type": null,
-                              //             "name": e.poojaName ?? "",
-                              //             "qty": e.poojaCount ?? 0,
-                              //             "rate": e.totalRate ?? 0,
-                              //           };
-                              //         }).toList() ??
-                              //         [];
-                              List<Map<String, dynamic>> itemsList =
-                                  poojaSummaryProvider
-                                          ?.poojaSummaryResponse?.data
-                                          ?.asMap()
-                                          .entries
-                                          .map((entry) {
-                                        int index = entry.key;
-                                        var e = entry.value;
-
-                                        return {
-                                          "type": null,
-                                          "name":
-                                              "${index + 1}. ${e.poojaName}",
-                                          "qty": e.poojaCount ?? 0,
-                                          "rate": e.totalRate ?? 0,
-                                        };
-                                      }).toList() ??
-                                      [];
-
-                              await platform.invokeMethod('printReceipt', {
-                                "shop": poojaSummaryProvider
-                                    ?.poojaSummaryResponse?.temple?.name,
-                                "shopaddress": poojaSummaryProvider
-                                    ?.poojaSummaryResponse
-                                    ?.temple
-                                    ?.addressLine1,
-                                "shopaddress2": poojaSummaryProvider
-                                    ?.poojaSummaryResponse
-                                    ?.temple
-                                    ?.addressLine2,
-
-                                "items": itemsList, //  ALL ITEMS
-
-                                "total": int.parse(poojaSummaryProvider
-                                    ?.poojaSummaryResponse?.grossTotal),
-
-                                "billdate": formattedDate,
-                                "billtime": formattedTime,
-                                "mode": null,
-                                "bill": null,
-                              });
-                            } catch (e) {
-                              print("Error: $e");
-                            }
-                          },
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.print, size: 18),
-                              Text(
-                                "print",
-                                style: TextStyle(fontSize: 10.sp),
-                              )
-                            ],
-                          ),
-                        ),
                         DataCell(SizedBox(
                           width: 185.w,
                           child: Text(
