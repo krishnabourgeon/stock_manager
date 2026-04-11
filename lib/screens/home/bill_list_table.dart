@@ -662,7 +662,10 @@ class _BillListTableState extends State<BillListTable> {
                   ),
                   10.horizontalSpace,
                   Text(
-                    billListProvider?.billListResponseModel?.grossTotal.toString() ?? '0',
+                    //billListProvider?.billListResponseModel?.grossTotal.toString() ?? '0',
+                    billListProvider?.billListResponseModel?.grossTotal != null
+                      ? double.parse(billListProvider!.billListResponseModel!.grossTotal.toString()).toStringAsFixed(2)
+                      : '0.00',
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -676,20 +679,20 @@ class _BillListTableState extends State<BillListTable> {
               Row(
                 children: [
                   Text('Cash Total : ', style: TextStyle(color: Colors.white)),
-                  Text(cashTotal.toString(), style: TextStyle(color: Colors.white)),
+                  Text(cashTotal.toStringAsFixed(2), style: TextStyle(color: Colors.white)),
                 ],
               ),
 
               Row(
                 children: [
                   Text('QR Code Total : ', style: TextStyle(color: Colors.white)),
-                  Text(qrTotal.toString(), style: TextStyle(color: Colors.white)),
+                  Text(qrTotal.toStringAsFixed(2), style: TextStyle(color: Colors.white)),
                 ],
               ),
               Row(
                 children: [
                   Text('NEFT Total : ', style: TextStyle(color: Colors.white)),
-                  Text(neftTotal.toString(), style: TextStyle(color: Colors.white)),
+                  Text(neftTotal.toStringAsFixed(2), style: TextStyle(color: Colors.white)),
                 ],
               ),
               SizedBox(height: 40.h),

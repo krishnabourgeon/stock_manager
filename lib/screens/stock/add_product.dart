@@ -238,7 +238,8 @@ class _AddProductState extends State<AddProduct> {
   final TextEditingController codeController = TextEditingController();
   final TextEditingController rateController = TextEditingController();
   final TextEditingController unitController = TextEditingController();
-
+  int? selectedUnitId;
+  String? selectedUnitName;
   int? selectedCategoryId;
   DateTime selectedDate = DateTime.now();
 
@@ -246,9 +247,14 @@ class _AddProductState extends State<AddProduct> {
   void initState() {
     super.initState();
 
-    /// 🔹 Load categories
+    ///  Load categories
     Future.microtask(() {
       Provider.of<StockProvider>(context, listen: false).getCategories();
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<StockProvider>().getUnits();
+    });
+
     });
   }
 
@@ -342,15 +348,45 @@ class _AddProductState extends State<AddProduct> {
 
                   const SizedBox(height: 15),
 
-                  /// UNIT
-                  TextFormField(
-                    controller: unitController,
-                    decoration: const InputDecoration(
-                      labelText: "Unit (e.g., kg, pcs)",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) =>
-                        value!.isEmpty ? "Enter unit" : null,
+                  // /// UNIT
+                  // TextFormField(
+                  //   controller: unitController,
+                  //   decoration: const InputDecoration(
+                  //     labelText: "Unit (e.g., kg, pcs)",
+                  //     border: OutlineInputBorder(),
+                  //   ),
+                  //   validator: (value) =>
+                  //       value!.isEmpty ? "Enter unit" : null,
+                  // ),
+
+                  Consumer<StockProvider>(
+                    builder: (context, stockProvider, child) {
+                      return DropdownButtonFormField<int>(
+                        decoration: const InputDecoration(
+                          labelText: "Select Unit",
+                          border: OutlineInputBorder(),
+                        ),
+                        value: stockProvider.unitList.any((e) => e.id == selectedUnitId)
+                            ? selectedUnitId
+                            : null,
+                        items: stockProvider.unitList
+                            .map((item) => DropdownMenuItem<int>(
+                                  value: item.id,
+                                  child: Text(item.name.toString()),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedUnitId = value;
+                            selectedUnitName = context
+                                .read<StockProvider>()
+                                .unitList
+                                .firstWhere((e) => e.id == value)
+                                .name;
+                          });
+                        },
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 15),
@@ -419,10 +455,18 @@ class _AddProductState extends State<AddProduct> {
                             return;
                           }
 
+                          if (selectedUnitId == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text("Please select a unit")),
+                            );
+                            return;
+                          }
+
                           provider.saveProduct(
                             name: nameController.text.trim(),
                             code: codeController.text.trim(),
-                            unit: unitController.text.trim(),
+                            unit: selectedUnitId.toString(),
                             price: rateController.text.trim(),
                             categoryId:
                                 selectedCategoryId.toString(),
