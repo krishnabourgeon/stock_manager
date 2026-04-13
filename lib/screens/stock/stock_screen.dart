@@ -1274,6 +1274,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stock_manager/screens/stock/add_product.dart';
 import 'package:stock_manager/screens/stock/add_stock.dart';
+import 'package:stock_manager/screens/stock/aded_category.dart';
 import 'package:stock_manager/screens/stock/view_product.dart';
 import 'package:stock_manager/screens/stock/view_purchase.dart';
 import 'package:stock_manager/screens/stock/view_stock.dart';
@@ -1359,7 +1360,7 @@ class _StockScreenState extends State<StockScreen> {
                       Expanded(
                         child: buildContainer(
                           title: "Add Purchase",
-                          color: Color(0xFF2196F3),
+                          color: const Color(0xFF2196F3),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -1381,7 +1382,7 @@ class _StockScreenState extends State<StockScreen> {
                   Expanded(
                     child: buildContainer(
                       title: "View Stock",
-                      color: Color(0xFFFFC107),
+                      color: const Color(0xFFFFC107),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -1396,7 +1397,7 @@ class _StockScreenState extends State<StockScreen> {
                   Expanded(
                     child: buildContainer(
                       title: "Add Product",
-                      color:Color(0xFFF44336),
+                      color:const Color(0xFFF44336),
                       onTap: () {
                          Navigator.push(
                           context,
@@ -1415,7 +1416,7 @@ class _StockScreenState extends State<StockScreen> {
                   Expanded(
                     child: buildContainer(
                       title: "View Product",
-                      color:Color(0xFF9C27B0) ,
+                      color:const Color(0xFF9C27B0) ,
                       onTap: () {
                          Navigator.push(
                           context,
@@ -1429,7 +1430,18 @@ class _StockScreenState extends State<StockScreen> {
                   20.horizontalSpace,
         
                   Expanded(
-                    child: SizedBox(),
+                    child: buildContainer(
+                      title: "Add Category",
+                      color:Colors.orangeAccent,
+                      onTap: () {
+                         Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AddCategoryScreen(),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),
