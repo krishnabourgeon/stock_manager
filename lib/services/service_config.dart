@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:stock_manager/models/Save_stock_body.dart';
+import 'package:stock_manager/models/add_cat_model.dart';
 import 'package:stock_manager/models/bill_list_response_model.dart';
 import 'package:stock_manager/models/category_model.dart';
 import 'package:stock_manager/models/counter_wise_summary_response.dart';
@@ -23,6 +24,7 @@ import 'package:stock_manager/models/rashi_datamodel.dart';
 import 'package:stock_manager/models/register_body.dart';
 import 'package:stock_manager/models/save_bill_body.dart';
 import 'package:stock_manager/models/save_bill_response.dart';
+import 'package:stock_manager/models/save_cat_body.dart';
 import 'package:stock_manager/models/save_product_body.dart';
 import 'package:stock_manager/models/save_product_model.dart';
 import 'package:stock_manager/models/save_stock_model.dart';
@@ -538,6 +540,33 @@ Future<Result> getProductStock({
     return (saveProductResponse.status)
         ? Result.value(saveProductResponse)
         : Result.error(saveProductResponse);
+  }
+}
+
+
+  Future<Result> addCat(SaveCatBody saveCatBody) async {
+  if (kDebugMode) {
+    print("add CAT..............${saveCatBody.toJson()}");
+  }
+
+  Result res = await BaseClient.post(
+    'addcat', // make sure this matches your API route
+    body: saveCatBody.toJson(),
+  );
+
+  if (res.isError) {
+    ErrorResponseModel errorResponseModel =
+        ErrorResponseModel(errorMessage: 'Oops...! Something went wrong');
+    return Result.error(errorResponseModel);
+  } else {
+    var response = res.asValue!.value;
+
+    AddCatModel addCatResponse =
+        AddCatModel.fromJson(response);
+
+    return (addCatResponse.status)
+        ? Result.value(addCatResponse)
+        : Result.error(addCatResponse);
   }
 }
 

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:stock_manager/common/common_functions.dart';
 import 'package:stock_manager/models/Save_stock_body.dart';
+import 'package:stock_manager/models/add_cat_model.dart';
 import 'package:stock_manager/models/category_model.dart';
 import 'package:stock_manager/models/delete_purchase_model.dart';
 import 'package:stock_manager/models/get_all_product.dart';
 import 'package:stock_manager/models/product_model.dart';
 import 'package:stock_manager/models/purchase_details_model.dart';
+import 'package:stock_manager/models/save_cat_body.dart';
 import 'package:stock_manager/models/save_product_body.dart';
 import 'package:stock_manager/models/save_product_model.dart';
 import 'package:stock_manager/models/save_stock_model.dart';
@@ -565,7 +567,47 @@ Future<void> getAllProducts() async {
   }
 }
 
+  Future<void> saveCat({
+  required String name,
+  Function? onSuccess,
+  Function? onFailure,
+}) async {
+  final network = await CommonFunctions.checkInternetConnection();
 
+  if (network) {
+    updateLoadState(LoaderState.loading);
+
+    try {
+      ///  CREATE BODY
+      SaveCatBody body = SaveCatBody(
+        name: name,
+      );
+
+      debugPrint("SAVE CAT BODY: ${body.toJson()}");
+
+      ///  API CALL
+      var res = await serviceConfig.addCat(body);
+
+      if (res.isValue) {
+        AddCatModel response = res.asValue!.value;
+
+        Helpers.successToast("Category Added Successfully");
+
+        if (onSuccess != null) onSuccess();
+      } else {
+        Helpers.successToast("Failed to add category");
+
+        if (onFailure != null) onFailure();
+      }
+
+      updateLoadState(LoaderState.loaded);
+    } catch (e) {
+      debugPrint("save category error: $e");
+      updateLoadState(LoaderState.loaded);
+      Helpers.successToast("Something went wrong");
+    }
+  }
+}
 
   // Future<void> getCategories() async {
   //   final network = await CommonFunctions.checkInternetConnection();
