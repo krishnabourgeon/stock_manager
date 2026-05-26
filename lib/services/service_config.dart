@@ -42,14 +42,20 @@ import 'package:stock_manager/services/app_config.dart';
 import 'package:stock_manager/services/base_client.dart';
 import 'package:async/async.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stock_manager/services/device_service.dart';
 import 'package:stock_manager/services/shared_preference_helper.dart';
 
 class ServiceConfig {
   Future<Result> login({String? email, String? password}) async {
+    final deviceId = await DeviceService.getDeviceId();
+    final deviceKey = await DeviceService.getDeviceKey();
     Map<String, dynamic> body = {
       'email': email ?? '',
-      'password': password ?? ''
+      'password': password ?? '',
+      'device_id': deviceId,
+      'device_key': deviceKey,
     };
+    debugPrint('login body $body');
 
     Result res = await BaseClient.post('auth/login', body: body);
     if (res.isError) {
