@@ -115,35 +115,50 @@ void _saveAndNext() {
 
 
 void _saveAll() async {
-  //  Validate form
-  if (formKey.currentState!.validate()) {
-    double qtyValue = double.tryParse(qtyController.text) ?? 0;
-    double rateValue = double.tryParse(rateController.text) ?? 0;
-    double salesRateValue = double.tryParse(salesRateController.text) ?? 0;
-    double total = qtyValue * rateValue;
+  // Check if the user has filled in current form fields
+  bool hasCurrentFormData = qtyController.text.isNotEmpty ||
+      rateController.text.isNotEmpty ||
+      salesRateController.text.isNotEmpty ||
+      selectedProductId != null ||
+      selectedUnitId != null ||
+      addedStocks.isEmpty;
 
-    //  Add current item before saving
-    addedStocks.add({
-      'supplier': selectedSupplierId,
-      'product': selectedProductId,
-      'unit': selectedUnitId.toString(), // Pass ID as string
-      'qty': qtyValue.toInt(),
-      'rate': rateValue.toInt(),
-      'salesRate': salesRateValue.toInt(),
-      'total': total,
-    });
+  if (hasCurrentFormData) {
+    // Validate and add current item
+    if (formKey.currentState!.validate()) {
+      double qtyValue = double.tryParse(qtyController.text) ?? 0;
+      double rateValue = double.tryParse(rateController.text) ?? 0;
+      double salesRateValue = double.tryParse(salesRateController.text) ?? 0;
+      double total = qtyValue * rateValue;
+
+      addedStocks.add({
+        'supplier': selectedSupplierId,
+        'product': selectedProductId,
+        'unit': selectedUnitId.toString(),
+        'qty': qtyValue.toInt(),
+        'rate': rateValue.toInt(),
+        'salesRate': salesRateValue.toInt(),
+        'total': total,
+      });
+    } else {
+      // Form has data but validation failed — don't proceed
+      return;
+    }
   }
 
   //  Check empty list
   if (addedStocks.isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('No stocks to save')),
+      const SnackBar(content: Text('Please enter all the details')),
     );
     return;
   }
 
+  //  Recover supplier ID from previously added stocks if current is null
+  int? supplierId = selectedSupplierId ?? addedStocks.first['supplier'];
+
   //  Validate supplier
-  if (selectedSupplierId == null) {
+  if (supplierId == null) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Please select supplier')),
     );
@@ -151,25 +166,39 @@ void _saveAll() async {
   }
 
   if (invoiceController.text.isEmpty) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text('Enter invoice number')),
-  );
-  return;
-}
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Enter invoice number')),
+    );
+    return;
+  }
 
-if (selectedDate == null) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text('Please select date')),
-  );
-  return;
-}
+  if (selectedDate == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please select date')),
+    );
+    return;
+  }
 
-if (selectedUnitId == null) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text('Please select unit')),
-  );
-  return;
-}
+  if (rateController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please enter purchase rate')),
+    );
+    return;
+  }
+
+  if (salesRateController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please enter sales rate')),
+    );
+    return;
+  }
+
+  if (qtyController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please enter quantity')),
+    );
+    return;
+  }
 
   //   LOAD STORE ID (VERY IMPORTANT FIX)
   await SharedPreferenceHelper.getStoreID();
@@ -771,15 +800,7 @@ onChanged: (value) {
 
                           /// 🔹 Optional: auto update provider / state
                           onChanged: (value) {
-                            if (value.isNotEmpty) {
-                              int qty = int.tryParse(value) ?? 0;
-
-                              // If using BillingProvider
-                              // context.read<BillingProvider>().qtyController.text = value;
-
-                              // If you need to update rate dynamically
-                              // context.read<BillingProvider>().updateRateWithProduct();
-                            }
+                            setState(() {}); //  THIS FIXES LIVE GRAND TOTAL ON QTY CHANGE
                           },
                         ),
                       ),

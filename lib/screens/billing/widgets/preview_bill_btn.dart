@@ -208,15 +208,16 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
 
   BillingProvider? bill;
   routeTo(BuildContext buildContext) {
+    widget.previewBillProvider.previewDetailsList.clear();
+    widget.previewBillProvider.poojaDetailsList.clear();
+    widget.previewBillProvider.clearValues();
+    
     Navigator.pushAndRemoveUntil(
       buildContext,
       MaterialPageRoute(
           builder: (buildContext) => const CustomerSelectionScreen()),
-      (route) => true,
-    ).then((value) {
-      widget.previewBillProvider.previewDetailsList.clear();
-      widget.previewBillProvider.poojaDetailsList.clear();
-    });
+      (route) => route.isFirst,
+    );
   }
 
   Future<void> initAll() async {
