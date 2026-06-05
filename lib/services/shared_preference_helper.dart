@@ -21,9 +21,9 @@ class SharedPreferenceHelper {
 
     static Future<void> saveStoreID(String storeId) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString("store",  storeId);
+    prefs.setString("store_id",  storeId);
     AppConfig.storeId = storeId;
-    log("SAVED STORE : $storeId");
+    log("SAVED STORE ID : $storeId");
   }
 
   static Future<void> saveUserID(String userId) async {
@@ -50,8 +50,8 @@ class SharedPreferenceHelper {
 
   static Future<String> getStoreID() async {
     final prefs = await SharedPreferences.getInstance();
-    String id = prefs.getString("store") ?? "";
-    log('store $id');
+    String id = prefs.getString("store_id") ?? "";
+    log('store_id $id');
     AppConfig.storeId = id;
     return id;
   }

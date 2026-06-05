@@ -8,6 +8,8 @@ class SaveBillBody {
   double? discount;
   double? paidAmount;
   String? transactionid;
+  int? gstPercent;
+  double? gstAmount;
   List<PoojaDetails>? poojaDetails;
   SaveBillBody(
       {this.customerId,
@@ -19,7 +21,9 @@ class SaveBillBody {
       this.subTotal,
       this.discount,
       this.paidAmount,
-      this.poojaDetails});
+      this.poojaDetails,
+      this.gstAmount,
+      this.gstPercent});
   SaveBillBody.fromJson(Map<String, dynamic> json) {
     customerId = json['customer_id'];
     counterId = json['counter_id'];
@@ -30,6 +34,8 @@ class SaveBillBody {
     discount = json['discount'];
     paidAmount = json['paid_amount'];
     transactionid = json['transaction_id'];
+    gstPercent = json['gst_percent'];
+    gstAmount = json['gst_amount'];
     if (json['pooja_details'] != null) {
       poojaDetails = <PoojaDetails>[];
       json['pooja_details'].forEach((v) {
@@ -48,6 +54,8 @@ class SaveBillBody {
     data['discount'] = discount;
     data['paid_amount'] = paidAmount;
     data['transaction_id'] = transactionid;
+    data['gst_percent'] = gstPercent;
+    data['gst_amount'] = gstAmount;
     if (poojaDetails != null) {
       data['pooja_details'] = poojaDetails!.map((v) => v.toJson()).toList();
     }

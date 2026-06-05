@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:stock_manager/common/common_functions.dart';
 import 'package:stock_manager/models/Save_stock_body.dart';
 import 'package:stock_manager/models/add_cat_model.dart';
+import 'package:stock_manager/models/add_supplier_body.dart';
+import 'package:stock_manager/models/add_supplier_model.dart';
 import 'package:stock_manager/models/category_model.dart';
 import 'package:stock_manager/models/delete_purchase_model.dart';
 import 'package:stock_manager/models/get_all_product.dart';
@@ -19,6 +21,7 @@ import 'package:stock_manager/models/view_stock_model.dart';
 import 'package:stock_manager/services/app_config.dart';
 import 'package:stock_manager/services/helpers.dart';
 import 'package:stock_manager/services/provider_helper_class.dart';
+import 'package:stock_manager/services/shared_preference_helper.dart';
 
 class StockProvider extends ChangeNotifier with ProviderHelperClass {
   ProductModel? productModel;
@@ -567,6 +570,58 @@ Future<void> getAllProducts() async {
   }
 }
 
+
+Future<void> saveSupplier({
+  required String name,
+  required String contactPerson,
+  required int contactNo,
+  required String address,
+  Function? onSuccess,
+  Function? onFailure,
+}) async {
+  final network = await CommonFunctions.checkInternetConnection();
+
+  if (network) {
+    updateLoadState(LoaderState.loading);
+
+    try {
+      /// 🔹 CREATE BODY
+      AddSupplierBody body = AddSupplierBody(
+        name: name,
+        contactPerson: contactPerson,
+        contactNo: contactNo,
+        address: address,
+        storeId: int.parse(AppConfig.storeId.toString()),
+      );
+
+      debugPrint("SAVE SUPPLIER BODY: ${body.toJson()}");
+
+      /// 🔹 API CALL
+      var res = await serviceConfig.addSupplier(body);
+
+      if (res.isValue) {
+        AddSupplierModel response = res.asValue!.value;
+
+        Helpers.successToast("Supplier Added Successfully");
+
+        if (onSuccess != null) onSuccess();
+      } else {
+        Helpers.successToast("Failed to add supplier");
+
+        if (onFailure != null) onFailure();
+      }
+
+      updateLoadState(LoaderState.loaded);
+    } catch (e) {
+      debugPrint("save supplier error: $e");
+      updateLoadState(LoaderState.loaded);
+      Helpers.successToast("Something went wrong");
+    }
+  }
+}
+
+
+
   Future<void> saveCat({
   required String name,
   Function? onSuccess,
@@ -581,8 +636,9 @@ Future<void> getAllProducts() async {
       ///  CREATE BODY
       SaveCatBody body = SaveCatBody(
         name: name,
+        storeId: int.parse(AppConfig.storeId ?? ""),
       );
-
+      debugPrint("the store id is : ${AppConfig.storeId}");
       debugPrint("SAVE CAT BODY: ${body.toJson()}");
 
       ///  API CALL
@@ -633,12 +689,16 @@ Future<void> getAllProducts() async {
 
   Future<void> getCategories({int? categoryId}) async {
   final network = await CommonFunctions.checkInternetConnection();
+  debugPrint("category id : $categoryId");
+  String storeIdStr = await SharedPreferenceHelper.getStoreID();
+  int? storeId = int.tryParse(storeIdStr);
 
   if (network) {
     updateLoadState(LoaderState.loading);
+    debugPrint("store id : $storeId");
 
     try {
-      var res = await serviceConfig.getCategory(categoryId: categoryId);
+      var res = await serviceConfig.getCategory(categoryId: categoryId, storeId: storeId);
 
       if (res.isValue) {
         categoryModel = res.asValue!.value;
@@ -708,7 +768,7 @@ Future<void> getAllProducts() async {
           storeId: AppConfig.storeId,
         );
 
-        print("REQUEST BODY: ${body.toJson()}"); //  debug
+        print("REQUEST BODY: ${body.toJson()}"); 
         print("=========== STOCK SAVE DEBUG ===========");
         print("Invoice No: $invoiceNo");
         print("Purchase Date: ${date.toString().split(' ')[0]}");

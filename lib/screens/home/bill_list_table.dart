@@ -266,11 +266,11 @@ class _BillListTableState extends State<BillListTable> {
                       'Bill Date',
                       style: TextStyle(color: Colors.white),
                     )),
-                    DataColumn(
-                        label: Text(
-                      'Counter',
-                      style: TextStyle(color: Colors.white),
-                    )),
+                    // DataColumn(
+                    //     label: Text(
+                    //   'Counter',
+                    //   style: TextStyle(color: Colors.white),
+                    // )),
                     DataColumn(
                         label: Text(
                       'Customer',
@@ -313,10 +313,10 @@ class _BillListTableState extends State<BillListTable> {
                                       .reversed
                                       .join('-') ??
                                   ''))),
-                          DataCell(Text(billListProvider
-                                  ?.billListResponseModel?.list?[index].counter
-                                  .toString() ??
-                              '')),
+                          // DataCell(Text(billListProvider
+                          //         ?.billListResponseModel?.list?[index].counter
+                          //         .toString() ??
+                          //     '')),
                           DataCell(Text(billListProvider
                                   ?.billListResponseModel?.list?[index].devotee
                                   .toString() ??

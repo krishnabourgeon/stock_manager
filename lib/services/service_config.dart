@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:stock_manager/models/Save_stock_body.dart';
 import 'package:stock_manager/models/add_cat_model.dart';
+import 'package:stock_manager/models/add_supplier_body.dart';
+import 'package:stock_manager/models/add_supplier_model.dart';
 import 'package:stock_manager/models/bill_list_response_model.dart';
 import 'package:stock_manager/models/category_model.dart';
 import 'package:stock_manager/models/counter_wise_summary_response.dart';
@@ -92,7 +94,8 @@ class ServiceConfig {
   }
 
   Future<Result> getDeities() async {
-    Result res = await BaseClient.get('deities');
+    String storeId = await SharedPreferenceHelper.getStoreID();
+    Result res = await BaseClient.get('deities?store_id=$storeId');
     if (res.isError) {
       ErrorResponseModel errorResponseModel =
           ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
@@ -109,7 +112,9 @@ class ServiceConfig {
 
 
     Future<Result> getAllProduct() async {
-    Result res = await BaseClient.post('invproducts_all');
+    String storeId = await SharedPreferenceHelper.getStoreID();
+    Result res = await BaseClient.post('invproducts_all', body: {'store_id': storeId});
+    print("store id : $storeId");
     if (res.isError) {
       ErrorResponseModel errorResponseModel =
           ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
@@ -175,7 +180,10 @@ class ServiceConfig {
 
 
   Future<Result> getSupplier() async {
-    Result res = await BaseClient.get('suppliers');
+    String storeId = await SharedPreferenceHelper.getStoreID();
+    Result res = await BaseClient.get('suppliers?store_id=$storeId');
+    print('supplier response url : suppliers');
+    print('supplier response storeid : $storeId');
     if (res.isError) {
       ErrorResponseModel errorResponseModel =
           ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
@@ -227,15 +235,21 @@ class ServiceConfig {
 
 
 
-  Future<Result> getCategory({int? categoryId}) async {
+  Future<Result> getCategory({int? categoryId,  int? storeId}) async {
   String url = 'cat';
 
-  if (categoryId != null) {
-    url = 'cat?category_id=$categoryId'; //  pass param here
+  if (categoryId != null && storeId != null) {
+    url = 'cat?category_id=$categoryId&store_id=$storeId';
+  } else if (categoryId != null) {
+    url = 'cat?category_id=$categoryId';
+  } else if (storeId != null) {
+    url = 'cat?store_id=$storeId';
   }
 
 
-print("category id : $categoryId");
+  print("url : $url");
+  print("category id : $categoryId");
+  print("store id : $storeId");
   Result res = await BaseClient.get(url);
 
   if (res.isError) {
@@ -254,7 +268,9 @@ print("category id : $categoryId");
 
 
      Future<Result> getPurchases() async {
-    Result res = await BaseClient.get('purchases');
+      String storeId = await SharedPreferenceHelper.getStoreID();
+    Result res = await BaseClient.get('purchases?store_id=$storeId');
+    print("purchase store id : $storeId");
     if (res.isError) {
       ErrorResponseModel errorResponseModel =
           ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
@@ -393,7 +409,7 @@ Future<Result> getStockList({
 
   debugPrint('getStockList => storeId: "$storeId"');
 
-  /// 🔹 BUILD BODY DYNAMICALLY
+  ///  BUILD BODY DYNAMICALLY
   Map<String, dynamic> body = {
     'store_id': int.tryParse(storeId) ?? 0,
   };
@@ -453,7 +469,7 @@ Future<Result> getStockCount() async {
     return Result.error(errorResponseModel);
   } else {
     var response = res.asValue!.value;
-    debugPrint('stock list response $response');
+    debugPrint('----------------------------stock list response------------------ $response');
 
     ViewStockModel viewStockModel = ViewStockModel.fromJson(response);
 
@@ -520,6 +536,32 @@ Future<Result> getProductStock({
   }
 }
 
+
+Future<Result> addSupplier(AddSupplierBody addSupplierBody) async {
+  if (kDebugMode) {
+    print("add supplier..............${addSupplierBody.toJson()}");
+  }
+
+  Result res = await BaseClient.post(
+    'addsupplier',
+    body: addSupplierBody.toJson(),
+  );
+
+  if (res.isError) {
+    ErrorResponseModel errorResponseModel =
+        ErrorResponseModel(errorMessage: 'Oops...! Something went wrong');
+    return Result.error(errorResponseModel);
+  } else {
+    var response = res.asValue!.value;
+
+    AddSupplierModel addSupplierResponse =
+        AddSupplierModel.fromJson(response);
+
+    return (addSupplierResponse.status)
+        ? Result.value(addSupplierResponse)
+        : Result.error(addSupplierResponse);
+  }
+}
 
 
 
@@ -643,9 +685,10 @@ Future<Result> getProductStock({
     }
   }
 
-  Future<Result> getPoojas(String deityId) async {
+  Future<Result> getPoojas(String deityId, String storeId) async {
     Result res =
-        await BaseClient.post('deity/poojas', body: {'deity': deityId});
+        await BaseClient.post('deity/poojas', body: {'deity': deityId, 'store_id': storeId});
+          debugPrint('pooja body  $deityId, $storeId');
     if (res.isError) {
       ErrorResponseModel errorResponseModel =
           ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
@@ -848,20 +891,53 @@ Future<Result> getProductStock({
     }
   }
 
-  Future<Result> getPoojaSummary(String fromDate, String toDate) async {
-    // print("pagein api....${page}");
-    Result res = await BaseClient.get(
-      'reports/pooja-summary?from_date=${fromDate.toString()}&to_date=${toDate.toString()}',
-    );
+  // Future<Result> getPoojaSummary(String fromDate, String toDate) async {
+  //   // print("pagein api....${page}");
+  //   Result res = await BaseClient.get(
+  //     'reports/pooja-summary?from_date=${fromDate.toString()}&to_date=${toDate.toString()}',
+  //   );
+  //   if (res.isError) {
+  //     ErrorResponseModel errorResponseModel =
+  //         ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+  //     return Result.error(errorResponseModel);
+  //   } else {
+  //     var response = res.asValue!.value;
+  //     PoojaSummaryResponse poojaSummaryResponse =
+  //         PoojaSummaryResponse.fromJson(response);
+  //     // print("....responsepoojasummary...${response}");n
+  //     return (poojaSummaryResponse.status ?? false)
+  //         ? Result.value(poojaSummaryResponse)
+  //         : Result.error(poojaSummaryResponse);
+  //   }
+  // }
+
+
+  Future<Result> getPoojaSummary(
+    String fromDate,
+    String toDate, {
+    int? categoryId,
+    int? productId,
+  }) async {
+    // Build query string dynamically
+    String storeId = await SharedPreferenceHelper.getStoreID();
+    String query =
+        'reports/pooja-summary?from_date=${fromDate.toString()}&to_date=${toDate.toString()}&store_id=$storeId';
+      
+ 
+    if (categoryId != null) query += '&category_id=$categoryId';
+    if (productId != null) query += '&product_id=$productId';
+    print("categoryid$categoryId  productid$productId    store id$storeId");
+ 
+    Result res = await BaseClient.get(query);
+ 
     if (res.isError) {
-      ErrorResponseModel errorResponseModel =
-          ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
-      return Result.error(errorResponseModel);
+      return Result.error(
+        ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong'),
+      );
     } else {
       var response = res.asValue!.value;
       PoojaSummaryResponse poojaSummaryResponse =
           PoojaSummaryResponse.fromJson(response);
-      // print("....responsepoojasummary...${response}");n
       return (poojaSummaryResponse.status ?? false)
           ? Result.value(poojaSummaryResponse)
           : Result.error(poojaSummaryResponse);

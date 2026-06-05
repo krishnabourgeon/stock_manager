@@ -1733,6 +1733,69 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   List<PoojaDetails> previewDetailsList = [];
   PreviewBillResponse? previewBillResponse;
   double totalAmount = 0;
+
+
+
+  // ── New fields ───────────────────────────────────────────────────────────────
+
+// int? gstPercent;                                          // selected GST %
+// final TextEditingController gstAmountController =
+//     TextEditingController(text: '0');                     // computed GST amount
+
+// // ── New method ───────────────────────────────────────────────────────────────
+
+// void updateGst(int percent) {
+//   gstPercent = percent;
+
+//   // Use the already-discounted subtotal as the base
+//   final double base =
+//       double.tryParse(totalRateController.text) ?? 0.0;
+
+//   final double gstAmount = (base * percent) / 100;
+//   final double grandTotal = base + gstAmount;
+
+//   gstAmountController.text = gstAmount.toStringAsFixed(2);
+//   totalRateController.text = grandTotal.toStringAsFixed(2);
+
+//   notifyListeners();
+// }
+
+
+
+int? gstPercent;
+
+final TextEditingController gstAmountController =
+    TextEditingController(text: '0');
+
+final TextEditingController cgstController =
+    TextEditingController(text: '0');
+
+final TextEditingController sgstController =
+    TextEditingController(text: '0');
+
+void updateGst(int percent) {
+  gstPercent = percent;
+
+  // Base amount before GST
+  final double base =
+      double.tryParse(totalRateController.text) ?? 0.0;
+
+  // Total GST
+  final double gstAmount = (base * percent) / 100;
+
+  // Split equally
+  final double cgst = gstAmount / 2;
+  final double sgst = gstAmount / 2;
+
+  final double grandTotal = base + gstAmount;
+
+  cgstController.text = cgst.toStringAsFixed(2);
+  sgstController.text = sgst.toStringAsFixed(2);
+  gstAmountController.text = gstAmount.toStringAsFixed(2);
+  totalRateController.text = grandTotal.toStringAsFixed(2);
+
+  notifyListeners();
+}
   getInitialDataList() async {
     await clearValues();
     await getDeities();
@@ -1951,6 +2014,8 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
           billAmount: double.parse(totalRateController.text.trim()),
           subTotal: double.tryParse(subTotalController.text.trim()),
           discount: double.tryParse(discountController.text.trim()),
+          gstAmount: double.tryParse(gstAmountController.text.trim()),
+          gstPercent: gstPercent,
           counterId: int.parse(AppConfig.counterID ?? '0'),
           customerId: AppConfig.customerId ?? 1,
           paidAmount: double.parse(paidAmountController.text.trim()),
@@ -2113,7 +2178,8 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     if (network) {
       if (isEnableBtnLoader) updateBtnLoader(true);
       try {
-        var res = await serviceConfig.getPoojas(deityId);
+        String storeId = await SharedPreferenceHelper.getStoreID()?? '';
+        var res = await serviceConfig.getPoojas(deityId, storeId);
         if (res.isValue) {
           poojaResponse = res.asValue!.value;
           if (poojaResponse != null) {

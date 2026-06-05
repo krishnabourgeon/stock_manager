@@ -610,7 +610,12 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
         "bill": summary?.id,
         "billdate": formattedDate,
         "billtime": formattedTime,
-        "total": int.parse(bill?.totalRateController.text ?? '0')
+        "total": int.parse(bill?.totalRateController.text ?? '0'),
+         "cgst": double.parse(bill?.cgstController.text ?? '0'),
+          "sgst": double.parse(bill?.sgstController.text ?? '0'),
+          "gst": double.parse(bill?.gstAmountController.text ?? '0'),
+  
+
       });
     } catch (e) {
       print("Error: $e");

@@ -22,16 +22,37 @@ class MainActivity : FlutterActivity() {
                     "printReceipt" -> {
                         try {
                             val shop = call.argument<String>("shop") ?: ""
-                            val shopaddress = call.argument<String>("shopaddress") ?: ""
-                              val shopaddress2 = call.argument<String>("shopaddress2") ?: ""
-                          
-                            val items = call.argument<List<Map<String, Any>>>("items") ?: listOf()
-                            val mode = call.argument<String>("mode") ?: ""
-                            val bill = call.argument<Int>("bill") ?: 0
-                             val total = call.argument<Int>("total") ?: 0
-                            val billdate = call.argument<String>("billdate") ?: ""
-                          val billtime = call.argument<String>("billtime") ?: ""
-                             printReceipt(shop, shopaddress,shopaddress2, items, mode, bill, billdate,billtime,total)
+        val shopaddress = call.argument<String>("shopaddress") ?: ""
+        val shopaddress2 = call.argument<String>("shopaddress2") ?: ""
+
+        val items = call.argument<List<Map<String, Any>>>("items") ?: listOf()
+
+        val mode = call.argument<String>("mode") ?: ""
+        val bill = call.argument<Int>("bill") ?: 0
+        val total = call.argument<Int>("total") ?: 0
+
+        val billdate = call.argument<String>("billdate") ?: ""
+        val billtime = call.argument<String>("billtime") ?: ""
+
+        // GST Values
+        val cgst = call.argument<Double>("cgst") ?: 0.0
+        val sgst = call.argument<Double>("sgst") ?: 0.0
+        val gst = call.argument<Double>("gst") ?: 0.0
+
+        printReceipt(
+            shop,
+            shopaddress,
+            shopaddress2,
+            items,
+            mode,
+            bill,
+            billdate,
+            billtime,
+            total,
+            cgst,
+            sgst,
+            gst
+        )
 
                             result.success("Printed")
 
@@ -55,6 +76,9 @@ class MainActivity : FlutterActivity() {
         billdate: String,
         billtime: String,
         total:Any,
+        cgst:Double,
+        sgst:Double,
+        gst:Double,
        
     ) {
         try {
@@ -107,16 +131,29 @@ val rate = (item["rate"] as? Number)?.toInt()
 builder.append(formatItem(item["type"],name, qty, rate,unit))
             }
 
-            builder.append("--------------------------------\n")
+builder.append("--------------------------------\n")
 
-            
-          if (mode != null&&mode != "null"&& mode!="" ) {
-    builder.append(leftRightAlign("Mode: $mode", "TOTAL: Rs $total"));
+// GST Details
+if (cgst > 0) {
+    builder.append(leftRightAlign("CGST", "Rs %.2f".format(cgst)))
+}
+
+if (sgst > 0) {
+    builder.append(leftRightAlign("SGST", "Rs %.2f".format(sgst)))
+}
+
+if (gst > 0) {
+    builder.append(leftRightAlign("GST Total", "Rs %.2f".format(gst)))
+}
+
+builder.append("--------------------------------\n")
+
+if (mode != null && mode != "null" && mode != "") {
+    builder.append(leftRightAlign("Mode: $mode", "TOTAL: Rs $total"))
 } else {
-    if(total==0){
-
-    }else{
-    builder.append(rightAlign("TOTAL: Rs $total\n"));}
+    if (total != 0) {
+        builder.append(rightAlign("TOTAL: Rs $total\n"))
+    }
 }
 
 if(total!=0){

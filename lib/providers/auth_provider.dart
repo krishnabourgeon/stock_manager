@@ -32,7 +32,7 @@ class AuthProvider extends ChangeNotifier with ProviderHelperClass {
       LoginResponseModel loginResponseModel = res.asValue!.value;
       if (isRememberCredentials) {
         await SharedPreferenceHelper.saveToken(loginResponseModel.token ?? '');
-
+        await SharedPreferenceHelper.saveStoreID(loginResponseModel.storeId?.toString() ?? '');
         //  await SharedPreferenceHelper.savesetting(loginResponseModel. ?? '');
       }
       if (onSuccess != null) onSuccess();
@@ -57,6 +57,7 @@ class AuthProvider extends ChangeNotifier with ProviderHelperClass {
     if (res.isValue) {
       LoginResponseModel loginResponseModel = res.asValue!.value;
       await SharedPreferenceHelper.saveToken(loginResponseModel.token ?? '');
+      await SharedPreferenceHelper.saveStoreID(loginResponseModel.storeId?.toString() ?? '');
       if (onSuccess != null) onSuccess();
       updateLoadState(LoaderState.loaded);
     } else {

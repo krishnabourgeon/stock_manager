@@ -31,19 +31,31 @@ class SupplierModel {
 class Data {
     int id;
     String name;
+    String contactperson;
+    String contactno;
+    String address;
 
     Data({
         required this.id,
         required this.name,
+        required this.contactperson,
+        required this.contactno,
+        required this.address,
     });
 
     factory Data.fromJson(Map<String, dynamic> json) => Data(
         id: json["id"],
         name: json["name"],
+        contactperson: json["contact_person"],
+        contactno: json["contact_no"],
+        address: json["address"],
     );
 
     Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
+        "contact_person": contactperson,
+        "contact_no": contactno,
+        "address": address,
     };
 }

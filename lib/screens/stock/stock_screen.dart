@@ -271,6 +271,7 @@ import 'package:stock_manager/screens/stock/add_stock.dart';
 import 'package:stock_manager/screens/stock/aded_category.dart';
 import 'package:stock_manager/screens/stock/add_supplier_screen.dart';
 import 'package:stock_manager/screens/stock/view_product.dart';
+import 'package:stock_manager/screens/stock/view_purchase.dart';
 import 'package:stock_manager/screens/stock/view_stock.dart';
 
 class StockScreen extends StatefulWidget {
@@ -351,7 +352,7 @@ class _StockScreenState extends State<StockScreen>
       const AddProduct(),
       const ViewProduct(),
       const AddStock(),
-      const ViewStock(),
+      const ViewPurchase(),
       const ViewStock(),
     ];
     Navigator.push(
@@ -370,7 +371,7 @@ class _StockScreenState extends State<StockScreen>
           SliverToBoxAdapter(child: _buildHeader(context)),
 
           // ─── STATS ROW ───────────────────────────────────────────────────
-          SliverToBoxAdapter(child: _buildStatsRow()),
+          //SliverToBoxAdapter(child: _buildStatsRow()),
 
           // ─── SECTION LABEL ───────────────────────────────────────────────
           SliverToBoxAdapter(
@@ -486,37 +487,37 @@ class _StockScreenState extends State<StockScreen>
                   ),
                 ),
               ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE8F5E9),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFA5D6A7)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF27AE60),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    SizedBox(width: 6.w),
-                    Text(
-                      "LIVE",
-                      style: GoogleFonts.rajdhani(
-                        color: const Color(0xFF27AE60),
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // Container(
+              //   padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+              //   decoration: BoxDecoration(
+              //     color: const Color(0xFFE8F5E9),
+              //     borderRadius: BorderRadius.circular(20),
+              //     border: Border.all(color: const Color(0xFFA5D6A7)),
+              //   ),
+              //   child: Row(
+              //     mainAxisSize: MainAxisSize.min,
+              //     children: [
+              //       Container(
+              //         width: 6,
+              //         height: 6,
+              //         decoration: const BoxDecoration(
+              //           color: Color(0xFF27AE60),
+              //           shape: BoxShape.circle,
+              //         ),
+              //       ),
+              //       SizedBox(width: 6.w),
+              //       Text(
+              //         "LIVE",
+              //         style: GoogleFonts.rajdhani(
+              //           color: const Color(0xFF27AE60),
+              //           fontSize: 11.sp,
+              //           fontWeight: FontWeight.w700,
+              //           letterSpacing: 1.5,
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
             ],
           ),
 
