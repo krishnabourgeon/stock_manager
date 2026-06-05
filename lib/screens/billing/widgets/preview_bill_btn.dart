@@ -588,6 +588,10 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
 
     final details = previewBillProvider.saveBillResponse?.details ?? [];
     DateTime dateTime = DateTime.parse(DateTime.now().toString());
+    print("__________________TOTAL SENT = ${previewBillProvider.totalRateController.text}");
+print("__________________GST AMOUNT = ${previewBillProvider.gstAmountController.text}");
+print("__________________CGST = ${previewBillProvider.cgstController.text}");
+print("__________________SGST = ${previewBillProvider.sgstController.text}");
 
 // 🔹 Format
     String formattedDate = DateFormat('dd-MM-yyyy').format(dateTime);
@@ -610,10 +614,10 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
         "bill": summary?.id,
         "billdate": formattedDate,
         "billtime": formattedTime,
-        "total": int.parse(bill?.totalRateController.text ?? '0'),
-         "cgst": double.parse(bill?.cgstController.text ?? '0'),
-          "sgst": double.parse(bill?.sgstController.text ?? '0'),
-          "gst": double.parse(bill?.gstAmountController.text ?? '0'),
+        "total": previewBillProvider.totalRateController.text,
+         "cgst": double.parse(previewBillProvider.cgstController.text ),
+          "sgst": double.parse(previewBillProvider.sgstController.text),
+          "gst": double.parse(previewBillProvider.gstAmountController.text ),
   
 
       });
