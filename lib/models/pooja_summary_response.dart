@@ -31,7 +31,7 @@ class PoojaSummaryResponse {
 class PoojaSummaryData {
   String? poojaName;
   int? poojaCount;
-  int? totalRate;
+  var totalRate;
   PoojaSummaryData({this.poojaName, this.poojaCount, this.totalRate});
   PoojaSummaryData.fromJson(Map<String, dynamic> json) {
     poojaName = json['pooja_name'];

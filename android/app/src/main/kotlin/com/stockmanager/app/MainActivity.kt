@@ -17,7 +17,7 @@ class MainActivity : FlutterActivity() {
     private val CHANNEL = "cloudpos/printer"
 
     // Thermal paper print width in pixels (576 for 80mm, 384 for 58mm)
-    private val PRINT_WIDTH = 576
+    private val PRINT_WIDTH = 384
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -68,7 +68,9 @@ class MainActivity : FlutterActivity() {
                                 discountValue = 0.0
                                 discountLabel = ""
                             }
-
+println("Shop: $discountValue")
+println("Shop: $discountLabel")
+  println("$subTotal....")
                             printReceipt(
                                 shop,
                                 shopaddress,
@@ -145,7 +147,15 @@ class MainActivity : FlutterActivity() {
 
             val lines = mutableListOf<ReceiptLine>()
 
-            if (shop.isNotEmpty()) lines.add(ReceiptLine(shop, "center", bold = true))
+            if (shop.isNotEmpty()) {
+    lines.add(
+        ReceiptLine(
+            shop.trim(),
+            "center",
+            bold = true
+        )
+    )
+}
             if (address.isNotEmpty()) lines.add(ReceiptLine(address, "center"))
             if (address2.isNotEmpty()) lines.add(ReceiptLine(address2, "center"))
 
@@ -176,8 +186,13 @@ class MainActivity : FlutterActivity() {
             lines.add(ReceiptLine("--------------------------------", "center"))
 
             if (discountValue > 0 && subTotal > 0) {
+                println("successs....")
                 lines.add(ReceiptLine("Sub Total         Rs %.2f".format(subTotal), "left"))
-                lines.add(ReceiptLine("$discountLabel   - Rs %.2f".format(discountValue), "left"))
+                lines.add(ReceiptLine("$discountLabel", "left"))
+                 lines.add(ReceiptLine("Disc.Amt     Rs %.2f".format(discountValue), "left"))
+                
+            }else{
+                  println("fail...$discountValue..$subTotal")
             }
             if (cgst > 0) lines.add(ReceiptLine("CGST              Rs %.2f".format(cgst), "left"))
             if (sgst > 0) lines.add(ReceiptLine("SGST              Rs %.2f".format(sgst), "left"))
@@ -219,47 +234,105 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun renderReceiptToBitmap(lines: List<Triple<String, String, Boolean>>): Bitmap {
-        val textSize = 28f
-        val lineSpacing = 10f
-        val padding = 16
+    private fun renderReceiptToBitmap(
+    lines: List<Triple<String, String, Boolean>>
+): Bitmap {
 
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.BLACK
-            this.textSize = textSize
-            typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-        }
+    val textSize = 28f
+    val lineSpacing = 10f
+    val padding = 16
 
-        // Measure total height
-        val fm = paint.fontMetrics
-        val lineHeight = (fm.descent - fm.ascent + lineSpacing).toInt()
-        val totalHeight = lineHeight * lines.size + padding * 2
-
-        val bitmap = Bitmap.createBitmap(PRINT_WIDTH, totalHeight, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        canvas.drawColor(Color.WHITE)
-
-        var y = padding - fm.ascent
-
-        for ((text, align, bold) in lines) {
-            paint.typeface = if (bold) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
-
-            val x = when (align) {
-                "center" -> {
-                    val textWidth = paint.measureText(text)
-                    ((PRINT_WIDTH - textWidth) / 2f).coerceAtLeast(0f)
-                }
-                "right" -> {
-                    val textWidth = paint.measureText(text)
-                    (PRINT_WIDTH - textWidth - padding).coerceAtLeast(0f)
-                }
-                else -> padding.toFloat()
-            }
-
-            canvas.drawText(text, x, y, paint)
-            y += lineHeight
-        }
-
-        return bitmap
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.BLACK
+        this.textSize = textSize
+        typeface = Typeface.DEFAULT
     }
+
+    val fm = paint.fontMetrics
+    val lineHeight = (fm.descent - fm.ascent + lineSpacing).toInt()
+
+    val maxWidth = PRINT_WIDTH - (padding * 2)
+
+    // First pass: wrap all lines and calculate height
+    val preparedLines = mutableListOf<Triple<String, String, Boolean>>()
+
+    for ((text, align, bold) in lines) {
+
+        paint.typeface =
+            if (bold) Typeface.DEFAULT_BOLD
+            else Typeface.DEFAULT
+
+        if (text.isBlank()) {
+            preparedLines.add(Triple("", align, bold))
+            continue
+        }
+
+        var currentLine = ""
+
+        text.split(" ").forEach { word ->
+
+            val testLine =
+                if (currentLine.isEmpty()) word
+                else "$currentLine $word"
+
+            if (paint.measureText(testLine) <= maxWidth) {
+                currentLine = testLine
+            } else {
+
+                if (currentLine.isNotEmpty()) {
+                    preparedLines.add(
+                        Triple(currentLine, align, bold)
+                    )
+                }
+
+                currentLine = word
+            }
+        }
+
+        if (currentLine.isNotEmpty()) {
+            preparedLines.add(
+                Triple(currentLine, align, bold)
+            )
+        }
+    }
+
+    val totalHeight =
+        (preparedLines.size * lineHeight) + (padding * 2)
+
+    val bitmap = Bitmap.createBitmap(
+        PRINT_WIDTH,
+        totalHeight,
+        Bitmap.Config.ARGB_8888
+    )
+
+    val canvas = Canvas(bitmap)
+    canvas.drawColor(Color.WHITE)
+
+    var y = padding - fm.ascent
+
+    for ((text, align, bold) in preparedLines) {
+
+        paint.typeface =
+            if (bold) Typeface.DEFAULT_BOLD
+            else Typeface.DEFAULT
+
+      paint.textAlign = when (align) {
+    "center" -> Paint.Align.CENTER
+    "right" -> Paint.Align.RIGHT
+    else -> Paint.Align.LEFT
+}
+
+val x = when (align) {
+    "center" -> PRINT_WIDTH / 2f
+    "right" -> (PRINT_WIDTH - padding).toFloat()
+    else -> padding.toFloat()
+}
+
+canvas.drawText(text, x, y, paint)
+
+        y += lineHeight
+    }
+
+    return bitmap
+}
 }

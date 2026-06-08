@@ -71,7 +71,7 @@ class PoojaDetails {
   String? diety;
   int? poojaId;
   String? pooja;
-  int? qty;
+  var qty;
   var rate;
   String? date;
   int? isScheduled;
@@ -88,31 +88,30 @@ class PoojaDetails {
   String? star;
   double? discount;
   String? discountType;
-  PoojaDetails({
-    this.name,
-    this.address,
-    this.starId,
-    this.deityId,
-    this.poojaId,
-    this.qty,
-    this.rate,
-    this.date,
-    this.isScheduled,
-    this.dwmo,
-    this.fromDate,
-    this.noOfDays,
-    this.weekDays,
-    this.noOfWeeks,
-    this.noOfMonths,
-    this.monthStar,
-    this.specialStarId,
-    this.prasadamStatus,
-    this.postalAmount,
-    this.pooja,
-    this.star,
-    this.discount,
-    this.discountType
-  });
+  PoojaDetails(
+      {this.name,
+      this.address,
+      this.starId,
+      this.deityId,
+      this.poojaId,
+      this.qty,
+      this.rate,
+      this.date,
+      this.isScheduled,
+      this.dwmo,
+      this.fromDate,
+      this.noOfDays,
+      this.weekDays,
+      this.noOfWeeks,
+      this.noOfMonths,
+      this.monthStar,
+      this.specialStarId,
+      this.prasadamStatus,
+      this.postalAmount,
+      this.pooja,
+      this.star,
+      this.discount,
+      this.discountType});
   PoojaDetails.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     address = json['address'];

@@ -211,7 +211,7 @@
 // //     widget.previewBillProvider.previewDetailsList.clear();
 // //     widget.previewBillProvider.poojaDetailsList.clear();
 // //     widget.previewBillProvider.clearValues();
-    
+
 // //     Navigator.pushAndRemoveUntil(
 // //       buildContext,
 // //       MaterialPageRoute(
@@ -618,7 +618,6 @@
 // //          "cgst": double.parse(previewBillProvider.cgstController.text ),
 // //           "sgst": double.parse(previewBillProvider.sgstController.text),
 // //           "gst": double.parse(previewBillProvider.gstAmountController.text ),
-  
 
 // //       });
 // //     } catch (e) {
@@ -983,9 +982,6 @@
 // //   });
 // // }
 
-
-
-
 // // import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 // import 'package:flutter/material.dart';
 
@@ -1199,7 +1195,7 @@
 //     widget.previewBillProvider.previewDetailsList.clear();
 //     widget.previewBillProvider.poojaDetailsList.clear();
 //     widget.previewBillProvider.clearValues();
-    
+
 //     Navigator.pushAndRemoveUntil(
 //       buildContext,
 //       MaterialPageRoute(
@@ -1972,11 +1968,6 @@
 //   });
 // }
 
-
-
-
-
-
 // // import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 // import 'package:flutter/material.dart';
 
@@ -2190,7 +2181,7 @@
 //     widget.previewBillProvider.previewDetailsList.clear();
 //     widget.previewBillProvider.poojaDetailsList.clear();
 //     widget.previewBillProvider.clearValues();
-    
+
 //     Navigator.pushAndRemoveUntil(
 //       buildContext,
 //       MaterialPageRoute(
@@ -2597,7 +2588,6 @@
 //          "cgst": double.parse(previewBillProvider.cgstController.text ),
 //           "sgst": double.parse(previewBillProvider.sgstController.text),
 //           "gst": double.parse(previewBillProvider.gstAmountController.text ),
-  
 
 //       });
 //     } catch (e) {
@@ -2962,9 +2952,6 @@
 //   });
 // }
 
-
-
-
 // import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:flutter/material.dart';
 
@@ -3178,7 +3165,7 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
     widget.previewBillProvider.previewDetailsList.clear();
     widget.previewBillProvider.poojaDetailsList.clear();
     widget.previewBillProvider.clearValues();
-    
+
     Navigator.pushAndRemoveUntil(
       buildContext,
       MaterialPageRoute(
@@ -3350,20 +3337,15 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
     final double subTotal =
         double.tryParse(provider.subTotalController.text) ?? 0.0;
     final bool isPercent = provider.isDiscountPercentage;
-    final double discountValue = isPercent
-        ? subTotal * discountInput / 100
-        : discountInput;
+    final double discountValue =
+        isPercent ? subTotal * discountInput / 100 : discountInput;
     final String discountLabel = discountInput > 0
-        ? (isPercent
-            ? "Discount (${discountInput.toInt()}%)"
-            : "Discount")
+        ? (isPercent ? "Discount (${discountInput.toInt()}%)" : "Discount")
         : '';
 
     // GST
-    final double cgst =
-        double.tryParse(provider.cgstController.text) ?? 0.0;
-    final double sgst =
-        double.tryParse(provider.sgstController.text) ?? 0.0;
+    final double cgst = double.tryParse(provider.cgstController.text) ?? 0.0;
+    final double sgst = double.tryParse(provider.sgstController.text) ?? 0.0;
     final double gstTotal =
         double.tryParse(provider.gstAmountController.text) ?? 0.0;
 
@@ -3383,8 +3365,7 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text("BILL RECEIPT",
-                  style: pw.TextStyle(fontSize: 20)),
+              pw.Text("BILL RECEIPT", style: pw.TextStyle(fontSize: 20)),
               pw.SizedBox(height: 15),
               pw.Text("Bill No: ${summary?.id ?? ''}"),
               pw.SizedBox(height: 10),
@@ -3512,9 +3493,11 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
 
                           // ── Discount ──────────────────────────────────
                           final double discountInput =
-                              double.tryParse(bp.discountController.text) ?? 0.0;
+                              double.tryParse(bp.discountController.text) ??
+                                  0.0;
                           final double subTotal =
-                              double.tryParse(bp.subTotalController.text) ?? 0.0;
+                              double.tryParse(bp.subTotalController.text) ??
+                                  0.0;
                           final bool isPercent = bp.isDiscountPercentage;
                           final double discountValue = isPercent
                               ? subTotal * discountInput / 100
@@ -3531,7 +3514,8 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
                           final double sgst =
                               double.tryParse(bp.sgstController.text) ?? 0.0;
                           final double gstTotal =
-                              double.tryParse(bp.gstAmountController.text) ?? 0.0;
+                              double.tryParse(bp.gstAmountController.text) ??
+                                  0.0;
 
                           // Build optional discount & GST lines
                           final StringBuffer extraLines = StringBuffer();
@@ -3649,10 +3633,18 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
 
     final details = previewBillProvider.saveBillResponse?.details ?? [];
     DateTime dateTime = DateTime.parse(DateTime.now().toString());
-    print("__________________TOTAL SENT = ${previewBillProvider.totalRateController.text}");
-print("__________________GST AMOUNT = ${previewBillProvider.gstAmountController.text}");
-print("__________________CGST = ${previewBillProvider.cgstController.text}");
-print("__________________SGST = ${previewBillProvider.sgstController.text}");
+    print(
+        "__________________TOTAL SENT = ${previewBillProvider.totalRateController.text}");
+    print(
+        "__________________GST AMOUNT = ${previewBillProvider.gstAmountController.text}");
+    print(
+        "__________________CGST = ${previewBillProvider.cgstController.text}");
+    print(
+        "__________________SGST = ${previewBillProvider.sgstController.text}");
+    print("disco = ${previewBillProvider.discountController.text}");
+    print(
+        "discotype = ${previewBillProvider.isDiscountPercentage ? "percentage" : "flat"}");
+    print("subTotal = ${previewBillProvider.subTotalController.text}");
 
 // 🔹 Format
     String formattedDate = DateFormat('dd-MM-yyyy').format(dateTime);
@@ -3678,14 +3670,21 @@ print("__________________SGST = ${previewBillProvider.sgstController.text}");
         "billdate": formattedDate,
         "billtime": formattedTime,
         // ✅ FIX: totalRateController.text is "84.00" (has decimal) — parse as double then toInt
-        "total": (double.tryParse(previewBillProvider.totalRateController.text) ?? 0.0).toInt(),
+        "total":
+            (double.tryParse(previewBillProvider.totalRateController.text) ??
+                    0.0)
+                .toInt(),
         "cgst": double.tryParse(previewBillProvider.cgstController.text) ?? 0.0,
         "sgst": double.tryParse(previewBillProvider.sgstController.text) ?? 0.0,
-        "gst": double.tryParse(previewBillProvider.gstAmountController.text) ?? 0.0,
+        "gst": double.tryParse(previewBillProvider.gstAmountController.text) ??
+            0.0,
         // ✅ Discount fields
-        "discountInput": double.tryParse(previewBillProvider.discountController.text) ?? 0.0,
-        "discountType": previewBillProvider.isDiscountPercentage ? "percentage" : "flat",
-        "subTotal": double.tryParse(previewBillProvider.subTotalController.text) ?? 0.0,
+        "discountInput":
+            double.tryParse(previewBillProvider.discountController.text) ?? 0.0,
+        "discountType":
+            previewBillProvider.isDiscountPercentage ? "percentage" : "flat",
+        "subTotal":
+            double.tryParse(previewBillProvider.subTotalController.text) ?? 0.0,
       });
     } catch (e) {
       print("Error: $e");

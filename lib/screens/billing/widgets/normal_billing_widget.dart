@@ -676,7 +676,7 @@ class _NormalBillingWidgetState extends State<NormalBillingWidget> {
           //     validationMessage:
           //         ValidationHelperClass.validateName(value.trim()) ?? ''),
           ),
-            20.verticalSpace,
+      20.verticalSpace,
       !widget.billingProvider.isScheduled
           ? PunnyamDatePicker(
               title: widget.billingProvider.fromDate
@@ -704,7 +704,11 @@ class _NormalBillingWidgetState extends State<NormalBillingWidget> {
               PunnyamTextField(
                 hintText: "Qty",
                 height: 45.h,
-                inputFormatter: [FilteringTextInputFormatter.digitsOnly],
+                inputFormatter: [
+                  FilteringTextInputFormatter.allow(
+                    RegExp(r'[0-9.]'),
+                  ),
+                ],
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
                 isEnabled: BillingProvider.ratefield == true ? false : true,

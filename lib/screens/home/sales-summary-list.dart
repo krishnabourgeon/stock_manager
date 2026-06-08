@@ -434,10 +434,6 @@
 //   }
 // }
 
-
-
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -559,24 +555,23 @@ class _PoojaListTableState extends State<PoojaListTable> {
                   DateTime dateTime = DateTime.now();
                   String formattedDate =
                       DateFormat('dd-MM-yyyy').format(dateTime);
-                  String formattedTime =
-                      DateFormat('hh:mm a').format(dateTime);
+                  String formattedTime = DateFormat('hh:mm a').format(dateTime);
 
-                  List<Map<String, dynamic>> itemsList =
-                      poojaSummaryProvider?.poojaSummaryResponse?.data
-                              ?.asMap()
-                              .entries
-                              .map((entry) {
-                            int index = entry.key;
-                            var e = entry.value;
-                            return {
-                              "type": null,
-                              "name": "${index + 1}. ${e.poojaName}",
-                              "qty": e.poojaCount ?? 0,
-                              "rate": e.totalRate ?? 0,
-                            };
-                          }).toList() ??
-                          [];
+                  List<Map<String, dynamic>> itemsList = poojaSummaryProvider
+                          ?.poojaSummaryResponse?.data
+                          ?.asMap()
+                          .entries
+                          .map((entry) {
+                        int index = entry.key;
+                        var e = entry.value;
+                        return {
+                          "type": null,
+                          "name": "${index + 1}. ${e.poojaName}",
+                          "qty": e.poojaCount ?? 0,
+                          "rate": e.totalRate ?? 0,
+                        };
+                      }).toList() ??
+                      [];
 
                   await platform.invokeMethod('printReceipt', {
                     "shop": poojaSummaryProvider
@@ -586,8 +581,10 @@ class _PoojaListTableState extends State<PoojaListTable> {
                     "shopaddress2": poojaSummaryProvider
                         ?.poojaSummaryResponse?.temple?.addressLine2,
                     "items": itemsList,
-                    "total": int.parse(
-                        poojaSummaryProvider?.poojaSummaryResponse?.grossTotal),
+                    "total": double.parse(poojaSummaryProvider
+                            ?.poojaSummaryResponse?.grossTotal
+                            .toString() ??
+                        '0'),
                     "billdate": formattedDate,
                     "billtime": formattedTime,
                     "mode": null,
@@ -626,8 +623,7 @@ class _PoojaListTableState extends State<PoojaListTable> {
 
                   // ── Main content ───────────────────────────────────────
                   Expanded(
-                    child:
-                        _switchView(poojaSummaryProvider, stockProvider),
+                    child: _switchView(poojaSummaryProvider, stockProvider),
                   ),
                 ],
               ),
@@ -642,8 +638,7 @@ class _PoojaListTableState extends State<PoojaListTable> {
   static const platform = MethodChannel('cloudpos/printer');
 
   // ── Switch view (unchanged logic + date pickers) ──────────────────────────
-  Widget _switchView(
-      PoojaSummaryProvider? prov, StockProvider stockProvider) {
+  Widget _switchView(PoojaSummaryProvider? prov, StockProvider stockProvider) {
     switch (prov?.loaderState) {
       case LoaderState.loading:
         return const Center(
@@ -687,8 +682,8 @@ class _PoojaListTableState extends State<PoojaListTable> {
 
         // Table
         Padding(
-          padding: EdgeInsets.only(
-              left: 15.w, right: 15.w, top: 65.h, bottom: 55.h),
+          padding:
+              EdgeInsets.only(left: 15.w, right: 15.w, top: 65.h, bottom: 55.h),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
@@ -699,39 +694,32 @@ class _PoojaListTableState extends State<PoojaListTable> {
                 headingRowHeight: 45.h,
                 dataRowMinHeight: 50.h,
                 dataRowMaxHeight: 50.h,
-                decoration:
-                    BoxDecoration(color: ColorPalette.primaryColor),
+                decoration: BoxDecoration(color: ColorPalette.primaryColor),
                 border: TableBorder.symmetric(
-                  outside:
-                      BorderSide(color: Colors.grey, width: .5.w),
+                  outside: BorderSide(color: Colors.grey, width: .5.w),
                 ),
                 columns: const [
                   DataColumn(
                       label: Text('Product Name',
-                          style: TextStyle(
-                              color: Colors.white, fontSize: 12))),
+                          style: TextStyle(color: Colors.white, fontSize: 12))),
                   DataColumn(
                       label: Text('Product Count',
-                          style: TextStyle(
-                              color: Colors.white, fontSize: 12))),
+                          style: TextStyle(color: Colors.white, fontSize: 12))),
                   DataColumn(
                       label: Text('Total',
-                          style: TextStyle(
-                              color: Colors.white, fontSize: 12))),
+                          style: TextStyle(color: Colors.white, fontSize: 12))),
                 ],
                 rows: List.generate(
                   prov?.poojaSummaryResponse?.data?.length ?? 0,
                   (index) => DataRow(
                     color: index % 2 == 0
                         ? MaterialStateProperty.all(Colors.white)
-                        : MaterialStateProperty.all(
-                            Colors.grey.shade100),
+                        : MaterialStateProperty.all(Colors.grey.shade100),
                     cells: [
                       DataCell(SizedBox(
                         width: 185.w,
                         child: Text(
-                          prov?.poojaSummaryResponse?.data![index]
-                                  .poojaName ??
+                          prov?.poojaSummaryResponse?.data![index].poojaName ??
                               '',
                           strutStyle: StrutStyle(height: 1.5.h),
                         ),
@@ -770,8 +758,7 @@ class _PoojaListTableState extends State<PoojaListTable> {
                 ),
                 10.horizontalSpace,
                 Text(
-                  prov?.poojaSummaryResponse?.grossTotal.toString() ??
-                      '0',
+                  prov?.poojaSummaryResponse?.grossTotal.toString() ?? '0',
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -819,8 +806,8 @@ class _FilterSection extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
       decoration: BoxDecoration(
         color: Colors.green.shade50,
-        border: Border(
-            bottom: BorderSide(color: Colors.green.shade100, width: 1)),
+        border:
+            Border(bottom: BorderSide(color: Colors.green.shade100, width: 1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -844,8 +831,8 @@ class _FilterSection extends StatelessWidget {
                 GestureDetector(
                   onTap: onClear,
                   child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 10.w, vertical: 4.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                     decoration: BoxDecoration(
                       color: Colors.red.shade50,
                       borderRadius: BorderRadius.circular(20),
@@ -859,8 +846,7 @@ class _FilterSection extends StatelessWidget {
                         SizedBox(width: 3.w),
                         Text('Clear',
                             style: TextStyle(
-                                fontSize: 11.sp,
-                                color: Colors.red.shade400)),
+                                fontSize: 11.sp, color: Colors.red.shade400)),
                       ],
                     ),
                   ),
@@ -888,10 +874,9 @@ class _FilterSection extends StatelessWidget {
                           ))
                       .toList(),
                   onChanged: (val) {
-                    final cat = stockProvider.categoryList
-                        .firstWhere((c) => c.id == val,
-                            orElse: () =>
-                                stockProvider.categoryList.first);
+                    final cat = stockProvider.categoryList.firstWhere(
+                        (c) => c.id == val,
+                        orElse: () => stockProvider.categoryList.first);
                     onCategoryChanged(val, cat.name);
                   },
                 ),
@@ -981,11 +966,9 @@ class _DateFilterRow extends StatelessWidget {
             child: PunnyamDatePicker(
               isEndDate: true,
               isFirstDate: true,
-              title: poojaSummaryProvider?.toDate
-                      ?.split('-')
-                      .reversed
-                      .join('-') ??
-                  "To Date",
+              title:
+                  poojaSummaryProvider?.toDate?.split('-').reversed.join('-') ??
+                      "To Date",
               onChanged: (date) => poojaSummaryProvider
                 ?..updateToDate(date)
                 ..updateCurrentIndex(0)
@@ -1043,8 +1026,8 @@ class _StyledDropdown<T> extends StatelessWidget {
                 Expanded(
                   child: Text(
                     hint,
-                    style: TextStyle(
-                        fontSize: 12.sp, color: Colors.grey.shade400),
+                    style:
+                        TextStyle(fontSize: 12.sp, color: Colors.grey.shade400),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),

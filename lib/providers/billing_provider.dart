@@ -1734,8 +1734,6 @@
 // //   PreviewBillResponse? previewBillResponse;
 // //   double totalAmount = 0;
 
-
-
 // //   // ── New fields ───────────────────────────────────────────────────────────────
 
 // // // int? gstPercent;                                          // selected GST %
@@ -1759,8 +1757,6 @@
 
 // // //   notifyListeners();
 // // // }
-
-
 
 // // int? gstPercent;
 
@@ -3133,12 +3129,6 @@
 // //     notifyListeners();
 // //   }
 // // }
-
-
-
-
-
-
 
 // // import 'dart:typed_data';
 // // import 'package:http/http.dart' as http;
@@ -4884,8 +4874,6 @@
 //   PreviewBillResponse? previewBillResponse;
 //   double totalAmount = 0;
 
-
-
 //   // ── New fields ───────────────────────────────────────────────────────────────
 
 // // int? gstPercent;                                          // selected GST %
@@ -4909,8 +4897,6 @@
 
 // //   notifyListeners();
 // // }
-
-
 
 // int? gstPercent;
 
@@ -6221,8 +6207,6 @@
 //     discountController.clear();
 //     gstAmountController.clear();
 
-    
-
 //     // IDs & selections
 //     deityId = '1';
 //     poojaId = '';
@@ -6293,11 +6277,6 @@
 //     notifyListeners();
 //   }
 // }
-
-
-
-
-
 
 // // import 'dart:typed_data';
 // // import 'package:http/http.dart' as http;
@@ -8035,8 +8014,6 @@
 //   PreviewBillResponse? previewBillResponse;
 //   double totalAmount = 0;
 
-
-
 //   // ── New fields ───────────────────────────────────────────────────────────────
 
 // // int? gstPercent;                                          // selected GST %
@@ -8060,8 +8037,6 @@
 
 // //   notifyListeners();
 // // }
-
-
 
 // int? gstPercent;
 
@@ -9434,12 +9409,6 @@
 //     notifyListeners();
 //   }
 // }
-
-
-
-
-
-
 
 // import 'dart:typed_data';
 // import 'package:http/http.dart' as http;
@@ -11166,7 +11135,7 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   TextEditingController totalRateController = TextEditingController();
   TextEditingController subTotalController = TextEditingController();
   TextEditingController discountController = TextEditingController();
-  bool isDiscountPercentage = true;  // always percentage
+  bool isDiscountPercentage = true; // always percentage
 
   void toggleDiscountType() {
     isDiscountPercentage = !isDiscountPercentage;
@@ -11174,6 +11143,7 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
     updatePreviewRate();
     notifyListeners();
   }
+
   TextEditingController noOfDaysController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController nameController2 = TextEditingController();
@@ -11184,8 +11154,6 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
   List<PoojaDetails> previewDetailsList = [];
   PreviewBillResponse? previewBillResponse;
   double totalAmount = 0;
-
-
 
   // ── New fields ───────────────────────────────────────────────────────────────
 
@@ -11211,48 +11179,45 @@ class BillingProvider extends ChangeNotifier with ProviderHelperClass {
 //   notifyListeners();
 // }
 
+  int? gstPercent;
 
+  final TextEditingController gstAmountController =
+      TextEditingController(text: '0');
 
-int? gstPercent;
+  final TextEditingController cgstController = TextEditingController(text: '0');
 
-final TextEditingController gstAmountController =
-    TextEditingController(text: '0');
+  final TextEditingController sgstController = TextEditingController(text: '0');
 
-final TextEditingController cgstController =
-    TextEditingController(text: '0');
+  void updateGst(int percent) {
+    gstPercent = percent;
 
-final TextEditingController sgstController =
-    TextEditingController(text: '0');
-
-void updateGst(int percent) {
-  gstPercent = percent;
-
-  // Base = subTotal after discount (always calculated fresh, never from
-  // totalRateController which may already contain a previous GST value)
-  double afterDiscount = totalAmount;
-  if (discountController.text.isNotEmpty) {
-    double rawDiscount = double.tryParse(discountController.text) ?? 0;
-    if (isDiscountPercentage) {
-      if (rawDiscount > 100) rawDiscount = 100;
-      afterDiscount = totalAmount - (totalAmount * rawDiscount / 100);
-    } else {
-      afterDiscount = totalAmount - rawDiscount;
+    // Base = subTotal after discount (always calculated fresh, never from
+    // totalRateController which may already contain a previous GST value)
+    double afterDiscount = totalAmount;
+    if (discountController.text.isNotEmpty) {
+      double rawDiscount = double.tryParse(discountController.text) ?? 0;
+      if (isDiscountPercentage) {
+        if (rawDiscount > 100) rawDiscount = 100;
+        afterDiscount = totalAmount - (totalAmount * rawDiscount / 100);
+      } else {
+        afterDiscount = totalAmount - rawDiscount;
+      }
+      if (afterDiscount < 0) afterDiscount = 0;
     }
-    if (afterDiscount < 0) afterDiscount = 0;
+
+    final double gstAmount = (afterDiscount * percent) / 100;
+    final double half = gstAmount / 2;
+    final double grandTotal = afterDiscount + gstAmount;
+
+    cgstController.text = half.toStringAsFixed(2);
+    sgstController.text = half.toStringAsFixed(2);
+    gstAmountController.text = gstAmount.toStringAsFixed(2);
+    totalRateController.text = grandTotal.toStringAsFixed(2);
+    paidAmountController.text = grandTotal.toStringAsFixed(2);
+
+    notifyListeners();
   }
 
-  final double gstAmount = (afterDiscount * percent) / 100;
-  final double half      = gstAmount / 2;
-  final double grandTotal = afterDiscount + gstAmount;
-
-  cgstController.text      = half.toStringAsFixed(2);
-  sgstController.text      = half.toStringAsFixed(2);
-  gstAmountController.text = gstAmount.toStringAsFixed(2);
-  totalRateController.text = grandTotal.toStringAsFixed(2);
-  paidAmountController.text = grandTotal.toStringAsFixed(2);
-
-  notifyListeners();
-}
   getInitialDataList() async {
     await clearValues();
     await getDeities();
@@ -11431,7 +11396,7 @@ void updateGst(int percent) {
     for (var element in previewDetailsList) {
       totalAmount += element.rate;
     }
-    subTotalController.text = totalAmount.toStringAsFixed(0);
+    subTotalController.text = totalAmount.toStringAsFixed(2);
 
     // 2. Apply discount
     double discount = 0;
@@ -11658,7 +11623,7 @@ void updateGst(int percent) {
     if (network) {
       if (isEnableBtnLoader) updateBtnLoader(true);
       try {
-        String storeId = await SharedPreferenceHelper.getStoreID()?? '';
+        String storeId = await SharedPreferenceHelper.getStoreID() ?? '';
         var res = await serviceConfig.getPoojas(deityId, storeId);
         if (res.isValue) {
           poojaResponse = res.asValue!.value;
@@ -11840,8 +11805,8 @@ void updateGst(int percent) {
 
   updateRate() {
     if (qtyController.text.isNotEmpty) {
-      var totalRate = (poojaRate ?? 0) * (int.parse(qtyController.text));
-      rateController.text = totalRate == 0 ? '' : totalRate.toStringAsFixed(0);
+      var totalRate = (poojaRate ?? 0) * (double.parse(qtyController.text));
+      rateController.text = totalRate == 0 ? '' : totalRate.toStringAsFixed(2);
     } else {
       rateController.text = '';
     }
@@ -12375,7 +12340,7 @@ void updateGst(int percent) {
           : null,
       poojaId: int.parse(poojaId),
       prasadamStatus: (isPrasadhamIncluded ?? false) ? 1 : 0,
-      qty: int.parse(qtyController.text.trim()),
+      qty: double.parse(qtyController.text.toString().trim()),
       rate: double.parse(rateController.text.trim()),
       starId: int.parse(starId ?? '28'),
       specialStarId: specialStarId,
@@ -12545,10 +12510,8 @@ void updateGst(int percent) {
     gstAmountController.text = '0';
     cgstController.text = '0';
     sgstController.text = '0';
-    gstPercent = null;          // resets the dropdown to "Select GST %"
+    gstPercent = null; // resets the dropdown to "Select GST %"
     isDiscountPercentage = true; // keep % mode
-
-    
 
     // IDs & selections
     deityId = '1';
