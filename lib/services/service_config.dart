@@ -42,6 +42,7 @@ import 'package:stock_manager/models/unit_model.dart';
 import 'package:stock_manager/models/version_datamodel.dart';
 import 'package:stock_manager/models/view_product_stock.dart';
 import 'package:stock_manager/models/view_purchase_model.dart';
+import 'package:stock_manager/models/view_samage_model.dart';
 import 'package:stock_manager/models/view_stock_model.dart';
 import 'package:stock_manager/services/app_config.dart';
 import 'package:stock_manager/services/base_client.dart';
@@ -666,6 +667,23 @@ Future<Result> addSupplier(AddSupplierBody addSupplierBody) async {
       return (starsResponse.status ?? false)
           ? Result.value(starsResponse)
           : Result.error(starsResponse);
+    }
+  }
+
+
+    Future<Result> viewDamage() async {
+    Result res = await BaseClient.get('viewdamagestock');
+    if (res.isError) {
+      ErrorResponseModel errorResponseModel =
+          ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+      debugPrint('damage view  $response');
+      ViewDamageModel viewDamageResponse = ViewDamageModel.fromJson(response);
+      return (viewDamageResponse.status ?? false)
+          ? Result.value(viewDamageResponse)
+          : Result.error(viewDamageResponse);
     }
   }
 

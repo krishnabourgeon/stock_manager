@@ -19,6 +19,7 @@ import 'package:stock_manager/models/supplier_model.dart';
 import 'package:stock_manager/models/unit_model.dart';
 import 'package:stock_manager/models/view_product_stock.dart';
 import 'package:stock_manager/models/view_purchase_model.dart';
+import 'package:stock_manager/models/view_samage_model.dart';
 import 'package:stock_manager/models/view_stock_model.dart';
 import 'package:stock_manager/services/app_config.dart';
 import 'package:stock_manager/services/helpers.dart';
@@ -34,6 +35,7 @@ class StockProvider extends ChangeNotifier with ProviderHelperClass {
   ViewPurchaseModel? viewPurchaseModel;
   PurchaseDetailsModel? purchaseDetailsModel;
   ViewProductStock? viewProductStock;
+  ViewDamageModel? viewDamageModel;
 
   List<Datum> productList = [];
   List<Datum> allPoojaDataList = [];
@@ -58,6 +60,10 @@ class StockProvider extends ChangeNotifier with ProviderHelperClass {
 
   List<StockList> stockList = [];
   List<StockList> allStockList = [];
+
+  List<DamageMessage> viewDamageList = [];
+  List<DamageMessage> allViewDamageList = [];
+  List<DamageMessage> damageList = [];
 
   String? selectedProductFilter;
   DateTime? fromDate;
@@ -713,6 +719,28 @@ class StockProvider extends ChangeNotifier with ProviderHelperClass {
     }
   }
 
+
+Future<void> getViewDamage() async {
+    updateLoadState(LoaderState.loading);
+
+    try {
+      var res = await serviceConfig.viewDamage();
+
+      if (res.isValue) {
+        viewDamageModel = res.asValue!.value;
+
+        debugPrint(
+          "API Records Count : ${viewDamageModel?.message?.length}",
+        );
+
+        updateViewDamageList(viewDamageModel);
+      }
+    } catch (e) {
+      debugPrint("Damage Error : $e");
+    }
+
+    updateLoadState(LoaderState.loaded);
+  }
   // Future<void> getCategories() async {
   //   final network = await CommonFunctions.checkInternetConnection();
   //   if (network) {
@@ -904,6 +932,16 @@ class StockProvider extends ChangeNotifier with ProviderHelperClass {
     categoryList = categoryModel?.data ?? [];
     allCategoryList = categoryModel?.data ?? [];
     // updateDeityId('${deitiesList[0].id}');  // cleared
+    notifyListeners();
+  }
+
+void updateViewDamageList(ViewDamageModel? model) {
+    damageList = model?.message ?? [];
+
+    debugPrint(
+      "Damage List Updated : ${damageList.length}",
+    );
+
     notifyListeners();
   }
 

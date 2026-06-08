@@ -271,6 +271,7 @@ import 'package:stock_manager/screens/stock/add_product.dart';
 import 'package:stock_manager/screens/stock/add_stock.dart';
 import 'package:stock_manager/screens/stock/aded_category.dart';
 import 'package:stock_manager/screens/stock/add_supplier_screen.dart';
+import 'package:stock_manager/screens/stock/view_damage_screen.dart';
 import 'package:stock_manager/screens/stock/view_product.dart';
 import 'package:stock_manager/screens/stock/view_purchase.dart';
 import 'package:stock_manager/screens/stock/view_stock.dart';
@@ -330,7 +331,7 @@ class _StockScreenState extends State<StockScreen>
       accentColor: Color(0xFFF5A623),
     ),
     _MenuItemData(
-      title: "Add Damage",
+      title: "Damage Stock",
       subtitle: "Add damaged items",
       icon: Icons.remove,
       accentColor: Color(0xFFF5A623),
@@ -361,7 +362,7 @@ class _StockScreenState extends State<StockScreen>
       const AddStock(),
       const ViewPurchase(),
       const ViewStock(),
-      const AddDamageScreen()
+      const ViewDamageScreen()
     ];
     Navigator.push(
       context,

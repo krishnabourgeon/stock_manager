@@ -1,5 +1,10 @@
 package com.stockmanager.app
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Typeface
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -10,6 +15,9 @@ import com.cloudpos.printer.PrinterDevice
 class MainActivity : FlutterActivity() {
 
     private val CHANNEL = "cloudpos/printer"
+
+    // Thermal paper print width in pixels (576 for 80mm, 384 for 58mm)
+    private val PRINT_WIDTH = 576
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -101,6 +109,12 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+    // Checks if a string contains any characters outside the ASCII range
+    // (Malayalam, Arabic, Devanagari, etc. all fall outside ASCII)
+    private fun hasNonAscii(text: String): Boolean {
+        return text.any { it.code > 127 }
+    }
+
     private fun printReceipt(
         shop: String,
         address: String,
@@ -114,9 +128,9 @@ class MainActivity : FlutterActivity() {
         cgst: Double,
         sgst: Double,
         gst: Double,
-        discountValue: Double,         // ✅ actual rupee amount deducted
-        discountLabel: String,         // ✅ "Discount" or "Discount (10%)"
-        subTotal: Double,              // ✅ pre-discount subtotal
+        discountValue: Double,
+        discountLabel: String,
+        subTotal: Double,
     ) {
         try {
             val printer = POSTerminal.getInstance(this)
@@ -124,74 +138,67 @@ class MainActivity : FlutterActivity() {
 
             printer.open()
 
-            val builder = StringBuilder()
+            // Collect receipt as a list of lines for bitmap rendering
+            // Each entry: Pair(text, alignment) where alignment is "left"/"center"/"right"
+            // or Pair("---DIVIDER---", "") for separator lines
+            data class ReceiptLine(val text: String, val align: String = "left", val bold: Boolean = false)
 
-            builder.append(centerText(shop))
-            builder.append(centerText(address))
-            builder.append(centerText(address2))
+            val lines = mutableListOf<ReceiptLine>()
 
-            builder.append("--------------------------------\n")
+            if (shop.isNotEmpty()) lines.add(ReceiptLine(shop, "center", bold = true))
+            if (address.isNotEmpty()) lines.add(ReceiptLine(address, "center"))
+            if (address2.isNotEmpty()) lines.add(ReceiptLine(address2, "center"))
+
+            lines.add(ReceiptLine("--------------------------------", "center"))
+
             if (bill != 0) {
-                builder.append(leftRightAlign("Bill No : $bill", "$billdate"))
+                lines.add(ReceiptLine("Bill No : $bill", "left"))
+                lines.add(ReceiptLine(billdate, "right"))
             } else {
-                builder.append(rightAlign("$billdate"))
+                lines.add(ReceiptLine(billdate, "right"))
             }
-            builder.append(rightAlign("$billtime\n"))
+            lines.add(ReceiptLine(billtime, "right"))
 
-            for ((index, item) in items.withIndex()) {
+            for (item in items) {
                 val type = item["type"]?.toString()
-                if (!type.isNullOrEmpty() && type != "null") {
-                    builder.append("${index + 1}. $type\n")
-                }
-
                 val name = item["name"].toString()
                 val qty = (item["qty"] as? Number)?.toInt()
-                    ?: item["qty"]?.toString()?.toIntOrNull()
-                    ?: 0
+                    ?: item["qty"]?.toString()?.toIntOrNull() ?: 0
                 val rate = (item["rate"] as? Number)?.toInt()
-                    ?: item["rate"]?.toString()?.toIntOrNull()
-                    ?: 0
+                    ?: item["rate"]?.toString()?.toIntOrNull() ?: 0
                 val unit = item["unit"] as? String
 
-                builder.append(formatItem(item["type"], name, qty, rate, unit))
+                val lineText = buildItemLine(type, name, qty, rate, unit)
+                lines.add(ReceiptLine(lineText, "left"))
+                lines.add(ReceiptLine("", "left")) // blank line between items
             }
 
-            builder.append("--------------------------------\n")
+            lines.add(ReceiptLine("--------------------------------", "center"))
 
-            // ✅ Show subtotal only when there's a discount so the deduction is clear
             if (discountValue > 0 && subTotal > 0) {
-                builder.append(leftRightAlign("Sub Total", "Rs %.2f".format(subTotal)))
-                builder.append(leftRightAlign(discountLabel, "- Rs %.2f".format(discountValue)))
+                lines.add(ReceiptLine("Sub Total         Rs %.2f".format(subTotal), "left"))
+                lines.add(ReceiptLine("$discountLabel   - Rs %.2f".format(discountValue), "left"))
             }
+            if (cgst > 0) lines.add(ReceiptLine("CGST              Rs %.2f".format(cgst), "left"))
+            if (sgst > 0) lines.add(ReceiptLine("SGST              Rs %.2f".format(sgst), "left"))
+            if (gst > 0) lines.add(ReceiptLine("GST Total         Rs %.2f".format(gst), "left"))
 
-            if (cgst > 0) {
-                builder.append(leftRightAlign("CGST", "Rs %.2f".format(cgst)))
-            }
-            if (sgst > 0) {
-                builder.append(leftRightAlign("SGST", "Rs %.2f".format(sgst)))
-            }
-            if (gst > 0) {
-                builder.append(leftRightAlign("GST Total", "Rs %.2f".format(gst)))
-            }
-
-            builder.append("--------------------------------\n")
+            lines.add(ReceiptLine("--------------------------------", "center"))
 
             if (mode.isNotEmpty() && mode != "null") {
-                builder.append(leftRightAlign("Mode: $mode", "TOTAL: Rs $total"))
-            } else {
-                if (total != 0) {
-                    builder.append(rightAlign("TOTAL: Rs $total\n"))
-                }
+                lines.add(ReceiptLine("Mode: $mode", "left"))
             }
-
             if (total != 0) {
-                builder.append("--------------------------------\n")
+                lines.add(ReceiptLine("TOTAL: Rs $total", "right", bold = true))
+                lines.add(ReceiptLine("--------------------------------", "center"))
             }
-            builder.append(centerText("THANK YOU"))
-            builder.append("\n\n")
+            lines.add(ReceiptLine("THANK YOU", "center", bold = true))
+            lines.add(ReceiptLine(""))
+            lines.add(ReceiptLine(""))
 
-            printer.printText(builder.toString())
-            printer.printText("\n\n\n")
+            // Render all lines to a single bitmap so Unicode (Malayalam etc.) prints correctly
+            val bitmap = renderReceiptToBitmap(lines.map { Triple(it.text, it.align, it.bold) })
+            printer.printBitmap(bitmap)
             printer.close()
 
         } catch (e: Exception) {
@@ -199,34 +206,60 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun centerText(text: String, width: Int = 32): String {
-        val padding = (width - text.length) / 2
-        return " ".repeat(if (padding > 0) padding else 0) + text + "\n"
-    }
-
-    private fun rightAlign(text: String, width: Int = 32): String {
-        val padding = width - text.length
-        return " ".repeat(if (padding > 0) padding else 0) + text
-    }
-
-    private fun formatItem(itemName: Any?, name: String, qty: Int, rate: Any?, unit: String?): String {
-        return if (itemName == "" || itemName == null || itemName == "null") {
+    private fun buildItemLine(type: Any?, name: String, qty: Int, rate: Any?, unit: String?): String {
+        return if (type == "" || type == null || type == "null") {
             if (rate == 0 || rate == "0") {
-                if (unit != null && unit != "null" && unit != "") {
-                    "$name $qty$unit\n\n"
-                } else {
-                    "$name $qty\n\n"
-                }
+                if (unit != null && unit != "null" && unit != "") "$name $qty$unit"
+                else "$name $qty"
             } else {
-                "$name $qty x $rate\n\n"
+                "$name $qty x $rate"
             }
         } else {
-            "   $name $qty x $rate\n\n"
+            "  $name $qty x $rate"
         }
     }
 
-    private fun leftRightAlign(left: String, right: String, width: Int = 32): String {
-        val space = width - (left.length + right.length)
-        return left + " ".repeat(if (space > 0) space else 1) + right + "\n"
+    private fun renderReceiptToBitmap(lines: List<Triple<String, String, Boolean>>): Bitmap {
+        val textSize = 28f
+        val lineSpacing = 10f
+        val padding = 16
+
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.BLACK
+            this.textSize = textSize
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+        }
+
+        // Measure total height
+        val fm = paint.fontMetrics
+        val lineHeight = (fm.descent - fm.ascent + lineSpacing).toInt()
+        val totalHeight = lineHeight * lines.size + padding * 2
+
+        val bitmap = Bitmap.createBitmap(PRINT_WIDTH, totalHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        canvas.drawColor(Color.WHITE)
+
+        var y = padding - fm.ascent
+
+        for ((text, align, bold) in lines) {
+            paint.typeface = if (bold) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+
+            val x = when (align) {
+                "center" -> {
+                    val textWidth = paint.measureText(text)
+                    ((PRINT_WIDTH - textWidth) / 2f).coerceAtLeast(0f)
+                }
+                "right" -> {
+                    val textWidth = paint.measureText(text)
+                    (PRINT_WIDTH - textWidth - padding).coerceAtLeast(0f)
+                }
+                else -> padding.toFloat()
+            }
+
+            canvas.drawText(text, x, y, paint)
+            y += lineHeight
+        }
+
+        return bitmap
     }
 }

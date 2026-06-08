@@ -776,7 +776,7 @@ class _AddDamageScreenState extends State<AddDamageScreen> {
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      lastDate: DateTime.now(),
     );
     if (picked != null) setState(() => _selectedDate = picked);
   }
