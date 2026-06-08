@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as baseClient;
 import 'package:stock_manager/models/Save_stock_body.dart';
 import 'package:stock_manager/models/add_cat_model.dart';
+import 'package:stock_manager/models/add_damage_body.dart';
+import 'package:stock_manager/models/add_damage_model.dart';
 import 'package:stock_manager/models/add_supplier_body.dart';
 import 'package:stock_manager/models/add_supplier_model.dart';
 import 'package:stock_manager/models/bill_list_response_model.dart';
@@ -537,6 +540,36 @@ Future<Result> getProductStock({
 }
 
 
+
+Future<Result> addDamage(AddDamageBody addDamageBody) async {
+  if (kDebugMode) {
+    print("add damage..............${addDamageBody.toJson()}");
+  }
+
+  Result res = await BaseClient.post(
+    'Damage',
+    body: addDamageBody.toJson(),
+  );
+
+  if (res.isError) {
+    ErrorResponseModel errorResponseModel =
+        ErrorResponseModel(errorMessage: 'Oops...! Something went wrong');
+    return Result.error(errorResponseModel);
+  } else {
+    var response = res.asValue!.value;
+
+    SaveDamageModel  adddamageResponse =
+        SaveDamageModel.fromJson(response);
+
+    return (adddamageResponse.status ?? false)
+        ? Result.value(adddamageResponse)
+        : Result.error(adddamageResponse);
+  }
+}
+
+
+
+
 Future<Result> addSupplier(AddSupplierBody addSupplierBody) async {
   if (kDebugMode) {
     print("add supplier..............${addSupplierBody.toJson()}");
@@ -790,6 +823,19 @@ Future<Result> addSupplier(AddSupplierBody addSupplierBody) async {
           : Result.error(versionResponse);
     }
   }
+
+//   Future<Result<SaveDamageModel>> saveDamage(SaveDamageBody body) async {
+//   try {
+//     final response = await baseClient.post(
+//       ServiceUrl.saveDamage, // e.g. "/api/save-damage"
+//       body.toJson(),
+//     );
+//     return Result.value(saveDamageModelFromJson(response));
+//   } catch (e) {
+//     debugPrint('saveDamage error: $e');
+//     return Result.error(e);
+//   }
+// }
 
   Future<Result> saveBill(SaveBillBody saveBillBody) async {
     if (kDebugMode) {

@@ -266,6 +266,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:stock_manager/screens/stock/add_damage_screen.dart';
 import 'package:stock_manager/screens/stock/add_product.dart';
 import 'package:stock_manager/screens/stock/add_stock.dart';
 import 'package:stock_manager/screens/stock/aded_category.dart';
@@ -328,6 +329,12 @@ class _StockScreenState extends State<StockScreen>
       icon: Icons.warehouse_outlined,
       accentColor: Color(0xFFF5A623),
     ),
+    _MenuItemData(
+      title: "Add Damage",
+      subtitle: "Add damaged items",
+      icon: Icons.remove,
+      accentColor: Color(0xFFF5A623),
+    ),
   ];
 
   @override
@@ -354,6 +361,7 @@ class _StockScreenState extends State<StockScreen>
       const AddStock(),
       const ViewPurchase(),
       const ViewStock(),
+      const AddDamageScreen()
     ];
     Navigator.push(
       context,

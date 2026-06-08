@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:stock_manager/common/common_functions.dart';
 import 'package:stock_manager/models/Save_stock_body.dart';
 import 'package:stock_manager/models/add_cat_model.dart';
+import 'package:stock_manager/models/add_damage_body.dart';
+import 'package:stock_manager/models/add_damage_model.dart';
 import 'package:stock_manager/models/add_supplier_body.dart';
 import 'package:stock_manager/models/add_supplier_model.dart';
 import 'package:stock_manager/models/category_model.dart';
@@ -137,34 +139,33 @@ class StockProvider extends ChangeNotifier with ProviderHelperClass {
     notifyListeners();
   }
 
-
   GetAllProduct? getAllProductModel;
-List<AllProduct> allProductList = [];
+  List<AllProduct> allProductList = [];
 
-Future<void> getAllProducts() async {
-  final network = await CommonFunctions.checkInternetConnection();
+  Future<void> getAllProducts() async {
+    final network = await CommonFunctions.checkInternetConnection();
 
-  if (network) {
-    updateLoadState(LoaderState.loading);
+    if (network) {
+      updateLoadState(LoaderState.loading);
 
-    try {
-      var res = await serviceConfig.getAllProduct();
+      try {
+        var res = await serviceConfig.getAllProduct();
 
-      if (res.isValue) {
-        getAllProductModel = res.asValue!.value;
+        if (res.isValue) {
+          getAllProductModel = res.asValue!.value;
 
-        if (getAllProductModel != null) {
-          allProductList = getAllProductModel!.data;
+          if (getAllProductModel != null) {
+            allProductList = getAllProductModel!.data;
+          }
         }
-      }
 
-      updateLoadState(LoaderState.loaded);
-    } catch (e) {
-      debugPrint('exception in all products: $e');
-      updateLoadState(LoaderState.loaded);
+        updateLoadState(LoaderState.loaded);
+      } catch (e) {
+        debugPrint('exception in all products: $e');
+        updateLoadState(LoaderState.loaded);
+      }
     }
   }
-}
 
   // Future<void> getProducts() async {
   //   final network = await CommonFunctions.checkInternetConnection();
@@ -188,31 +189,30 @@ Future<void> getAllProducts() async {
   //   }
   // }
 
-
   Future<void> getProducts({int? categoryId}) async {
-  final network = await CommonFunctions.checkInternetConnection();
+    final network = await CommonFunctions.checkInternetConnection();
 
-  if (network) {
-    updateLoadState(LoaderState.loading);
+    if (network) {
+      updateLoadState(LoaderState.loading);
 
-    try {
-      var res = await serviceConfig.getProduct(categoryId: categoryId);
+      try {
+        var res = await serviceConfig.getProduct(categoryId: categoryId);
 
-      if (res.isValue) {
-        productModel = res.asValue!.value;
+        if (res.isValue) {
+          productModel = res.asValue!.value;
 
-        if (productModel != null) {
-          updateProductsList(productModel);
+          if (productModel != null) {
+            updateProductsList(productModel);
+          }
         }
-      }
 
-      updateLoadState(LoaderState.loaded);
-    } catch (e) {
-      debugPrint('exception in products: $e');
-      updateLoadState(LoaderState.loaded);
+        updateLoadState(LoaderState.loaded);
+      } catch (e) {
+        debugPrint('exception in products: $e');
+        updateLoadState(LoaderState.loaded);
+      }
     }
   }
-}
 
 //   Future<void> deletePurchaseItem({
 //   required String id,
@@ -518,152 +518,200 @@ Future<void> getAllProducts() async {
     }
   }
 
-
   Future<void> saveProduct({
-  required String name,
-  required String code,
-  required String unit,
-  required String price,
-  required String categoryId,
-  Function? onSuccess,
-  Function? onFailure,
-}) async {
-  final network = await CommonFunctions.checkInternetConnection();
+    required String name,
+    required String code,
+    required String unit,
+    required String price,
+    required String categoryId,
+    Function? onSuccess,
+    Function? onFailure,
+  }) async {
+    final network = await CommonFunctions.checkInternetConnection();
 
-  if (network) {
-    updateLoadState(LoaderState.loading);
+    if (network) {
+      updateLoadState(LoaderState.loading);
 
-    try {
-      /// 🔹 CREATE BODY
-      SaveProductBody body = SaveProductBody(
-        code: code,
-        name: name,
-        catId: categoryId,
-        unit: unit,
-        price: price,
-        storeId: AppConfig.storeId.toString(),
-      );
+      try {
+        /// 🔹 CREATE BODY
+        SaveProductBody body = SaveProductBody(
+          code: code,
+          name: name,
+          catId: categoryId,
+          unit: unit,
+          price: price,
+          storeId: AppConfig.storeId.toString(),
+        );
 
-      debugPrint("SAVE PRODUCT BODY: ${body.toJson()}");
+        debugPrint("SAVE PRODUCT BODY: ${body.toJson()}");
 
-      /// 🔹 API CALL
-      var res = await serviceConfig.saveProduct(body);
+        /// 🔹 API CALL
+        var res = await serviceConfig.saveProduct(body);
 
-      if (res.isValue) {
-        SaveProductModel response = res.asValue!.value;
+        if (res.isValue) {
+          SaveProductModel response = res.asValue!.value;
 
-        Helpers.successToast("Product Added Successfully");
+          Helpers.successToast("Product Added Successfully");
 
-        if (onSuccess != null) onSuccess();
-      } else {
-        Helpers.successToast("Failed to add product");
+          if (onSuccess != null) onSuccess();
+        } else {
+          Helpers.successToast("Failed to add product");
 
-        if (onFailure != null) onFailure();
+          if (onFailure != null) onFailure();
+        }
+
+        updateLoadState(LoaderState.loaded);
+      } catch (e) {
+        debugPrint("save product error: $e");
+        updateLoadState(LoaderState.loaded);
+        Helpers.successToast("Something went wrong");
       }
-
-      updateLoadState(LoaderState.loaded);
-    } catch (e) {
-      debugPrint("save product error: $e");
-      updateLoadState(LoaderState.loaded);
-      Helpers.successToast("Something went wrong");
     }
   }
-}
 
+  Future<void> saveSupplier({
+    required String name,
+    required String contactPerson,
+    required int contactNo,
+    required String address,
+    Function? onSuccess,
+    Function? onFailure,
+  }) async {
+    final network = await CommonFunctions.checkInternetConnection();
 
-Future<void> saveSupplier({
-  required String name,
-  required String contactPerson,
-  required int contactNo,
-  required String address,
-  Function? onSuccess,
-  Function? onFailure,
-}) async {
-  final network = await CommonFunctions.checkInternetConnection();
+    if (network) {
+      updateLoadState(LoaderState.loading);
 
-  if (network) {
-    updateLoadState(LoaderState.loading);
+      try {
+        /// 🔹 CREATE BODY
+        AddSupplierBody body = AddSupplierBody(
+          name: name,
+          contactPerson: contactPerson,
+          contactNo: contactNo,
+          address: address,
+          storeId: int.parse(AppConfig.storeId.toString()),
+        );
 
-    try {
-      /// 🔹 CREATE BODY
-      AddSupplierBody body = AddSupplierBody(
-        name: name,
-        contactPerson: contactPerson,
-        contactNo: contactNo,
-        address: address,
-        storeId: int.parse(AppConfig.storeId.toString()),
-      );
+        debugPrint("SAVE SUPPLIER BODY: ${body.toJson()}");
 
-      debugPrint("SAVE SUPPLIER BODY: ${body.toJson()}");
+        /// 🔹 API CALL
+        var res = await serviceConfig.addSupplier(body);
 
-      /// 🔹 API CALL
-      var res = await serviceConfig.addSupplier(body);
+        if (res.isValue) {
+          AddSupplierModel response = res.asValue!.value;
 
-      if (res.isValue) {
-        AddSupplierModel response = res.asValue!.value;
+          Helpers.successToast("Supplier Added Successfully");
 
-        Helpers.successToast("Supplier Added Successfully");
+          if (onSuccess != null) onSuccess();
+        } else {
+          Helpers.successToast("Failed to add supplier");
 
-        if (onSuccess != null) onSuccess();
-      } else {
-        Helpers.successToast("Failed to add supplier");
+          if (onFailure != null) onFailure();
+        }
 
-        if (onFailure != null) onFailure();
+        updateLoadState(LoaderState.loaded);
+      } catch (e) {
+        debugPrint("save supplier error: $e");
+        updateLoadState(LoaderState.loaded);
+        Helpers.successToast("Something went wrong");
       }
-
-      updateLoadState(LoaderState.loaded);
-    } catch (e) {
-      debugPrint("save supplier error: $e");
-      updateLoadState(LoaderState.loaded);
-      Helpers.successToast("Something went wrong");
     }
   }
-}
 
+  Future<void> saveDamage({
+    required List<Map<String, dynamic>> damagedItems,
+    required DateTime date,
+    String? notes,
+    Function? onSuccess,
+    Function? onFailure,
+  }) async {
+    final network = await CommonFunctions.checkInternetConnection();
 
+    if (network) {
+      updateBtnLoader(true);
+
+      try {
+        String storeIdStr = await SharedPreferenceHelper.getStoreID();
+        int storeId = int.tryParse(storeIdStr) ?? 0;
+
+        List<Item> items = damagedItems.map((e) {
+          return Item(
+            productId: e['productId'] as int,
+            unit: e['unitId'].toString(),
+            qty: (e['damagedQty'] as double).toInt(),
+            storeId: storeId,
+            reason: notes ?? '',
+            date: date,
+          );
+        }).toList();
+
+        AddDamageBody body = AddDamageBody(items: items);
+
+        debugPrint("SAVE DAMAGE BODY: ${body.toJson()}");
+
+        var res = await serviceConfig.addDamage(body);
+
+        if (res.isValue) {
+          SaveDamageModel response = res.asValue!.value;
+          Helpers.successToast(response.message ?? "Damage saved successfully");
+          if (onSuccess != null) onSuccess();
+        } else {
+          Helpers.successToast("Failed to save damage");
+          if (onFailure != null) onFailure();
+        }
+
+        updateBtnLoader(false);
+      } catch (e) {
+        debugPrint("save damage error: $e");
+        updateBtnLoader(false);
+        Helpers.successToast("Something went wrong");
+        if (onFailure != null) onFailure();
+      }
+    }
+  }
 
   Future<void> saveCat({
-  required String name,
-  Function? onSuccess,
-  Function? onFailure,
-}) async {
-  final network = await CommonFunctions.checkInternetConnection();
+    required String name,
+    Function? onSuccess,
+    Function? onFailure,
+  }) async {
+    final network = await CommonFunctions.checkInternetConnection();
 
-  if (network) {
-    updateLoadState(LoaderState.loading);
+    if (network) {
+      updateLoadState(LoaderState.loading);
 
-    try {
-      ///  CREATE BODY
-      SaveCatBody body = SaveCatBody(
-        name: name,
-        storeId: int.parse(AppConfig.storeId ?? ""),
-      );
-      debugPrint("the store id is : ${AppConfig.storeId}");
-      debugPrint("SAVE CAT BODY: ${body.toJson()}");
+      try {
+        ///  CREATE BODY
+        SaveCatBody body = SaveCatBody(
+          name: name,
+          storeId: int.parse(AppConfig.storeId ?? ""),
+        );
+        debugPrint("the store id is : ${AppConfig.storeId}");
+        debugPrint("SAVE CAT BODY: ${body.toJson()}");
 
-      ///  API CALL
-      var res = await serviceConfig.addCat(body);
+        ///  API CALL
+        var res = await serviceConfig.addCat(body);
 
-      if (res.isValue) {
-        AddCatModel response = res.asValue!.value;
+        if (res.isValue) {
+          AddCatModel response = res.asValue!.value;
 
-        Helpers.successToast("Category Added Successfully");
+          Helpers.successToast("Category Added Successfully");
 
-        if (onSuccess != null) onSuccess();
-      } else {
-        Helpers.successToast("Failed to add category");
+          if (onSuccess != null) onSuccess();
+        } else {
+          Helpers.successToast("Failed to add category");
 
-        if (onFailure != null) onFailure();
+          if (onFailure != null) onFailure();
+        }
+
+        updateLoadState(LoaderState.loaded);
+      } catch (e) {
+        debugPrint("save category error: $e");
+        updateLoadState(LoaderState.loaded);
+        Helpers.successToast("Something went wrong");
       }
-
-      updateLoadState(LoaderState.loaded);
-    } catch (e) {
-      debugPrint("save category error: $e");
-      updateLoadState(LoaderState.loaded);
-      Helpers.successToast("Something went wrong");
     }
   }
-}
 
   // Future<void> getCategories() async {
   //   final network = await CommonFunctions.checkInternetConnection();
@@ -688,33 +736,34 @@ Future<void> saveSupplier({
   // }
 
   Future<void> getCategories({int? categoryId}) async {
-  final network = await CommonFunctions.checkInternetConnection();
-  debugPrint("category id : $categoryId");
-  String storeIdStr = await SharedPreferenceHelper.getStoreID();
-  int? storeId = int.tryParse(storeIdStr);
+    final network = await CommonFunctions.checkInternetConnection();
+    debugPrint("category id : $categoryId");
+    String storeIdStr = await SharedPreferenceHelper.getStoreID();
+    int? storeId = int.tryParse(storeIdStr);
 
-  if (network) {
-    updateLoadState(LoaderState.loading);
-    debugPrint("store id : $storeId");
+    if (network) {
+      updateLoadState(LoaderState.loading);
+      debugPrint("store id : $storeId");
 
-    try {
-      var res = await serviceConfig.getCategory(categoryId: categoryId, storeId: storeId);
+      try {
+        var res = await serviceConfig.getCategory(
+            categoryId: categoryId, storeId: storeId);
 
-      if (res.isValue) {
-        categoryModel = res.asValue!.value;
+        if (res.isValue) {
+          categoryModel = res.asValue!.value;
 
-        if (categoryModel != null) {
-          updateCategoriesList(categoryModel);
+          if (categoryModel != null) {
+            updateCategoriesList(categoryModel);
+          }
         }
-      }
 
-      updateLoadState(LoaderState.loaded);
-    } catch (e) {
-      debugPrint('exception in categories: $e');
-      updateLoadState(LoaderState.loaded);
+        updateLoadState(LoaderState.loaded);
+      } catch (e) {
+        debugPrint('exception in categories: $e');
+        updateLoadState(LoaderState.loaded);
+      }
     }
   }
-}
 
   Future<void> saveStock({
     required List<Map<String, dynamic>> addedStocks,
@@ -768,7 +817,7 @@ Future<void> saveSupplier({
           storeId: AppConfig.storeId,
         );
 
-        print("REQUEST BODY: ${body.toJson()}"); 
+        print("REQUEST BODY: ${body.toJson()}");
         print("=========== STOCK SAVE DEBUG ===========");
         print("Invoice No: $invoiceNo");
         print("Purchase Date: ${date.toString().split(' ')[0]}");

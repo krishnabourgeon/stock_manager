@@ -22,37 +22,62 @@ class MainActivity : FlutterActivity() {
                     "printReceipt" -> {
                         try {
                             val shop = call.argument<String>("shop") ?: ""
-        val shopaddress = call.argument<String>("shopaddress") ?: ""
-        val shopaddress2 = call.argument<String>("shopaddress2") ?: ""
+                            val shopaddress = call.argument<String>("shopaddress") ?: ""
+                            val shopaddress2 = call.argument<String>("shopaddress2") ?: ""
 
-        val items = call.argument<List<Map<String, Any>>>("items") ?: listOf()
+                            val items = call.argument<List<Map<String, Any>>>("items") ?: listOf()
 
-        val mode = call.argument<String>("mode") ?: ""
-        val bill = call.argument<Int>("bill") ?: 0
-        val total = call.argument<Int>("total") ?: 0
+                            val mode = call.argument<String>("mode") ?: ""
 
-        val billdate = call.argument<String>("billdate") ?: ""
-        val billtime = call.argument<String>("billtime") ?: ""
+                            val bill = safeInt(call.argument<Any>("bill"))
+                            val total = safeInt(call.argument<Any>("total"))
 
-        // GST Values
-        val cgst = call.argument<Double>("cgst") ?: 0.0
-        val sgst = call.argument<Double>("sgst") ?: 0.0
-        val gst = call.argument<Double>("gst") ?: 0.0
+                            val billdate = call.argument<String>("billdate") ?: ""
+                            val billtime = call.argument<String>("billtime") ?: ""
 
-        printReceipt(
-            shop,
-            shopaddress,
-            shopaddress2,
-            items,
-            mode,
-            bill,
-            billdate,
-            billtime,
-            total,
-            cgst,
-            sgst,
-            gst
-        )
+                            // GST Values
+                            val cgst = call.argument<Double>("cgst") ?: 0.0
+                            val sgst = call.argument<Double>("sgst") ?: 0.0
+                            val gst = call.argument<Double>("gst") ?: 0.0
+
+                            // ✅ Discount fields
+                            val discountInput = call.argument<Double>("discountInput") ?: 0.0
+                            val discountType = call.argument<String>("discountType") ?: "flat"
+                            val subTotal = call.argument<Double>("subTotal") ?: 0.0
+
+                            // Compute actual discount rupee value
+                            val discountValue: Double
+                            val discountLabel: String
+                            if (discountInput > 0) {
+                                if (discountType == "percentage") {
+                                    discountValue = subTotal * discountInput / 100
+                                    discountLabel = "Discount (${discountInput.toInt()}%)"
+                                } else {
+                                    discountValue = discountInput
+                                    discountLabel = "Discount"
+                                }
+                            } else {
+                                discountValue = 0.0
+                                discountLabel = ""
+                            }
+
+                            printReceipt(
+                                shop,
+                                shopaddress,
+                                shopaddress2,
+                                items,
+                                mode,
+                                bill,
+                                billdate,
+                                billtime,
+                                total,
+                                cgst,
+                                sgst,
+                                gst,
+                                discountValue,
+                                discountLabel,
+                                subTotal
+                            )
 
                             result.success("Printed")
 
@@ -66,6 +91,16 @@ class MainActivity : FlutterActivity() {
             }
     }
 
+    private fun safeInt(value: Any?): Int {
+        return when (value) {
+            is Int -> value
+            is Long -> value.toInt()
+            is Double -> value.toInt()
+            is String -> value.toIntOrNull() ?: 0
+            else -> 0
+        }
+    }
+
     private fun printReceipt(
         shop: String,
         address: String,
@@ -75,93 +110,84 @@ class MainActivity : FlutterActivity() {
         bill: Int,
         billdate: String,
         billtime: String,
-        total:Any,
-        cgst:Double,
-        sgst:Double,
-        gst:Double,
-       
+        total: Int,
+        cgst: Double,
+        sgst: Double,
+        gst: Double,
+        discountValue: Double,         // ✅ actual rupee amount deducted
+        discountLabel: String,         // ✅ "Discount" or "Discount (10%)"
+        subTotal: Double,              // ✅ pre-discount subtotal
     ) {
         try {
-           
             val printer = POSTerminal.getInstance(this)
                 .getDevice("cloudpos.device.printer") as PrinterDevice
 
             printer.open()
 
             val builder = StringBuilder()
-    
-            // ✅ CENTER SHOP NAME (manual)
-            builder.append(centerText(shop))
- 
-            // ✅ CENTER ADDRESS
-            builder.append(centerText(address))
-             builder.append(centerText(address2))
-           
 
+            builder.append(centerText(shop))
+            builder.append(centerText(address))
+            builder.append(centerText(address2))
 
             builder.append("--------------------------------\n")
-            if (bill != null&&bill != 0  ) {
-    builder.append(leftRightAlign("Bill No : $bill", "$billdate"));
-} else {
-    builder.append(rightAlign( "$billdate"));
-}
-             builder.append(rightAlign("$billtime\n"))
-              
+            if (bill != 0) {
+                builder.append(leftRightAlign("Bill No : $bill", "$billdate"))
+            } else {
+                builder.append(rightAlign("$billdate"))
+            }
+            builder.append(rightAlign("$billtime\n"))
 
-           
-           for ((index, item) in items.withIndex()) {
-            if (item["type"] != null&&  item["type"] != "null"&&item["type"] !="") {
-    builder.append("${index + 1}. ${item["type"].toString()}\n");
-} else {
-    
-}
-                
+            for ((index, item) in items.withIndex()) {
+                val type = item["type"]?.toString()
+                if (!type.isNullOrEmpty() && type != "null") {
+                    builder.append("${index + 1}. $type\n")
+                }
+
                 val name = item["name"].toString()
                 val qty = (item["qty"] as? Number)?.toInt()
-    ?: item["qty"]?.toString()?.toIntOrNull()
-    ?: 0
+                    ?: item["qty"]?.toString()?.toIntOrNull()
+                    ?: 0
+                val rate = (item["rate"] as? Number)?.toInt()
+                    ?: item["rate"]?.toString()?.toIntOrNull()
+                    ?: 0
+                val unit = item["unit"] as? String
 
-val rate = (item["rate"] as? Number)?.toInt()
-    ?: item["rate"]?.toString()?.toIntOrNull()
-    ?: 0
-   val unit = item["unit"] as? String
-
- 
-
-builder.append(formatItem(item["type"],name, qty, rate,unit))
+                builder.append(formatItem(item["type"], name, qty, rate, unit))
             }
 
-builder.append("--------------------------------\n")
+            builder.append("--------------------------------\n")
 
-// GST Details
-if (cgst > 0) {
-    builder.append(leftRightAlign("CGST", "Rs %.2f".format(cgst)))
-}
+            // ✅ Show subtotal only when there's a discount so the deduction is clear
+            if (discountValue > 0 && subTotal > 0) {
+                builder.append(leftRightAlign("Sub Total", "Rs %.2f".format(subTotal)))
+                builder.append(leftRightAlign(discountLabel, "- Rs %.2f".format(discountValue)))
+            }
 
-if (sgst > 0) {
-    builder.append(leftRightAlign("SGST", "Rs %.2f".format(sgst)))
-}
+            if (cgst > 0) {
+                builder.append(leftRightAlign("CGST", "Rs %.2f".format(cgst)))
+            }
+            if (sgst > 0) {
+                builder.append(leftRightAlign("SGST", "Rs %.2f".format(sgst)))
+            }
+            if (gst > 0) {
+                builder.append(leftRightAlign("GST Total", "Rs %.2f".format(gst)))
+            }
 
-if (gst > 0) {
-    builder.append(leftRightAlign("GST Total", "Rs %.2f".format(gst)))
-}
+            builder.append("--------------------------------\n")
 
-builder.append("--------------------------------\n")
+            if (mode.isNotEmpty() && mode != "null") {
+                builder.append(leftRightAlign("Mode: $mode", "TOTAL: Rs $total"))
+            } else {
+                if (total != 0) {
+                    builder.append(rightAlign("TOTAL: Rs $total\n"))
+                }
+            }
 
-if (mode != null && mode != "null" && mode != "") {
-    builder.append(leftRightAlign("Mode: $mode", "TOTAL: Rs $total"))
-} else {
-    if (total != 0) {
-        builder.append(rightAlign("TOTAL: Rs $total\n"))
-    }
-}
-
-if(total!=0){
-
-
-            builder.append("--------------------------------\n")}
-             builder.append(centerText("THANK YOU"))
-           
+            if (total != 0) {
+                builder.append("--------------------------------\n")
+            }
+            builder.append(centerText("THANK YOU"))
             builder.append("\n\n")
 
             printer.printText(builder.toString())
@@ -173,38 +199,34 @@ if(total!=0){
         }
     }
 
-    // 🔥 CENTER TEXT FUNCTION
     private fun centerText(text: String, width: Int = 32): String {
         val padding = (width - text.length) / 2
         return " ".repeat(if (padding > 0) padding else 0) + text + "\n"
     }
 
-    // 🔥 RIGHT ALIGN FUNCTION
     private fun rightAlign(text: String, width: Int = 32): String {
         val padding = width - text.length
         return " ".repeat(if (padding > 0) padding else 0) + text
     }
 
-    // 🔥 ITEM FORMAT  
-    private fun formatItem(itemName: Any?, name: String, qty: Int, rate: Any?,unit:String?): String {
-
-    return if (itemName ==""||itemName==null||itemName=="null") {
-        if(rate==0||rate=="0"){
-            if(unit!=null||unit!="null"||unit!=""){
-            return  "$name $qty$unit\n\n"  
-      }else{
-         return  "$name $qty\n\n"
-      }  }else{  
-        "$name $qty x $rate\n\n"   // 👈 no leading spaces
-   } } else {
-        "   $name $qty x $rate\n\n" // 👈 with spaces
+    private fun formatItem(itemName: Any?, name: String, qty: Int, rate: Any?, unit: String?): String {
+        return if (itemName == "" || itemName == null || itemName == "null") {
+            if (rate == 0 || rate == "0") {
+                if (unit != null && unit != "null" && unit != "") {
+                    "$name $qty$unit\n\n"
+                } else {
+                    "$name $qty\n\n"
+                }
+            } else {
+                "$name $qty x $rate\n\n"
+            }
+        } else {
+            "   $name $qty x $rate\n\n"
+        }
     }
-}
 
-//in row
     private fun leftRightAlign(left: String, right: String, width: Int = 32): String {
-    val space = width - (left.length + right.length)
-    return left + " ".repeat(if (space > 0) space else 1) + right + "\n"
-}
- 
+        val space = width - (left.length + right.length)
+        return left + " ".repeat(if (space > 0) space else 1) + right + "\n"
+    }
 }
