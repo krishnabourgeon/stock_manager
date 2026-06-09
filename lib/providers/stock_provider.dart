@@ -1358,6 +1358,7 @@ class StockProvider extends ChangeNotifier with ProviderHelperClass {
     required String unit,
     required String price,
     required String categoryId,
+    required String namemal,
     Function? onSuccess,
     Function? onFailure,
   }) async {
@@ -1371,6 +1372,7 @@ class StockProvider extends ChangeNotifier with ProviderHelperClass {
           catId: categoryId,
           unit: unit,
           price: price,
+          namemal: namemal,
           storeId: AppConfig.storeId.toString(),
         );
         debugPrint("SAVE PRODUCT BODY: ${body.toJson()}");

@@ -15,6 +15,7 @@ class SaveProductBody {
     String unit;
     String price;
     String storeId;
+    String namemal;
 
     SaveProductBody({
         required this.code,
@@ -23,6 +24,7 @@ class SaveProductBody {
         required this.unit,
         required this.price,
         required this.storeId,
+        required this.namemal,
     });
 
     factory SaveProductBody.fromJson(Map<String, dynamic> json) => SaveProductBody(
@@ -32,6 +34,7 @@ class SaveProductBody {
         unit: json["unit"],
         price: json["price"],
         storeId: json["store_id"],
+        namemal: json["name_mal"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -41,5 +44,6 @@ class SaveProductBody {
         "unit": unit,
         "price": price,
         "store_id": storeId,
+        "name_mal": namemal,
     };
 }
