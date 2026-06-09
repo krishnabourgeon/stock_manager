@@ -3645,6 +3645,11 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
     print(
         "discotype = ${previewBillProvider.isDiscountPercentage ? "percentage" : "flat"}");
     print("subTotal = ${previewBillProvider.subTotalController.text}");
+    print("**************************************");
+    print("Total items = ${previewBillProvider.person.length}");
+
+
+    
 
 // 🔹 Format
     String formattedDate = DateFormat('dd-MM-yyyy').format(dateTime);
@@ -3654,7 +3659,7 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
         "type": item.deity ?? '',
         "name": item.pooja ?? "",
         // ✅ FIX: qty and rate come as String from API — parse to int
-        "qty": int.tryParse(item.qty?.toString() ?? '0') ?? 0,
+        "qty": double.tryParse(item.qty?.toString() ?? '0') ?? 0.0,
         "rate": int.tryParse(item.rate?.toString() ?? '0') ?? 0,
       });
     }
@@ -3671,9 +3676,7 @@ class _PreviewBillButtonState extends State<PreviewBillButton> {
         "billtime": formattedTime,
         // ✅ FIX: totalRateController.text is "84.00" (has decimal) — parse as double then toInt
         "total":
-            (double.tryParse(previewBillProvider.totalRateController.text) ??
-                    0.0)
-                .toInt(),
+            double.tryParse(previewBillProvider.totalRateController.text) ?? 0.0,
         "cgst": double.tryParse(previewBillProvider.cgstController.text) ?? 0.0,
         "sgst": double.tryParse(previewBillProvider.sgstController.text) ?? 0.0,
         "gst": double.tryParse(previewBillProvider.gstAmountController.text) ??

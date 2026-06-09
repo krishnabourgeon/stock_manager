@@ -153,7 +153,7 @@ class ProductList {
     int productid;
     int unitid;
     int qty;
-    dynamic salesRate;
+    double? salesRate;        // ✅ nullable double
     String mode;
     DateTime addedDate;
     int user;
@@ -163,14 +163,14 @@ class ProductList {
     int status;
     String productCode;
     String productName;
-    String invoiceNo;
+    String? invoiceNo;
 
     ProductList({
         required this.id,
         required this.productid,
         required this.unitid,
         required this.qty,
-        required this.salesRate,
+        this.salesRate,         // ✅ optional
         required this.mode,
         required this.addedDate,
         required this.user,
@@ -180,7 +180,7 @@ class ProductList {
         required this.status,
         required this.productCode,
         required this.productName,
-        required this.invoiceNo,
+        this.invoiceNo,
     });
 
     factory ProductList.fromJson(Map<String, dynamic> json) => ProductList(
@@ -188,9 +188,13 @@ class ProductList {
         productid: json["productid"] ?? 0,
         unitid: json["unitid"] ?? 0,
         qty: json["qty"] ?? 0,
-        salesRate: json["sales_rate"],
+        salesRate: json["sales_rate"] != null           // ✅ safe parse
+            ? double.tryParse(json["sales_rate"].toString())
+            : null,
         mode: json["mode"] ?? "",
-        addedDate: json["added_date"] == null ? DateTime.now() : DateTime.parse(json["added_date"]),
+        addedDate: json["added_date"] == null
+            ? DateTime.now()
+            : DateTime.parse(json["added_date"]),
         user: json["user"] ?? 0,
         refId: json["ref_id"] ?? 0,
         date: json["date"],
@@ -198,7 +202,7 @@ class ProductList {
         status: json["status"] ?? 0,
         productCode: json["product_code"] ?? "1",
         productName: json["product_name"] ?? "Unknown",
-        invoiceNo: json["invoice_no"] ?? "N/A",
+        invoiceNo: json["invoice_no"]?.toString(),      // ✅ handles int/String/null
     );
 
     Map<String, dynamic> toJson() => {

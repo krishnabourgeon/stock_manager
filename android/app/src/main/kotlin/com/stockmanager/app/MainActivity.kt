@@ -15,8 +15,6 @@ import com.cloudpos.printer.PrinterDevice
 class MainActivity : FlutterActivity() {
 
     private val CHANNEL = "cloudpos/printer"
-
-    // Thermal paper print width in pixels (576 for 80mm, 384 for 58mm)
     private val PRINT_WIDTH = 384
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -32,28 +30,19 @@ class MainActivity : FlutterActivity() {
                             val shop = call.argument<String>("shop") ?: ""
                             val shopaddress = call.argument<String>("shopaddress") ?: ""
                             val shopaddress2 = call.argument<String>("shopaddress2") ?: ""
-
                             val items = call.argument<List<Map<String, Any>>>("items") ?: listOf()
-
                             val mode = call.argument<String>("mode") ?: ""
-
                             val bill = safeInt(call.argument<Any>("bill"))
-                            val total = safeInt(call.argument<Any>("total"))
-
+                            val total = safeDouble(call.argument<Any>("total"))
                             val billdate = call.argument<String>("billdate") ?: ""
                             val billtime = call.argument<String>("billtime") ?: ""
-
-                            // GST Values
                             val cgst = call.argument<Double>("cgst") ?: 0.0
                             val sgst = call.argument<Double>("sgst") ?: 0.0
                             val gst = call.argument<Double>("gst") ?: 0.0
-
-                            // ✅ Discount fields
                             val discountInput = call.argument<Double>("discountInput") ?: 0.0
                             val discountType = call.argument<String>("discountType") ?: "flat"
                             val subTotal = call.argument<Double>("subTotal") ?: 0.0
 
-                            // Compute actual discount rupee value
                             val discountValue: Double
                             val discountLabel: String
                             if (discountInput > 0) {
@@ -68,29 +57,14 @@ class MainActivity : FlutterActivity() {
                                 discountValue = 0.0
                                 discountLabel = ""
                             }
-println("Shop: $discountValue")
-println("Shop: $discountLabel")
-  println("$subTotal....")
+
                             printReceipt(
-                                shop,
-                                shopaddress,
-                                shopaddress2,
-                                items,
-                                mode,
-                                bill,
-                                billdate,
-                                billtime,
-                                total,
-                                cgst,
-                                sgst,
-                                gst,
-                                discountValue,
-                                discountLabel,
-                                subTotal
+                                shop, shopaddress, shopaddress2, items, mode, bill,
+                                billdate, billtime, total, cgst, sgst, gst,
+                                discountValue, discountLabel, subTotal
                             )
 
                             result.success("Printed")
-
                         } catch (e: Exception) {
                             result.error("PRINT_ERROR", e.message, null)
                         }
@@ -111,10 +85,26 @@ println("Shop: $discountLabel")
         }
     }
 
-    // Checks if a string contains any characters outside the ASCII range
-    // (Malayalam, Arabic, Devanagari, etc. all fall outside ASCII)
-    private fun hasNonAscii(text: String): Boolean {
-        return text.any { it.code > 127 }
+    private fun safeDouble(value: Any?): Double {
+        return when (value) {
+            is Double -> value
+            is Int -> value.toDouble()
+            is Long -> value.toDouble()
+            is String -> value.toDoubleOrNull() ?: 0.0
+            else -> 0.0
+        }
+    }
+
+    private fun hasNonAscii(text: String): Boolean = text.any { it.code > 127 }
+
+    private fun padEnd(text: String, width: Int): String {
+        return if (text.length >= width) text.substring(0, width)
+        else text + " ".repeat(width - text.length)
+    }
+
+    private fun padStart(text: String, width: Int): String {
+        return if (text.length >= width) text.substring(0, width)
+        else " ".repeat(width - text.length) + text
     }
 
     private fun printReceipt(
@@ -126,7 +116,7 @@ println("Shop: $discountLabel")
         bill: Int,
         billdate: String,
         billtime: String,
-        total: Int,
+        total: Double,
         cgst: Double,
         sgst: Double,
         gst: Double,
@@ -137,81 +127,111 @@ println("Shop: $discountLabel")
         try {
             val printer = POSTerminal.getInstance(this)
                 .getDevice("cloudpos.device.printer") as PrinterDevice
-
             printer.open()
 
-            // Collect receipt as a list of lines for bitmap rendering
-            // Each entry: Pair(text, alignment) where alignment is "left"/"center"/"right"
-            // or Pair("---DIVIDER---", "") for separator lines
             data class ReceiptLine(val text: String, val align: String = "left", val bold: Boolean = false)
 
             val lines = mutableListOf<ReceiptLine>()
 
-            if (shop.isNotEmpty()) {
-    lines.add(
-        ReceiptLine(
-            shop.trim(),
-            "center",
-            bold = true
-        )
-    )
-}
+            // ── Shop header ──────────────────────────────────────────────
+            if (shop.isNotEmpty()) lines.add(ReceiptLine(shop.trim(), "center", bold = true))
             if (address.isNotEmpty()) lines.add(ReceiptLine(address, "center"))
             if (address2.isNotEmpty()) lines.add(ReceiptLine(address2, "center"))
 
             lines.add(ReceiptLine("--------------------------------", "center"))
 
+            // ── #BillNo + Date on one line ───────────────────────────────
             if (bill != 0) {
-                lines.add(ReceiptLine("Bill No : $bill", "left"))
-                lines.add(ReceiptLine(billdate, "right"))
+                val billStr = "#$bill"
+                val gap = 32 - billStr.length - billdate.length
+                val spaces = if (gap > 0) " ".repeat(gap) else "  "
+                lines.add(ReceiptLine("$billStr$spaces$billdate", "left"))
             } else {
                 lines.add(ReceiptLine(billdate, "right"))
             }
-            lines.add(ReceiptLine(billtime, "right"))
+            if (billtime.isNotEmpty()) lines.add(ReceiptLine(billtime, "right"))
 
+            lines.add(ReceiptLine("--------------------------------", "center"))
+
+            // ── Table header ─────────────────────────────────────────────
+            val colItem = 16
+            val colQtyRate = 10
+            val colAmt = 6
+            val header = padEnd("Item", colItem) + padEnd("Qty x Rate", colQtyRate) + padStart("Amt", colAmt)
+            lines.add(ReceiptLine(header, "left", bold = true))
+            lines.add(ReceiptLine("--------------------------------", "center"))
+
+            // ── Item rows ────────────────────────────────────────────────
             for (item in items) {
                 val type = item["type"]?.toString()
                 val name = item["name"].toString()
-                val qty = (item["qty"] as? Number)?.toInt()
-                    ?: item["qty"]?.toString()?.toIntOrNull() ?: 0
-                val rate = (item["rate"] as? Number)?.toInt()
-                    ?: item["rate"]?.toString()?.toIntOrNull() ?: 0
-                val unit = item["unit"] as? String
+                val qty = (item["qty"] as? Number)?.toDouble()
+                    ?: item["qty"]?.toString()?.toDoubleOrNull() ?: 0.0
+                val rate = (item["rate"] as? Number)?.toDouble()
+                    ?: item["rate"]?.toString()?.toDoubleOrNull() ?: 0.0
 
-                val lineText = buildItemLine(type, name, qty, rate, unit)
-                lines.add(ReceiptLine(lineText, "left"))
-                lines.add(ReceiptLine("", "left")) // blank line between items
+                val qtyStr = if (qty % 1.0 == 0.0) qty.toInt().toString() else "%.2f".format(qty)
+                val rateStr = if (rate % 1.0 == 0.0) rate.toInt().toString() else "%.2f".format(rate)
+                val amt = qty * rate
+                val amtStr = if (amt % 1.0 == 0.0) amt.toInt().toString() else "%.2f".format(amt)
+                val qtyRateStr = "$qtyStr x $rateStr"
+
+                if (name.length > colItem - 1) {
+                    // Long name: name on its own line, numbers indented below
+                    lines.add(ReceiptLine(name, "left"))
+                    lines.add(ReceiptLine(
+                        padEnd("", colItem) + padEnd(qtyRateStr, colQtyRate) + padStart(amtStr, colAmt),
+                        "left"
+                    ))
+                } else {
+                    lines.add(ReceiptLine(
+                        padEnd(name, colItem) + padEnd(qtyRateStr, colQtyRate) + padStart(amtStr, colAmt),
+                        "left"
+                    ))
+                }
             }
 
             lines.add(ReceiptLine("--------------------------------", "center"))
 
+            // ── Discount — bold, aligned to table columns ────────────────
             if (discountValue > 0 && subTotal > 0) {
-                println("successs....")
-                lines.add(ReceiptLine("Sub Total         Rs %.2f".format(subTotal), "left"))
-                lines.add(ReceiptLine("$discountLabel", "left"))
-                 lines.add(ReceiptLine("Disc.Amt     Rs %.2f".format(discountValue), "left"))
-                
-            }else{
-                  println("fail...$discountValue..$subTotal")
+                lines.add(ReceiptLine(
+                    padEnd("Sub Total", colItem + colQtyRate) + padStart("\u20b9%.2f".format(subTotal), colAmt),
+                    "left", bold = true
+                ))
+                lines.add(ReceiptLine(
+                    padEnd(discountLabel, colItem + colQtyRate) + padStart("-\u20b9%.2f".format(discountValue), colAmt),
+                    "left", bold = true
+                ))
             }
-            if (cgst > 0) lines.add(ReceiptLine("CGST              Rs %.2f".format(cgst), "left"))
-            if (sgst > 0) lines.add(ReceiptLine("SGST              Rs %.2f".format(sgst), "left"))
-            if (gst > 0) lines.add(ReceiptLine("GST Total         Rs %.2f".format(gst), "left"))
+
+// ── GST — bold, aligned to table columns ─────────────────────
+            if (cgst > 0) lines.add(ReceiptLine(
+                padEnd("CGST", colItem + colQtyRate) + padStart("\u20b9%.2f".format(cgst), colAmt),
+                "left", bold = true
+            ))
+            if (sgst > 0) lines.add(ReceiptLine(
+                padEnd("SGST", colItem + colQtyRate) + padStart("\u20b9%.2f".format(sgst), colAmt),
+                "left", bold = true
+            ))
+            if (gst > 0) lines.add(ReceiptLine(
+                padEnd("GST Total", colItem + colQtyRate) + padStart("\u20b9%.2f".format(gst), colAmt),
+                "left", bold = true
+            ))
 
             lines.add(ReceiptLine("--------------------------------", "center"))
 
-            if (mode.isNotEmpty() && mode != "null") {
-                lines.add(ReceiptLine("Mode: $mode", "left"))
-            }
-            if (total != 0) {
-                lines.add(ReceiptLine("TOTAL: Rs $total", "right", bold = true))
+            // ── Mode & Total ─────────────────────────────────────────────
+            if (mode.isNotEmpty() && mode != "null") lines.add(ReceiptLine("Mode: $mode", "left"))
+            if (total != 0.0) {
+                lines.add(ReceiptLine("TOTAL: \u20b9%.2f".format(total), "right", bold = true))
                 lines.add(ReceiptLine("--------------------------------", "center"))
             }
+
             lines.add(ReceiptLine("THANK YOU", "center", bold = true))
             lines.add(ReceiptLine(""))
             lines.add(ReceiptLine(""))
 
-            // Render all lines to a single bitmap so Unicode (Malayalam etc.) prints correctly
             val bitmap = renderReceiptToBitmap(lines.map { Triple(it.text, it.align, it.bold) })
             printer.printBitmap(bitmap)
             printer.close()
@@ -221,118 +241,75 @@ println("Shop: $discountLabel")
         }
     }
 
-    private fun buildItemLine(type: Any?, name: String, qty: Int, rate: Any?, unit: String?): String {
-        return if (type == "" || type == null || type == "null") {
-            if (rate == 0 || rate == "0") {
-                if (unit != null && unit != "null" && unit != "") "$name $qty$unit"
-                else "$name $qty"
-            } else {
-                "$name $qty x $rate"
-            }
-        } else {
-            "  $name $qty x $rate"
-        }
+    // "Label                    ₹value" — full width ~32 chars
+    private fun labelValue(label: String, value: String): String {
+        val total = 32
+        val gap = total - label.length - value.length
+        val spaces = if (gap > 0) " ".repeat(gap) else "  "
+        return "$label$spaces$value"
     }
 
     private fun renderReceiptToBitmap(
-    lines: List<Triple<String, String, Boolean>>
-): Bitmap {
+        lines: List<Triple<String, String, Boolean>>
+    ): Bitmap {
+        val textSize = 28f
+        val lineSpacing = 10f
+        val padding = 16
 
-    val textSize = 28f
-    val lineSpacing = 10f
-    val padding = 16
-
-    val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.BLACK
-        this.textSize = textSize
-        typeface = Typeface.DEFAULT
-    }
-
-    val fm = paint.fontMetrics
-    val lineHeight = (fm.descent - fm.ascent + lineSpacing).toInt()
-
-    val maxWidth = PRINT_WIDTH - (padding * 2)
-
-    // First pass: wrap all lines and calculate height
-    val preparedLines = mutableListOf<Triple<String, String, Boolean>>()
-
-    for ((text, align, bold) in lines) {
-
-        paint.typeface =
-            if (bold) Typeface.DEFAULT_BOLD
-            else Typeface.DEFAULT
-
-        if (text.isBlank()) {
-            preparedLines.add(Triple("", align, bold))
-            continue
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.BLACK
+            this.textSize = textSize
+            typeface = Typeface.DEFAULT
         }
 
-        var currentLine = ""
+        val fm = paint.fontMetrics
+        val lineHeight = (fm.descent - fm.ascent + lineSpacing).toInt()
+        val maxWidth = PRINT_WIDTH - (padding * 2)
 
-        text.split(" ").forEach { word ->
+        val preparedLines = mutableListOf<Triple<String, String, Boolean>>()
 
-            val testLine =
-                if (currentLine.isEmpty()) word
-                else "$currentLine $word"
-
-            if (paint.measureText(testLine) <= maxWidth) {
-                currentLine = testLine
-            } else {
-
-                if (currentLine.isNotEmpty()) {
-                    preparedLines.add(
-                        Triple(currentLine, align, bold)
-                    )
-                }
-
-                currentLine = word
+        for ((text, align, bold) in lines) {
+            paint.typeface = if (bold) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+            if (text.isBlank()) {
+                preparedLines.add(Triple("", align, bold))
+                continue
             }
+            var currentLine = ""
+            text.split(" ").forEach { word ->
+                val testLine = if (currentLine.isEmpty()) word else "$currentLine $word"
+                if (paint.measureText(testLine) <= maxWidth) {
+                    currentLine = testLine
+                } else {
+                    if (currentLine.isNotEmpty()) preparedLines.add(Triple(currentLine, align, bold))
+                    currentLine = word
+                }
+            }
+            if (currentLine.isNotEmpty()) preparedLines.add(Triple(currentLine, align, bold))
         }
 
-        if (currentLine.isNotEmpty()) {
-            preparedLines.add(
-                Triple(currentLine, align, bold)
-            )
+        val totalHeight = (preparedLines.size * lineHeight) + (padding * 2)
+        val bitmap = Bitmap.createBitmap(PRINT_WIDTH, totalHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        canvas.drawColor(Color.WHITE)
+
+        var y = padding - fm.ascent
+
+        for ((text, align, bold) in preparedLines) {
+            paint.typeface = if (bold) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+            paint.textAlign = when (align) {
+                "center" -> Paint.Align.CENTER
+                "right"  -> Paint.Align.RIGHT
+                else     -> Paint.Align.LEFT
+            }
+            val x = when (align) {
+                "center" -> PRINT_WIDTH / 2f
+                "right"  -> (PRINT_WIDTH - padding).toFloat()
+                else     -> padding.toFloat()
+            }
+            canvas.drawText(text, x, y, paint)
+            y += lineHeight
         }
+
+        return bitmap
     }
-
-    val totalHeight =
-        (preparedLines.size * lineHeight) + (padding * 2)
-
-    val bitmap = Bitmap.createBitmap(
-        PRINT_WIDTH,
-        totalHeight,
-        Bitmap.Config.ARGB_8888
-    )
-
-    val canvas = Canvas(bitmap)
-    canvas.drawColor(Color.WHITE)
-
-    var y = padding - fm.ascent
-
-    for ((text, align, bold) in preparedLines) {
-
-        paint.typeface =
-            if (bold) Typeface.DEFAULT_BOLD
-            else Typeface.DEFAULT
-
-      paint.textAlign = when (align) {
-    "center" -> Paint.Align.CENTER
-    "right" -> Paint.Align.RIGHT
-    else -> Paint.Align.LEFT
-}
-
-val x = when (align) {
-    "center" -> PRINT_WIDTH / 2f
-    "right" -> (PRINT_WIDTH - padding).toFloat()
-    else -> padding.toFloat()
-}
-
-canvas.drawText(text, x, y, paint)
-
-        y += lineHeight
-    }
-
-    return bitmap
-}
 }
