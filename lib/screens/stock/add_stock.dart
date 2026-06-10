@@ -416,6 +416,7 @@ double getCombinedTotal() {
                       Consumer<StockProvider>(
                         builder: (context, stockProvider, child) {
                           return DropdownButtonFormField<int>(
+                            isExpanded: true,
                             decoration: InputDecoration(
                               labelText: "Select Category",
                               border: const OutlineInputBorder(),
@@ -445,7 +446,7 @@ double getCombinedTotal() {
                                     })
                                     .map((item) => DropdownMenuItem<int>(
                                           value: item.id,
-                                          child: Text(item.name.toString()),
+                                          child: Text(item.name.toString(), overflow: TextOverflow.ellipsis,),
                                         ))
                                     .toList(),
                             // onChanged: (value) {

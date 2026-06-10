@@ -1481,6 +1481,7 @@ class StockProvider extends ChangeNotifier with ProviderHelperClass {
 
   Future<void> saveCat({
     required String name,
+     String? nameMal,
     Function? onSuccess,
     Function? onFailure,
   }) async {

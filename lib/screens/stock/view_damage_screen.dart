@@ -380,6 +380,7 @@ class _ViewDamageScreenState extends State<ViewDamageScreen> {
                         // Category dropdown
                         Expanded(
                           child: DropdownButtonFormField<int>(
+                            isExpanded: true,
                             decoration: InputDecoration(
                               labelText: 'Category',
                               labelStyle: TextStyle(fontSize: 13.sp),
@@ -405,6 +406,7 @@ class _ViewDamageScreenState extends State<ViewDamageScreen> {
                                       child: Text(
                                         c.name.toString(),
                                         style: TextStyle(fontSize: 13.sp),
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ))
                                 .toList(),

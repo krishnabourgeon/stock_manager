@@ -27,7 +27,7 @@
         </intent>
     </queries>
    <application
-        android:label="stock_manager"
+        android:label="KrishiConnect"
         android:requestLegacyExternalStorage="true"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
