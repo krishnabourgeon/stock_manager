@@ -37,7 +37,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   flutter_screenutil: ^5.9.3
-  flutter_zoom_drawer:
+  flutter_zoom_drawer: 
   http: ^1.2.1
   dropdown_button2: ^1.9.2
   provider: ^6.1.5
